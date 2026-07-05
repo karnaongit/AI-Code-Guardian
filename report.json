@@ -1,0 +1,20 @@
+{
+  "scan": {
+    "target": "ai_code_guardian",
+    "files_scanned": 6,
+    "duration_seconds": 0.0,
+    "total_findings": 0,
+    "by_severity": {},
+    "by_category": {},
+    "findings": []
+  },
+  "risk": {
+    "security_score": 100.0,
+    "alignment_score": 75.0,
+    "maintainability_score": 80.0,
+    "overall_risk_score": 88.5,
+    "pr_risk": 0.0,
+    "merge_decision": "Warn - Merge Allowed (developer acknowledgement)",
+    "findings": []
+  }
+}
