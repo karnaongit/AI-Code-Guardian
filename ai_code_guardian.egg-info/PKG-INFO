@@ -1,0 +1,16 @@
+Metadata-Version: 2.4
+Name: ai-code-guardian
+Version: 2.0.0
+Summary: Repository-agnostic AI-powered application security platform: SAST, IaC, dependency, quantum-readiness, and business-intent analysis — 100% local.
+Requires-Python: >=3.10
+Requires-Dist: pyyaml>=6.0
+Provides-Extra: dashboard
+Requires-Dist: streamlit>=1.30; extra == "dashboard"
+Requires-Dist: pandas; extra == "dashboard"
+Requires-Dist: openpyxl; extra == "dashboard"
+Provides-Extra: ai
+Requires-Dist: sentence-transformers; extra == "ai"
+Requires-Dist: chromadb; extra == "ai"
+Requires-Dist: requests; extra == "ai"
+Provides-Extra: dev
+Requires-Dist: pytest>=7.0; extra == "dev"

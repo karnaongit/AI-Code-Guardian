@@ -1,0 +1,14 @@
+pyyaml>=6.0
+
+[ai]
+sentence-transformers
+chromadb
+requests
+
+[dashboard]
+streamlit>=1.30
+pandas
+openpyxl
+
+[dev]
+pytest>=7.0

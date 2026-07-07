@@ -1,0 +1,17 @@
+# AI Security Copilot — additional dependencies
+# Install: pip install -r requirements_ai.txt
+
+# Core RAG dependencies (required)
+faiss-cpu>=1.7.4
+ollama>=0.2.0
+
+# CodeBERT semantic code embeddings (recommended)
+torch>=2.0.0
+transformers>=4.35.0
+
+# Rich document parsing (optional but recommended)
+pdfminer.six>=20221105
+python-docx>=1.0.0
+
+# Already present in base project
+# streamlit, pandas, pyyaml, requests, openpyxl
