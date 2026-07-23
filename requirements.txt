@@ -1,0 +1,6 @@
+streamlit
+PyGithub
+requests
+python-dotenv
+networkx
+plotly
