@@ -1,0 +1,22 @@
+# AI Code Guardian 2.0 — default configuration
+# Every value here can be overridden per-repository or per-CI-job.
+ignore_dirs: []          # merged with built-in defaults (.git, node_modules, ...)
+follow_symlinks: false
+max_files: 200000
+max_file_bytes: 2000000
+
+enable_dependencies: true
+enable_infrastructure: true
+enable_quantum: true
+enable_intent: true
+enable_threat_intel: false   # network feeds (NVD/CISA KEV/OSV); enable when online
+enable_ai: false             # NVIDIA Nemotron reasoning layer (needs NVIDIA_API_KEY)
+
+alignment_score_default: 75.0
+fail_on_severity: null       # set to High/Critical for CI merge gating
+
+llm_provider: nemotron       # LLM provider (guardian/llm/factory.py)
+llm_model: ""                # blank = NVIDIA_MODEL env var / provider default
+rag_persist: false
+
+report_formats: [json]
