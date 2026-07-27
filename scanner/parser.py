@@ -16,7 +16,6 @@ DANGEROUS_FUNCTIONS = {
 class PythonParser(ast.NodeVisitor):
 
     def __init__(self):
-
         self.functions = []
         self.classes = []
         self.imports = []
@@ -26,6 +25,17 @@ class PythonParser(ast.NodeVisitor):
         self.dangerous_calls = []
 
     def parse(self, source_code):
+
+        # ----------------------------------
+        # Reset parser state for each file
+        # ----------------------------------
+        self.functions = []
+        self.classes = []
+        self.imports = []
+        self.variables = []
+        self.calls = []
+        self.constants = []
+        self.dangerous_calls = []
 
         try:
             tree = ast.parse(source_code)
@@ -81,12 +91,16 @@ class PythonParser(ast.NodeVisitor):
         for target in node.targets:
 
             if isinstance(target, ast.Name):
-
                 self.variables.append(target.id)
 
         if isinstance(node.value, ast.Constant):
 
-            self.constants.append(node.value.value)
+            value = node.value.value
+
+            if isinstance(value, bytes):
+                value = repr(value)
+
+            self.constants.append(value)
 
         self.generic_visit(node)
 
@@ -95,11 +109,9 @@ class PythonParser(ast.NodeVisitor):
         function_name = ""
 
         if isinstance(node.func, ast.Name):
-
             function_name = node.func.id
 
         elif isinstance(node.func, ast.Attribute):
-
             function_name = node.func.attr
 
         if function_name:

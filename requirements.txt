@@ -4,3 +4,15 @@ requests
 python-dotenv
 networkx
 plotly
+fastapi
+uvicorn
+python-multipart
+fastapi
+uvicorn
+pandas
+numpy
+sentence-transformers
+faiss-cpu
+google-generativeai
+PyGithub
+python-dotenv
