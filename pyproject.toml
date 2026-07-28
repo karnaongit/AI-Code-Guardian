@@ -1,16 +1,30 @@
 [project]
 name = "ai-code-guardian"
-version = "2.0.0"
-description = "Repository-agnostic AI-powered application security platform: SAST, IaC, dependency, quantum-readiness, and business-intent analysis, with NVIDIA Nemotron reasoning."
+version = "2.1.0"
+description = "Multi-language, UST-driven, evidence-grounded code analysis platform: Tree-sitter parsing, SAST, IaC, dependency, quantum-readiness and dynamic business-intent analysis, with validated NVIDIA Nemotron contextual reasoning."
 requires-python = ">=3.10"
 dependencies = [
     "pyyaml>=6.0",
 ]
 
 [project.optional-dependencies]
-dashboard = ["streamlit>=1.30", "pandas", "openpyxl"]
-ai = ["openai>=1.30", "sentence-transformers>=2.7", "faiss-cpu>=1.8", "requests>=2.31"]
-dev = ["pytest>=7.0"]
+# Tree-sitter grammars power the Unified Syntax Tree. The platform runs
+# without them (stdlib-AST for Python, regex elsewhere) but with reduced
+# precision, so this is the recommended install.
+ust = [
+    "tree_sitter>=0.21",
+    "tree_sitter_python>=0.21",
+    "tree_sitter_java>=0.21",
+    "tree_sitter_javascript>=0.21",
+    "tree_sitter_typescript>=0.21",
+    "tree_sitter_rust>=0.21",
+]
+dashboard = ["streamlit>=1.30", "pandas", "plotly", "openpyxl"]
+ai = ["openai>=1.30", "sentence-transformers>=2.7", "faiss-cpu>=1.8",
+      "requests>=2.31", "numpy>=1.24"]
+docs = ["pypdf>=4.0", "python-docx>=1.1"]
+dev = ["pytest>=7.0", "pandas", "openpyxl"]
+all = ["ai-code-guardian[ust,dashboard,ai,docs]"]
 
 [project.scripts]
 guardian = "guardian.cli:main"
@@ -21,3 +35,7 @@ build-backend = "setuptools.build_meta"
 
 [tool.setuptools.packages.find]
 include = ["guardian*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]

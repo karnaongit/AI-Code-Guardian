@@ -243,33 +243,37 @@ def regex_ust(source: str, file_label: str, language: str) -> USTFile:
                                      metadata={"grammar_type": "regex_import"}))
             continue
 
+        # A declaration and a call can share a line — `class A { void f() {
+        # Cipher.getInstance("RSA"); } }` is one line of perfectly ordinary
+        # Java. Record the declaration and keep scanning the same line for
+        # calls rather than moving on, which silently lost every finding in
+        # brace-heavy or minified code.
+        declaration_end = 0
+
         m = _CLASS_PATTERN.match(line)
         if m:
             current_cls = m.group(1)
             current_fn = ""
+            declaration_end = m.end()
             nodes.append(USTNode(type=USTNodeType.CLASS, language=language,
                                  file=file_label, span=span, name=current_cls,
                                  symbol=current_cls, snippet=stripped[:MAX_SNIPPET],
                                  metadata={"grammar_type": "regex_class"}))
-            continue
 
-        matched_fn = False
         for pat in _FUNC_PATTERNS:
             m = pat.match(line)
             if m:
                 current_fn = m.group(1)
+                declaration_end = max(declaration_end, m.end())
                 nodes.append(USTNode(
                     type=USTNodeType.FUNCTION, language=language, file=file_label,
                     span=span, name=current_fn,
                     symbol=f"{current_cls}.{current_fn}" if current_cls else current_fn,
                     enclosing_class=current_cls, snippet=stripped[:MAX_SNIPPET],
                     metadata={"grammar_type": "regex_function"}))
-                matched_fn = True
                 break
-        if matched_fn:
-            continue
 
-        for m in _CALL_PATTERN.finditer(line):
+        for m in _CALL_PATTERN.finditer(line, declaration_end):
             symbol = m.group(1).replace("::", ".")
             if symbol.split(".")[-1] in _KEYWORDS or symbol in _KEYWORDS:
                 continue

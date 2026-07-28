@@ -1,3 +1,19 @@
-streamlit
+# ── Core (required) ──────────────────────────────────────────────────────
+pyyaml>=6.0
+
+# ── Tree-sitter parsing foundation (multi-language UST) ──────────────────
+# The UST degrades to stdlib-AST (Python) and regex (all languages) when
+# these are absent, so a scan still works — with lower confidence and
+# narrower coverage. Installing them is strongly recommended.
+tree_sitter>=0.21
+tree_sitter_python>=0.21
+tree_sitter_java>=0.21
+tree_sitter_javascript>=0.21
+tree_sitter_typescript>=0.21
+tree_sitter_rust>=0.21
+
+# ── Dashboard ────────────────────────────────────────────────────────────
+streamlit>=1.30
 pandas
 plotly
+openpyxl                       # Excel/Jira requirement imports

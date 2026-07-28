@@ -20,12 +20,15 @@ the code match the stated requirements".
 """
 from __future__ import annotations
 
+import logging
 import re
 from collections import Counter
 from dataclasses import dataclass, field
 from pathlib import Path
 
 from guardian.intent.domains import DOMAIN_KEYWORDS
+
+log = logging.getLogger(__name__)
 
 _WORD = re.compile(r"[A-Za-z][A-Za-z\-]{2,}")
 _CAMEL = re.compile(r"(?<=[a-z0-9])(?=[A-Z])")
@@ -123,40 +126,71 @@ class DomainClassifier:
 
         return verdict
 
-    def _ai_rerank_pass(self, repo_root: Path, verdict: DomainVerdict) -> DomainVerdict:
-        """Refine top domain candidates using Nemotron AI analysis if configured."""
+    def _ai_rerank_pass(self, repo_root: Path, verdict: DomainVerdict,
+                        service=None) -> DomainVerdict:
+        """Optionally re-rank the top candidates using the README.
+
+        Routed through the shared reasoning service rather than building a
+        client here. The previous implementation called `llm.complete()` and
+        read `resp.text` — neither exists on `BaseLLM` — inside a bare
+        `except`, so it failed silently on every run and no one could tell.
+
+        The model may only re-order candidates the deterministic classifier
+        already produced; it cannot introduce a domain, and any failure
+        leaves the deterministic verdict untouched.
+        """
+        readme_text = ""
+        for candidate in sorted(repo_root.glob("README*")):
+            try:
+                readme_text = candidate.read_text(errors="ignore")[:3000]
+                break
+            except OSError:
+                continue
+        if not readme_text:
+            return verdict
+
         try:
-            from guardian.llm.factory import create_llm
-            from guardian.llm.config import LLMConfig
-            cfg = LLMConfig.from_env()
-            if not cfg.api_key:
-                return verdict
-            llm = create_llm(cfg)
-            readme_text = ""
-            for p in repo_root.glob("README*"):
-                try:
-                    readme_text = p.read_text(errors="ignore")[:3000]
-                    break
-                except OSError:
-                    pass
-            if not readme_text:
+            from guardian.reasoning.gateway import (
+                NemotronReasoningService, ReasoningRequest,
+            )
+            from guardian.reasoning.schemas import extract_json
+
+            service = service or NemotronReasoningService()
+            if not service.configured:
                 return verdict
 
-            prompt = (
-                f"System Domain Classifier: Select the primary business domain for this codebase.\n"
-                f"Top Candidates: {verdict.domain}, {[alt[0] for alt in verdict.alternatives]}\n"
-                f"README Context:\n{readme_text}\n\n"
-                f"Respond in JSON: {{\\\"primary_domain\\\": \\\"<domain>\\\", \\\"confidence\\\": <0.0-1.0>, \\\"reasoning\\\": \\\"<brief text>\\\"}}"
-            )
-            resp = llm.complete(prompt)
-            import json
-            data = json.loads(resp.text)
-            if data.get("primary_domain") in [verdict.domain] + [alt[0] for alt in verdict.alternatives]:
-                verdict.domain = data["primary_domain"]
-                verdict.confidence = float(data.get("confidence", verdict.confidence))
-                verdict.reasoning += f" [AI Refined: {data.get('reasoning', '')}]"
-        except Exception:
-            pass  # Fail gracefully, preserve deterministic verdict
+            candidates = [verdict.domain] + [alt[0] for alt in verdict.alternatives]
+            result = service.reason(ReasoningRequest(
+                task="domain_classification",
+                instruction=(
+                    "Choose the primary business domain of this repository from "
+                    "the CANDIDATES list. You may only choose from that list."),
+                schema_instruction=(
+                    'Return exactly one JSON object:\n'
+                    '{"primary_domain": "<one of the candidates>", '
+                    '"confidence": 0.0-1.0, "reasoning": "<one sentence>"}'),
+                business_block="CANDIDATES:\n" + "\n".join(f"- {c}" for c in candidates),
+                evidence_block="README:\n" + readme_text,
+                system_role=("You classify repositories into business domains "
+                             "using only the evidence provided."),
+            ))
+            if not result.available or result.response is None:
+                return verdict
+
+            data = extract_json(result.response.raw) or {}
+            chosen = data.get("primary_domain")
+            if chosen in candidates:
+                verdict.domain = chosen
+                try:
+                    verdict.confidence = max(0.0, min(1.0, float(data.get(
+                        "confidence", verdict.confidence))))
+                except (TypeError, ValueError):
+                    pass
+                reasoning = str(data.get("reasoning", "")).strip()
+                if reasoning:
+                    verdict.reasoning += f" [AI re-ranked: {reasoning}]"
+        except Exception as exc:  # noqa: BLE001 — classification must not fail a scan
+            log.debug("domain re-ranking unavailable: %s", exc)
         return verdict
 
     def _ingest_text(self, fp: Path, tokens: Counter, weight: int) -> None:

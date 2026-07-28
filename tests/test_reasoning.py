@@ -445,3 +445,75 @@ class TestAIValidation:
     def test_rejected_claims_never_become_findings(self, validation_context):
         report = self._validate(validation_context, evidence_ids=["E999"])
         assert to_findings(report.rejected, engine="quantum") == []
+
+
+class TestCentralisedIntegrations:
+    """Modules that used to build their own broken LLM clients."""
+
+    def test_verifier_imports_and_is_a_noop_without_a_key(self, tmp_path):
+        """Regression: this module raised on import (LLMGuardrails, llm.complete)."""
+        from guardian.core.models import Finding
+        from guardian.llm.verifier import AIFindingVerifier
+
+        service = NemotronReasoningService(llm=None)
+        service._config.api_key = ""
+        finding = Finding(category="SQL Injection", severity="High", rule_id="X",
+                          file="a.py", line=1, snippet="s", recommendation="r")
+        out = AIFindingVerifier(service=service).verify_findings(tmp_path, [finding])
+        assert out == [finding]
+        assert out[0].recommendation == "r", "no annotation without a model"
+
+    def test_verifier_demotes_rather_than_deletes_a_false_positive(self, tmp_path):
+        from guardian.core.models import Finding
+        from guardian.llm.verifier import AIFindingVerifier
+
+        (tmp_path / "a.py").write_text("def f():\n    pass\n" * 20)
+        reply = json.dumps({"findings": [{
+            "evidence_ids": ["x"], "verdict": "false_positive", "confidence": 0.95,
+            "reason": "the value is a compile-time constant", "recommendation": "none"}]})
+        finding = Finding(category="SQL Injection", severity="High", rule_id="X",
+                          file="a.py", line=5, snippet="s", recommendation="r",
+                          confidence=0.9)
+        out = AIFindingVerifier(
+            service=NemotronReasoningService(llm=FakeLLM(reply))
+        ).verify_findings(tmp_path, [finding])
+
+        assert len(out) == 1, "triage must never remove a finding"
+        assert out[0].confidence <= 0.3
+        assert "likely false positive" in out[0].recommendation
+
+    def test_domain_reranking_only_picks_from_deterministic_candidates(self, tmp_path):
+        from guardian.intent.classifier import DomainClassifier, DomainVerdict
+
+        (tmp_path / "README.md").write_text("A payments and refunds platform.")
+        verdict = DomainVerdict(domain="Banking / FinTech", confidence=0.5,
+                                alternatives=[("Retail / E-commerce", 0.2)])
+        reply = json.dumps({"primary_domain": "Astrology",  # not a candidate
+                            "confidence": 0.99, "reasoning": "made up"})
+        out = DomainClassifier()._ai_rerank_pass(
+            tmp_path, verdict, service=NemotronReasoningService(llm=FakeLLM(reply)))
+        assert out.domain == "Banking / FinTech", "a model cannot invent a domain"
+
+    def test_domain_reranking_accepts_a_valid_candidate(self, tmp_path):
+        from guardian.intent.classifier import DomainClassifier, DomainVerdict
+
+        (tmp_path / "README.md").write_text("An online storefront and checkout.")
+        verdict = DomainVerdict(domain="Banking / FinTech", confidence=0.4,
+                                alternatives=[("Retail / E-commerce", 0.3)])
+        reply = json.dumps({"primary_domain": "Retail / E-commerce",
+                            "confidence": 0.8, "reasoning": "storefront and checkout"})
+        out = DomainClassifier()._ai_rerank_pass(
+            tmp_path, verdict, service=NemotronReasoningService(llm=FakeLLM(reply)))
+        assert out.domain == "Retail / E-commerce"
+        assert "AI re-ranked" in out.reasoning
+
+    def test_domain_reranking_survives_an_llm_failure(self, tmp_path):
+        from guardian.intent.classifier import DomainClassifier, DomainVerdict
+
+        (tmp_path / "README.md").write_text("A payments platform.")
+        verdict = DomainVerdict(domain="Banking / FinTech", confidence=0.5,
+                                alternatives=[("Insurance", 0.2)])
+        out = DomainClassifier()._ai_rerank_pass(
+            tmp_path, verdict,
+            service=NemotronReasoningService(llm=FakeLLM(error=LLMError("503"))))
+        assert out.domain == "Banking / FinTech"
