@@ -300,6 +300,10 @@ class CBOM:
     #: Tracked separately: a library import is not an algorithm usage, and
     #: folding it into the algorithm inventory would inflate every count.
     dependencies: list[dict] = field(default_factory=list)
+    #: Layer C output — contextual reasoning about purpose and migration
+    #: urgency. Empty when no model was consulted; the CBOM itself is
+    #: entirely deterministic either way.
+    contextual_analysis: dict = field(default_factory=dict)
 
     # -- derived views ---------------------------------------------------
     def by_status(self) -> dict[str, list[CBOMEntry]]:
@@ -355,6 +359,7 @@ class CBOM:
             "total_occurrences": self.total_occurrences,
             "unresolved_call_sites": self.unresolved_call_sites,
             "crypto_dependencies": self.dependencies,
+            "contextual_analysis": self.contextual_analysis,
             "by_status": by_status,
             "entries": [e.to_dict() for e in
                         sorted(self.entries,

@@ -41,6 +41,10 @@ from guardian.evidence.models import Evidence, EvidenceType
 from guardian.quantum.classification import (
     CBOM, MIGRATION_REQUIRED, QuantumStatus, build_cbom, classify,
 )
+from guardian.reasoning.context import render_evidence, render_ust_context, select_for_crypto_asset
+from guardian.reasoning.gateway import ReasoningRequest
+from guardian.reasoning.schemas import QUANTUM_SCHEMA_INSTRUCTION
+from guardian.reasoning.validation import AIFindingValidator, to_findings
 from guardian.ust.models import USTFile, USTNode
 from guardian.ust.tagging import CRYPTO_IMPORT_HINTS, resolve_algorithm
 
@@ -63,8 +67,14 @@ class QuantumReadinessEngine(BaseEngine):
 
     name = ENGINE_NAME
 
-    def __init__(self, *, emit_findings: bool = True) -> None:
+    def __init__(self, *, emit_findings: bool = True,
+                 reasoning_service=None, knowledge_retriever=None,
+                 use_llm: bool = True, max_reasoning_assets: int = 8) -> None:
         self.emit_findings = emit_findings
+        self.service = reasoning_service
+        self.knowledge = knowledge_retriever
+        self.use_llm = use_llm
+        self.max_reasoning_assets = max_reasoning_assets
 
     # ------------------------------------------------------------------
     def analyze(self, context: AnalysisContext) -> EngineResult:
@@ -91,6 +101,14 @@ class QuantumReadinessEngine(BaseEngine):
                           files_analyzed=len(context.ust.files))
 
         findings = self._inventory_findings(cbom, evidence) if self.emit_findings else []
+
+        # Layer C — contextual reasoning about purpose, impact and migration
+        # urgency. Nemotron is never asked *whether* RSA exists; Layer A has
+        # already proved that. It is asked what this call site protects and
+        # how urgent the migration is.
+        ai_findings, ai_report = self._contextual_pass(context, evidence, cbom)
+        findings.extend(ai_findings)
+        cbom.contextual_analysis = ai_report
 
         return EngineResult(evidence=evidence, findings=findings, output=cbom)
 
@@ -266,6 +284,117 @@ class QuantumReadinessEngine(BaseEngine):
                 engine=self.name,
             ))
         return sorted(findings, key=lambda f: (f.file, f.line))
+
+
+    # ------------------------------------------------------------------
+    # Layer C — contextual reasoning
+    # ------------------------------------------------------------------
+    def _contextual_pass(self, context: AnalysisContext, evidence: list[Evidence],
+                         cbom: CBOM) -> tuple[list[Finding], dict]:
+        if not self.use_llm or self.service is None:
+            return [], {"status": "skipped", "reason": "contextual analysis disabled"}
+        if not self.service.configured:
+            return [], {"status": "unavailable",
+                        "reason": self.service.unavailable_reason()}
+
+        # Only assets that need a migration decision are worth a model call.
+        candidates = [
+            item for item in evidence
+            if item.type is EvidenceType.CRYPTO_USAGE
+            and classify((item.metadata or {}).get("algorithm", "")).status
+            in MIGRATION_REQUIRED
+        ]
+        if not candidates:
+            return [], {"status": "no_candidates"}
+
+        # Prioritise assets that look business-critical, then by confidence.
+        candidates.sort(key=lambda e: (
+            0 if (e.metadata or {}).get("business_tags") else 1, -e.confidence))
+        candidates = candidates[: self.max_reasoning_assets]
+
+        findings, reports = [], []
+        for item in candidates:
+            asset_findings, report = self._reason_about_asset(context, item)
+            findings.extend(asset_findings)
+            reports.append(report)
+
+        return findings, {"status": "analyzed", "assets_analyzed": len(reports),
+                          "reports": reports}
+
+    def _reason_about_asset(self, context: AnalysisContext,
+                            crypto: Evidence) -> tuple[list[Finding], dict]:
+        selected = select_for_crypto_asset(context, crypto)
+        metadata = crypto.metadata or {}
+        algorithm = metadata.get("algorithm", "unknown")
+        classification = classify(algorithm)
+
+        knowledge_block, knowledge_meta = "", {}
+        if self.knowledge is not None:
+            retrieval = self.knowledge.retrieve_for_evidence(
+                selected, extra_terms=[algorithm, "post-quantum", "migration"])
+            knowledge_block = retrieval.render()
+            knowledge_meta = retrieval.to_dict()
+
+        ust_block = render_ust_context(
+            context.ust_file(crypto.file), around_line=crypto.line,
+            function_name=metadata.get("enclosing_function", ""))
+
+        request = ReasoningRequest(
+            task="quantum_readiness",
+            instruction=(
+                f"A deterministic scan has already PROVEN that {algorithm} is used at "
+                f"{crypto.file}:{crypto.line} ({metadata.get('api', '')}). Do not "
+                f"re-assess whether it exists.\n\n"
+                f"Deterministic classification: {classification.status.value} — "
+                f"{classification.rationale}\n"
+                f"Standard migration target: {classification.migration_target}"
+                f"{f' ({classification.nist_standard})' if classification.nist_standard else ''}\n\n"
+                "Assess only the CONTEXT: what this cryptographic operation protects, "
+                "the business and security impact of it being broken, how urgent "
+                "migration is given the likely lifetime of the protected data, which "
+                "component is affected, and a concrete migration approach for this "
+                "specific call site. Use only the evidence and code structure below."),
+            schema_instruction=QUANTUM_SCHEMA_INSTRUCTION,
+            evidence_block=render_evidence(selected),
+            knowledge_block=knowledge_block,
+            ust_block=ust_block,
+            cache_key_extra=f"{crypto.file}:{crypto.line}:{algorithm}",
+        )
+
+        result = self.service.reason(request)
+        report = {
+            "evidence_id": crypto.id,
+            "algorithm": algorithm,
+            "file": crypto.file,
+            "line": crypto.line,
+            "available": result.available,
+            "error": result.error,
+            "cached": result.cached,
+            "prompt_chars": result.prompt_chars,
+            "knowledge": knowledge_meta,
+        }
+        if not result.available or result.response is None:
+            report["status"] = "unavailable"
+            return [], report
+
+        validator = AIFindingValidator(
+            context, allowed_evidence={e.id for e in selected if e.id})
+        validation = validator.validate_response(result.response)
+        report["status"] = "analyzed"
+        report["validation"] = validation.to_dict()
+
+        for item in validation.accepted:
+            item.category = "Quantum Readiness"
+            item.metadata.setdefault("algorithm", algorithm)
+            item.metadata.setdefault("classification", classification.status.value)
+            # The deterministic policy stands: crypto inventory is a
+            # migration item, not a live vulnerability. A model may raise
+            # migration urgency; it may not promote inventory into a
+            # present-day High/Critical security finding.
+            item.severity = Severity.INFO.value
+
+        return (to_findings(validation.accepted, engine=self.name,
+                            default_category="Quantum Readiness"), report)
 
 
 # ---------------------------------------------------------------------------
