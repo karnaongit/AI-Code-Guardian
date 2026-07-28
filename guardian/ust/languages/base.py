@@ -305,18 +305,34 @@ class LanguageNormalizer:
     def _normalise_symbol(text: str) -> str:
         """Collapse a callee expression into a dotted symbol.
 
-        Grammars happily hand back things like `hashlib.md5(data).hexdigest`
-        or `self.repo.query`. Keeping only identifier/`.`/`::` characters
-        gives detectors a predictable token to match on without them each
-        re-inventing the cleanup.
+        Grammars hand back things like `hashlib.md5(data).hexdigest`,
+        `self.repo.query` or `foo[0].bar`. Keeping only identifier/`.`
+        characters gives detectors a predictable token without each of
+        them re-inventing the cleanup.
+
+        Nested call arguments are skipped rather than terminating the
+        scan, so a chained call keeps its full path
+        (`hashlib.md5.hexdigest`). Truncating at the first `(` would make
+        the outer node indistinguishable from the inner `hashlib.md5`
+        one, and every detector matching on the symbol would fire twice
+        for a single crypto operation.
         """
         text = text.strip().replace("::", ".").replace("->", ".")
         cleaned: list[str] = []
+        depth = 0
         for ch in text:
+            if depth:
+                if ch in "([{":
+                    depth += 1
+                elif ch in ")]}":
+                    depth -= 1
+                continue
             if ch.isalnum() or ch in "._$":
                 cleaned.append(ch)
-            elif ch in "([{<":
-                break
+            elif ch in "([{":
+                depth += 1
+                # a call/index in the middle of the chain ends this segment
+                cleaned.append(".")
             elif ch in " \t\n":
                 continue
             else:
