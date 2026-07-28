@@ -34,6 +34,8 @@ from typing import Optional
 
 log = logging.getLogger(__name__)
 
+_JSON_FENCE = re.compile(r"^\s*```(?:json)?\s*(.*?)\s*```\s*$", re.S | re.I)
+
 # ---------------------------------------------------------------------------
 # Inbound: prompt injection
 # ---------------------------------------------------------------------------
@@ -182,6 +184,7 @@ class GuardrailPipeline:
                        question: str = "") -> GuardrailVerdict:
         """Validate a model answer before it reaches the user."""
         verdict = GuardrailVerdict()
+        answer = self.strip_markdown_json(answer)
 
         # 1. hallucination detection (mechanical, delegated)
         if self._validator is not None:
@@ -227,3 +230,13 @@ class GuardrailPipeline:
         if tokens & _IN_SCOPE_TERMS:
             return True
         return len(tokens) == 0
+
+    @staticmethod
+    def strip_markdown_json(answer: str) -> str:
+        """Strip accidental ```json fences around strict JSON responses."""
+        if not answer:
+            return ""
+        match = _JSON_FENCE.match(answer)
+        if match:
+            return match.group(1).strip()
+        return answer.strip()

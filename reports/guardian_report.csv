@@ -1,0 +1,29 @@
+Finding ID,Rule ID,Category,Severity,File,Line,Snippet,Recommendation,Confidence
+,SEC-004,Hardcoded Secret,High,tests/test_llm_layer.py,27,"cfg = LLMConfig(api_key=""nvapi-x"", base_url=""http://insecure.example/v1"")",Mitigate Hardcoded Secret using secure coding practices.,0.85
+,SEC-004,Hardcoded Secret,High,tests/test_llm_layer.py,32,"secret = ""nvapi-SUPERSECRETVALUE12345""",Mitigate Hardcoded Secret using secure coding practices.,0.85
+,SEC-004,Hardcoded Secret,High,tests/test_llm_layer.py,63,"create_llm(""gpt-9000"", LLMConfig(api_key=""nvapi-x""))",Mitigate Hardcoded Secret using secure coding practices.,0.85
+,SEC-004,Hardcoded Secret,High,tests/test_llm_layer.py,66,"llm = create_llm(""nemotron"", LLMConfig(api_key=""nvapi-x""))",Mitigate Hardcoded Secret using secure coding practices.,0.85
+,SEC-004,Hardcoded Secret,High,tests/test_llm_layer.py,80,"return NemotronLLM(LLMConfig(api_key=""nvapi-test"", max_retries=3,",Mitigate Hardcoded Secret using secure coding practices.,0.85
+,SEC-004,Hardcoded Secret,High,tests/test_llm_layer.py,236,"text = 'API_KEY = ""nvapi-abcdefghijklmnopqrstuvwxyz123456""'",Mitigate Hardcoded Secret using secure coding practices.,0.85
+,SEC-004,Hardcoded Secret,High,tests/test_llm_layer.py,250,"v = self.g.check_prompt('token = ""ghp_abcdefghijklmnopqrstuvwxyz0123456789""')",Mitigate Hardcoded Secret using secure coding practices.,0.85
+,SEC-004,Hardcoded Secret,High,tests/test_scaffold.py,21,"String apiKey=""SECRET_KEY_9"";",Mitigate Hardcoded Secret using secure coding practices.,0.85
+,SEC-004,Hardcoded Secret,High,tests/test_security_rule_engine.py,37,"src = 'String apiKey = ""SECRET_KEY_1"";\nString API_KEY = ""SECRET_KEY_2"";'",Mitigate Hardcoded Secret using secure coding practices.,0.85
+,SEC-004,Hardcoded Secret,High,tests/test_security_rule_engine.py,58,"src = 'String apiKey = ""SECRET_KEY_1"";'",Mitigate Hardcoded Secret using secure coding practices.,0.85
+,SEC-004,Hardcoded Secret,High,tests/test_security_rule_engine.py,66,"src = 'String apiKey = ""SECRET_KEY_1"";'",Mitigate Hardcoded Secret using secure coding practices.,0.85
+,SEC-004,Hardcoded Secret,High,dashboard/chat_page.py,43,"_KEY_COPILOT     = ""acg_copilot""",Mitigate Hardcoded Secret using secure coding practices.,0.85
+,SEC-004,Hardcoded Secret,High,dashboard/chat_page.py,44,"_KEY_CHAT_HIST   = ""acg_chat_history""      # list of (role, text, citations)",Mitigate Hardcoded Secret using secure coding practices.,0.85
+,SEC-004,Hardcoded Secret,High,dashboard/chat_page.py,45,"_KEY_INDEXING    = ""acg_indexing_done""",Mitigate Hardcoded Secret using secure coding practices.,0.85
+,SEC-004,Hardcoded Secret,High,dashboard/chat_page.py,113,"key=""acg_model_input"",",Mitigate Hardcoded Secret using secure coding practices.,0.85
+,SEC-004,Hardcoded Secret,High,dashboard/chat_page.py,115,"if st.button(""Apply model"", key=""acg_apply_model""):",Mitigate Hardcoded Secret using secure coding practices.,0.85
+,SEC-004,Hardcoded Secret,High,dashboard/chat_page.py,122,"if st.button(""🗑️ Clear chat history"", key=""acg_clear_hist""):",Mitigate Hardcoded Secret using secure coding practices.,0.85
+,SEC-004,Hardcoded Secret,High,dashboard/chat_page.py,203,"key=""acg_file_upload"",",Mitigate Hardcoded Secret using secure coding practices.,0.85
+,SEC-004,Hardcoded Secret,High,dashboard/chat_page.py,206,"if uploaded and st.button(""📚 Index uploaded files"", key=""acg_idx_upload""):",Mitigate Hardcoded Secret using secure coding practices.,0.85
+,SEC-004,Hardcoded Secret,High,dashboard/chat_page.py,210,"dir_path = st.text_input(""Local path"", key=""acg_dir_path"",",Mitigate Hardcoded Secret using secure coding practices.,0.85
+,SEC-004,Hardcoded Secret,High,dashboard/chat_page.py,212,"if st.button(""📚 Index directory"", key=""acg_idx_dir""):",Mitigate Hardcoded Secret using secure coding practices.,0.85
+,SEC-004,Hardcoded Secret,High,dashboard/app.py,96,"key=""code_upload"",",Mitigate Hardcoded Secret using secure coding practices.,0.85
+,SEC-004,Hardcoded Secret,High,dashboard/app.py,112,"key=""github_url_input"",",Mitigate Hardcoded Secret using secure coding practices.,0.85
+,SEC-004,Hardcoded Secret,High,dashboard/app.py,126,"key=""req_upload"",",Mitigate Hardcoded Secret using secure coding practices.,0.85
+,SEC-004,Hardcoded Secret,High,dashboard/app.py,141,"key=""policy_upload"",",Mitigate Hardcoded Secret using secure coding practices.,0.85
+,SEC-004,Hardcoded Secret,High,dashboard/app.py,506,"default=sev_opts, key=""sec_filter"")",Mitigate Hardcoded Secret using secure coding practices.,0.85
+,DEP-001,Unpinned Dependency,Low,requirements.txt,1,plotly (PyPI) has no pinned version,"Pin dependency versions for reproducible, auditable builds.",0.9
+,QNT-ECC-ECDSA,Quantum Migration Inventory,Info,tests/test_scaffold.py,138,"assert self._scan(""key = ec.generate_private_key(ec.SECP256R1())"", ""a.py"")","Replace with ML-DSA (Dilithium) or SLH-DSA (SPHINCS+) (FIPS 204 (ML-DSA) / FIPS 205 (SLH-DSA)). ECDSA/ECDH rely on the elliptic curve discrete log problem, which Shor's Algorithm solves efficiently.",0.85

@@ -258,10 +258,12 @@ def _scan_python_secrets(text: str, file_label: str, rules: dict) -> list[Findin
 
 
 def _scan_python_text(text: str, file_label: str, rules: dict) -> list[Finding]:
+    if "\x00" in text:
+        text = text.replace("\x00", "")
     findings = _scan_python_secrets(text, file_label, rules)
     try:
         tree = ast.parse(text)
-    except SyntaxError:
+    except (SyntaxError, ValueError):
         return findings  # fall back to regex-only results for unparsable files
     source_lines = text.splitlines()
     for func in [n for n in ast.walk(tree) if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef))]:

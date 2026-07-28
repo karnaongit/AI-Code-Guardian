@@ -18,7 +18,7 @@ except ImportError:  # pragma: no cover
 
 DEFAULT_IGNORE_DIRS = {
     ".git", ".hg", ".svn", "node_modules", "dist", "build", "target",
-    "venv", ".venv", "env", ".idea", ".vscode", "coverage", "__pycache__",
+    "venv", ".venv", ".venv-app", "env", ".idea", ".vscode", "coverage", "__pycache__",
     ".mypy_cache", ".pytest_cache", ".tox", "vendor", "bower_components",
 }
 

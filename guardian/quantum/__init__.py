@@ -1,13 +1,5 @@
-"""
-Quantum Readiness Engine
-=========================
-Public API surface.
+from __future__ import annotations
 
-    from guardian.quantum import QuantumReadinessEngine
-
-    engine = QuantumReadinessEngine()
-    report, findings = engine.analyze("path/to/src")
-"""
 from guardian.quantum.models import (
     CryptoUsage, CryptographicBOM, QuantumReadinessReport,
     MigrationRecommendation, QuantumThreat, AlgorithmFamily,

@@ -25,6 +25,8 @@ from guardian.llm.base import (
     BaseLLM, LLMAuthError, LLMError, LLMRateLimitError, LLMResponse, LLMTimeoutError,
 )
 from guardian.llm.config import LLMConfig
+from guardian.llm.parser import ResponseParser, SecurityAnalysis
+from guardian.llm.prompt_builder import build_nemotron_payload
 
 log = logging.getLogger(__name__)
 
@@ -91,6 +93,33 @@ class NemotronLLM(BaseLLM):
                      response.completion_tokens, response.total_tokens, finish)
         return response
 
+    def review_code(
+        self,
+        code_snippet: str,
+        file_path: str,
+        *,
+        language: str = "",
+        scanner_findings: Optional[list[dict]] = None,
+        additional_context: Optional[dict | str] = None,
+        temperature: Optional[float] = None,
+        max_tokens: Optional[int] = None,
+    ) -> SecurityAnalysis:
+        """Run the production security-review prompt and parse Section 11 JSON.
+
+        This is the Nemotron code-review integration point: it always loads
+        the markdown system instructions through ``build_nemotron_payload``
+        immediately before sending the request.
+        """
+        messages = build_nemotron_payload(
+            code_snippet=code_snippet,
+            file_path=file_path,
+            language=language,
+            scanner_findings=scanner_findings,
+            additional_context=additional_context,
+        )
+        response = self.chat(messages, temperature=temperature, max_tokens=max_tokens)
+        return ResponseParser().parse(response.content)
+
     def chat_stream(self, messages: list[dict], *, temperature: Optional[float] = None,
                     max_tokens: Optional[int] = None) -> Generator[str, None, None]:
         payload = self._payload(messages, temperature, max_tokens, stream=True)
@@ -104,7 +133,10 @@ class NemotronLLM(BaseLLM):
         if not self._cfg.is_configured:
             return False
         try:
-            self.chat([{"role": "user", "content": "ping"}], max_tokens=1)
+            self.chat([
+                {"role": "system", "content": "Return exactly: ok"},
+                {"role": "user", "content": "health check"},
+            ], max_tokens=1)
             return True
         except Exception as exc:  # noqa: BLE001 — health probe must be total
             log.debug("Nemotron health check failed: %s", exc)

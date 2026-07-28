@@ -96,15 +96,116 @@ def parse_go_mod(path: Path) -> list[Dependency]:
     return deps
 
 
+def parse_cargo_lock(path: Path) -> list[Dependency]:
+    deps = []
+    curr_name = None
+    curr_ver = None
+    for line in path.read_text(errors="ignore").splitlines():
+        line = line.strip()
+        if line == "[[package]]":
+            if curr_name:
+                deps.append(Dependency(curr_name, curr_ver, "Cargo", str(path)))
+            curr_name, curr_ver = None, None
+        elif line.startswith("name = "):
+            curr_name = line.split("=", 1)[1].strip().strip('"')
+        elif line.startswith("version = ") and curr_name and not curr_ver:
+            curr_ver = line.split("=", 1)[1].strip().strip('"')
+    if curr_name:
+        deps.append(Dependency(curr_name, curr_ver, "Cargo", str(path)))
+    return deps
+
+
+def parse_gemfile_lock(path: Path) -> list[Dependency]:
+    deps = []
+    in_specs = False
+    for line in path.read_text(errors="ignore").splitlines():
+        if line.startswith("    specs:"):
+            in_specs = True
+            continue
+        if in_specs:
+            if line and not line.startswith("      "):
+                in_specs = False
+                continue
+            m = re.match(r'^\s{6}([\w\-._]+)\s*\(([\w.\-+]+)\)', line)
+            if m:
+                deps.append(Dependency(m.group(1), m.group(2), "RubyGems", str(path)))
+    return deps
+
+
+def parse_composer_lock(path: Path) -> list[Dependency]:
+    try:
+        data = json.loads(path.read_text(errors="ignore"))
+    except json.JSONDecodeError:
+        return []
+    deps = []
+    for section in ("packages", "packages-dev"):
+        for item in data.get(section, []):
+            name = item.get("name")
+            ver = str(item.get("version", "")).lstrip("v")
+            if name:
+                deps.append(Dependency(name, ver or None, "Packagist", str(path)))
+    return deps
+
+
+def parse_go_sum(path: Path) -> list[Dependency]:
+    deps = []
+    seen = set()
+    for line in path.read_text(errors="ignore").splitlines():
+        parts = line.strip().split()
+        if len(parts) >= 2:
+            pkg, ver = parts[0], parts[1].lstrip("v").split("/")[0]
+            if (pkg, ver) not in seen:
+                seen.add((pkg, ver))
+                deps.append(Dependency(pkg, ver, "Go", str(path)))
+    return deps
+
+
+def parse_yarn_lock(path: Path) -> list[Dependency]:
+    deps = []
+    curr_names = []
+    for line in path.read_text(errors="ignore").splitlines():
+        if line and not line.startswith(" ") and not line.startswith("#"):
+            curr_names = [p.strip().strip('"\'') for p in line.rstrip(":").split(",")]
+        elif line.strip().startswith("version ") and curr_names:
+            ver = line.strip().split(maxsplit=1)[1].strip('"\'')
+            for name_spec in curr_names:
+                pkg_name = name_spec.rsplit("@", 1)[0] if "@" in name_spec[1:] else name_spec
+                deps.append(Dependency(pkg_name, ver, "npm", str(path)))
+            curr_names = []
+    return deps
+
+
+def parse_pipfile_lock(path: Path) -> list[Dependency]:
+    try:
+        data = json.loads(path.read_text(errors="ignore"))
+    except json.JSONDecodeError:
+        return []
+    deps = []
+    for section in ("default", "develop"):
+        for name, meta in data.get(section, {}).items():
+            ver = meta.get("version", "").lstrip("=")
+            deps.append(Dependency(name, ver or None, "PyPI", str(path)))
+    return deps
+
+
 PARSERS = {
     "requirements.txt": parse_requirements_txt,
     "package.json": parse_package_json,
     "package-lock.json": parse_package_lock,
     "pom.xml": parse_pom_xml,
     "go.mod": parse_go_mod,
+    "Cargo.lock": parse_cargo_lock,
+    "Gemfile.lock": parse_gemfile_lock,
+    "composer.lock": parse_composer_lock,
+    "go.sum": parse_go_sum,
+    "yarn.lock": parse_yarn_lock,
+    "pnpm-lock.yaml": parse_yarn_lock,
+    "poetry.lock": parse_cargo_lock,
+    "Pipfile.lock": parse_pipfile_lock,
 }
 
 
 def parse_manifest(path: Path) -> list[Dependency]:
     parser = PARSERS.get(path.name)
     return parser(path) if parser else []
+

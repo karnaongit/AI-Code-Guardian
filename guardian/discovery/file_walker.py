@@ -28,10 +28,10 @@ INFRA_EXTS = {".tf", ".tfvars"}
 DOC_EXTS = {".md", ".rst", ".txt"}
 MANIFEST_NAMES = {
     "pom.xml", "build.gradle", "build.gradle.kts", "requirements.txt",
-    "pyproject.toml", "setup.py", "pipfile", "package.json",
-    "package-lock.json", "yarn.lock", "cargo.toml", "cargo.lock",
+    "pyproject.toml", "setup.py", "pipfile", "pipfile.lock", "package.json",
+    "package-lock.json", "yarn.lock", "pnpm-lock.yaml", "cargo.toml", "cargo.lock",
     "go.mod", "go.sum", "gemfile", "gemfile.lock", "composer.json",
-    "composer.lock",
+    "composer.lock", "poetry.lock",
 }
 
 

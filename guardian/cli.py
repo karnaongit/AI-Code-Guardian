@@ -25,7 +25,7 @@ def main(argv: list[str] | None = None) -> int:
     p_scan = sub.add_parser("scan", help="Full pipeline scan")
     p_scan.add_argument("path")
     p_scan.add_argument("--format", nargs="+", default=["json"],
-                        choices=["json", "sarif", "html"])
+                        choices=["json", "sarif", "html", "csv", "pdf"])
     p_scan.add_argument("--out-dir", default=".")
     p_scan.add_argument("--config", default=None)
     p_scan.add_argument("--alignment-score", type=float, default=None)
@@ -41,18 +41,21 @@ def main(argv: list[str] | None = None) -> int:
     from guardian.config import GuardianConfig
     from guardian.core.registry import load_builtin_plugins
 
+    from guardian.discovery.github_service import is_github_url, GitHubService
+    target_path = GitHubService().fetch_repository(args.path) if is_github_url(args.path) else Path(args.path)
+
     if args.command == "detect":
         from guardian.discovery.file_walker import FileWalker
         from guardian.discovery.repo_detector import RepositoryDetector
         cfg = GuardianConfig.load()
-        files = list(FileWalker(cfg).walk(args.path))
-        profile = RepositoryDetector().detect(Path(args.path), files)
+        files = list(FileWalker(cfg).walk(target_path))
+        profile = RepositoryDetector().detect(target_path, files)
         print(json.dumps(profile.to_dict(), indent=2))
         return 0
 
     if args.command == "intent":
         from guardian.intent.classifier import DomainClassifier
-        verdict = DomainClassifier().classify(Path(args.path))
+        verdict = DomainClassifier().classify(target_path)
         print(json.dumps(verdict.to_dict(), indent=2))
         return 0
 

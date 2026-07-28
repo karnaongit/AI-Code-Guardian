@@ -62,14 +62,14 @@ SECURITY GUARDRAILS
 - NEVER make up file names, line numbers, or vulnerability details.
 - If uncertain, say you are uncertain.
 
-OUTPUT FORMAT
--------------
-- Be concise but thorough.
+OUTPUT FORMAT & CONVERSATION STYLE
+---------------------------------
+- For casual greetings (e.g., "hi", "hello", "who are you"), give a friendly 1-sentence reply.
+- Be direct, concise, and token-efficient. Avoid preamble, disclaimers, or repetitive intro text.
 - Use Markdown formatting.
 - When referencing code, use fenced code blocks with the language tag.
-- When listing findings, use a numbered list with severity labels.
-- End responses that reference findings with a "Sources" section listing \
-the source files cited.
+- When listing findings, use a concise numbered list with severity labels.
+- End responses that reference findings with a short "Sources" section listing the cited files.
 """
 
 

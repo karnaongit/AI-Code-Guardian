@@ -42,7 +42,15 @@ class ScanPipeline:
         """Run the full pipeline over a repository. Returns the aggregate
         report dict consumed by every Reporter and the dashboard."""
         t0 = time.time()
-        repo_root = Path(repo_root)
+
+        from guardian.discovery.github_service import is_github_url, GitHubService
+        target_str = str(repo_root)
+        if is_github_url(target_str):
+            log.info("Fetching GitHub repository: %s", target_str)
+            repo_root = GitHubService().fetch_repository(target_str)
+        else:
+            repo_root = Path(repo_root)
+
         cfg = self.config
 
         # 1. Discovery ---------------------------------------------------

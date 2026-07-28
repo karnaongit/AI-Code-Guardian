@@ -149,23 +149,51 @@ class TestResponseParser:
     def setup_method(self):
         self.p = ResponseParser()
 
+    def _valid_response(self, **overrides):
+        data = {
+            "summary": "ok",
+            "overall_posture": "At Risk",
+            "severity": "High",
+            "confidence": 0.9,
+            "findings": [],
+            "executive_summary": {
+                "posture_statement": "One high-risk issue is present.",
+                "counts_by_severity": {
+                    "Critical": 0, "High": 0, "Medium": 0, "Low": 0, "Info": 0,
+                },
+                "highest_priority_risks": [],
+                "immediate_remediation_priorities": [],
+                "assumptions": [],
+                "missing_context": [],
+            },
+            "business_impact": "",
+            "technical_explanation": "",
+            "recommendation": "",
+            "secure_code": "",
+            "owasp": "",
+            "nist": "",
+            "rmf": "",
+            "cwe": "CWE-89",
+        }
+        data.update(overrides)
+        return json.dumps(data)
+
     def test_plain_json(self):
-        r = self.p.parse(json.dumps({"summary": "ok", "severity": "High",
-                                     "confidence": 0.9, "cwe": "CWE-89"}))
+        r = self.p.parse(self._valid_response())
         assert not r.parse_failed
         assert r.severity == "High" and r.confidence == 0.9
 
     def test_fenced_json(self):
-        r = self.p.parse('Here you go:\n```json\n{"summary": "fenced"}\n```\nDone.')
+        r = self.p.parse("```json\n" + self._valid_response(summary="fenced") + "\n```")
         assert r.summary == "fenced" and not r.parse_failed
 
     def test_json_embedded_in_prose(self):
         r = self.p.parse('Analysis complete. {"summary": "embedded", "severity": "Low"} Regards.')
-        assert r.summary == "embedded"
+        assert r.summary == "embedded" and r.parse_failed
 
     def test_trailing_comma_repaired(self):
         r = self.p.parse('{"summary": "repaired", "severity": "Medium",}')
-        assert r.summary == "repaired" and not r.parse_failed
+        assert r.summary == "repaired" and r.parse_failed
 
     def test_confidence_normalisation(self):
         assert self.p.parse('{"confidence": "85%"}').confidence == 0.85

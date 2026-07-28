@@ -116,6 +116,47 @@ class DomainClassifier:
                 f"outscoring {len([s for _, s in ranked[1:] if s > 0])} alternative domains."
             ),
         )
+
+        # Optional Nemotron AI re-ranking pass over top 3 candidate domains
+        if verdict.alternatives:
+            verdict = self._ai_rerank_pass(repo_root, verdict)
+
+        return verdict
+
+    def _ai_rerank_pass(self, repo_root: Path, verdict: DomainVerdict) -> DomainVerdict:
+        """Refine top domain candidates using Nemotron AI analysis if configured."""
+        try:
+            from guardian.llm.factory import create_llm
+            from guardian.llm.config import LLMConfig
+            cfg = LLMConfig.from_env()
+            if not cfg.api_key:
+                return verdict
+            llm = create_llm(cfg)
+            readme_text = ""
+            for p in repo_root.glob("README*"):
+                try:
+                    readme_text = p.read_text(errors="ignore")[:3000]
+                    break
+                except OSError:
+                    pass
+            if not readme_text:
+                return verdict
+
+            prompt = (
+                f"System Domain Classifier: Select the primary business domain for this codebase.\n"
+                f"Top Candidates: {verdict.domain}, {[alt[0] for alt in verdict.alternatives]}\n"
+                f"README Context:\n{readme_text}\n\n"
+                f"Respond in JSON: {{\\\"primary_domain\\\": \\\"<domain>\\\", \\\"confidence\\\": <0.0-1.0>, \\\"reasoning\\\": \\\"<brief text>\\\"}}"
+            )
+            resp = llm.complete(prompt)
+            import json
+            data = json.loads(resp.text)
+            if data.get("primary_domain") in [verdict.domain] + [alt[0] for alt in verdict.alternatives]:
+                verdict.domain = data["primary_domain"]
+                verdict.confidence = float(data.get("confidence", verdict.confidence))
+                verdict.reasoning += f" [AI Refined: {data.get('reasoning', '')}]"
+        except Exception:
+            pass  # Fail gracefully, preserve deterministic verdict
         return verdict
 
     def _ingest_text(self, fp: Path, tokens: Counter, weight: int) -> None:
@@ -125,3 +166,4 @@ class DomainClassifier:
             return
         for tok in _WORD.findall(text.lower()):
             tokens[tok] += weight
+

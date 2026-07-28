@@ -41,6 +41,28 @@ logger = logging.getLogger(__name__)
 _NOT_FOUND_MARKER = "I could not find evidence in the indexed repository"
 
 
+import re
+
+_GREETING_PATTERNS = {
+    re.compile(r"^(hi|hello|hey|greetings|good\s+(morning|afternoon|evening))\b[\!\?\. ]*$", re.I):
+        "Hello! How can I help you with your repository security scan or code review today?",
+    re.compile(r"^(who\s+are\s+you|what\s+can\s+you\s+do|help|what\s+is\s+this)\b[\!\?\. ]*$", re.I):
+        "I am your AI Code Guardian Assistant! I can help explain security vulnerabilities, risk scores, post-quantum crypto risks, and business intent findings.",
+    re.compile(r"^(thanks|thank\s+you|thx|awesome|great|cool)\b[\!\?\. ]*$", re.I):
+        "You're welcome! Let me know if you have any more questions about your codebase.",
+    re.compile(r"^(bye|goodbye|cya|see\s+you)\b[\!\?\. ]*$", re.I):
+        "Goodbye! Have a great day.",
+}
+
+
+def _get_conversational_response(question: str) -> Optional[str]:
+    q = question.strip()
+    for pat, resp in _GREETING_PATTERNS.items():
+        if pat.match(q):
+            return resp
+    return None
+
+
 class RAGPipeline:
     """
     The central coordinator. Inject all sub-components for testability.
@@ -81,6 +103,17 @@ class RAGPipeline:
         Records the turn in conversation memory.
         """
         t0 = time.time()
+
+        # Fast path for casual greetings & conversational pleasantries
+        conv_resp = _get_conversational_response(question)
+        if conv_resp:
+            response = AssistantResponse(
+                answer=conv_resp, citations=[], grounded=True,
+                chunks_used=[], latency_ms=round((time.time() - t0) * 1000, 1))
+            self._memory.add_user_message(question)
+            self._memory.add_assistant_message(response)
+            return response
+
         rag_query = RAGQuery(
             question=question,
             top_k=top_k or self._cfg.retrieval_top_k,
@@ -160,6 +193,15 @@ class RAGPipeline:
         Memory is updated after the generator is exhausted.
         """
         t0 = time.time()
+
+        # Fast path for casual greetings & conversational pleasantries
+        conv_resp = _get_conversational_response(question)
+        if conv_resp:
+            self._memory.add_user_message(question)
+            self._memory.add_assistant_text(conv_resp, [])
+            yield conv_resp
+            return
+
         rag_query = RAGQuery(
             question=question,
             top_k=top_k or self._cfg.retrieval_top_k,

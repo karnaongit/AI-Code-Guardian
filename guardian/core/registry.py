@@ -92,5 +92,5 @@ def load_builtin_plugins() -> Registry:
     from guardian.scanner import java, python, javascript, rust  # noqa: F401
     from guardian import dependencies, infrastructure      # noqa: F401
     from guardian.quantum import plugin as _qp             # noqa: F401
-    from guardian.reporting import json_reporter, sarif, html_reporter  # noqa: F401
+    from guardian.reporting import json_reporter, sarif, html_reporter, csv_reporter, pdf_reporter  # noqa: F401
     return default_registry

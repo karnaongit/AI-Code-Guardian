@@ -12,6 +12,8 @@ Upload sections
 
 Run with: streamlit run dashboard/app.py
 """
+from __future__ import annotations
+
 import io
 import json
 import os
@@ -103,6 +105,16 @@ with upload_col1:
         if src:
             st.success(f"✅ {len(src)} source file(s) uploaded")
 
+    st.markdown('<div class="upload-hint"><b>OR</b> enter a GitHub Repository URL / Slug:</div>', unsafe_allow_html=True)
+    github_url = st.text_input(
+        "GitHub URL",
+        placeholder="https://github.com/owner/repo or owner/repo",
+        key="github_url_input",
+        label_visibility="collapsed"
+    )
+    if github_url.strip():
+        st.success(f"🔗 GitHub target: {github_url.strip()}")
+
 # ── Column 2: Requirements ──────────────────────────────────────────────────
 with upload_col2:
     st.markdown('<div class="upload-label">📋 Requirements / User Stories</div>', unsafe_allow_html=True)
@@ -138,17 +150,19 @@ st.divider()
 # ── Scan button ─────────────────────────────────────────────────────────────
 btn_col, hint_col = st.columns([2, 5])
 with btn_col:
+    has_target = bool(code_files) or bool(github_url.strip())
     run_btn = st.button("🚀 Run Full Scan", type="primary",
                          use_container_width=True,
-                         disabled=(not code_files))
+                         disabled=not has_target)
 with hint_col:
-    if not code_files:
-        st.info("⬆️  Upload code files above to enable scanning.")
+    if not has_target:
+        st.info("⬆️ Upload code files or provide a GitHub URL above to enable scanning.")
     else:
-        total_files = len(code_files)
-        zips_count  = sum(1 for f in code_files if f.name.endswith(".zip"))
+        total_files = len(code_files) if code_files else 0
+        zips_count  = sum(1 for f in code_files if f.name.endswith(".zip")) if code_files else 0
+        target_desc = f"{github_url.strip()}" if github_url.strip() and not code_files else f"{total_files} file(s) uploaded"
         st.caption(
-            f"Ready: {total_files} file(s) uploaded"
+            f"Ready: {target_desc}"
             + (f" ({zips_count} zip archive{'s' if zips_count>1 else ''})" if zips_count else "")
             + (f" · {len(req_files)} requirements file(s)" if req_files else "")
             + (f" · policy: {policy_file.name}" if policy_file else "")
@@ -159,12 +173,22 @@ with hint_col:
 # HELPERS — save uploaded bytes to temp dir
 # ═══════════════════════════════════════════════════════════════════════════
 
-def _save_uploaded_code(uploaded_files: list, dest_dir: Path) -> Path:
+def _save_uploaded_code(uploaded_files: list, dest_dir: Path, github_url: str = "") -> Path:
     """
-    Save uploaded code files into dest_dir.
+    Save uploaded code files or fetch GitHub repo into dest_dir.
     ZIP files are extracted. Individual .java/.py are placed flat.
     Returns dest_dir.
     """
+    if github_url.strip() and not uploaded_files:
+        from guardian.discovery.github_service import GitHubService
+        fetched = GitHubService().fetch_repository(github_url.strip())
+        for item in fetched.iterdir():
+            if item.is_dir():
+                shutil.copytree(item, dest_dir / item.name, dirs_exist_ok=True)
+            else:
+                shutil.copy2(item, dest_dir / item.name)
+        return dest_dir
+
     for uf in uploaded_files:
         data = uf.read()
         if uf.name.endswith(".zip"):
@@ -196,7 +220,9 @@ def _save_uploaded_requirements(req_files: list, dest_dir: Path) -> list[Path]:
     return paths
 
 
-def _save_policy(policy_file, dest_dir: Path) -> Path | None:
+from typing import Optional
+
+def _save_policy(policy_file, dest_dir: Path) -> Optional[Path]:
     if not policy_file:
         return None
     p = dest_dir / policy_file.name
@@ -296,11 +322,12 @@ def _build_results_zip(result, risk, q_report, bi_report) -> bytes:
 # RUN SCAN
 # ═══════════════════════════════════════════════════════════════════════════
 
-if run_btn and code_files:
+if run_btn and (code_files or github_url.strip()):
 
     # Reset pointer for all uploaded files (Streamlit rewinds on rerun)
-    for uf in code_files:
-        uf.seek(0)
+    if code_files:
+        for uf in code_files:
+            uf.seek(0)
     if req_files:
         for uf in req_files:
             uf.seek(0)
@@ -310,13 +337,13 @@ if run_btn and code_files:
     tmp_root = Path(tempfile.mkdtemp(prefix="acg_"))
 
     try:
-        # 1. Save uploaded code
+        # 1. Save uploaded code or fetch GitHub repository
         code_dir = tmp_root / "code"
         code_dir.mkdir()
-        with st.spinner("📦 Extracting uploaded files..."):
-            _save_uploaded_code(code_files, code_dir)
-            actual_files = list(code_dir.rglob("*.java")) + list(code_dir.rglob("*.py"))
-            st.toast(f"✅ {len(actual_files)} source files ready for scanning")
+        with st.spinner("📦 Preparing code repository for scanning..."):
+            _save_uploaded_code(code_files or [], code_dir, github_url.strip())
+            actual_files = list(code_dir.rglob("*"))
+            st.toast(f"✅ {len(actual_files)} files ready for scanning")
 
         # 2. Save requirements
         req_paths: list[Path] = []

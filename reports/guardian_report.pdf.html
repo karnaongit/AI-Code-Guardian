@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>AI Code Guardian — Executive Security Audit Report</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; margin: 40px; color: #1f2937; }
+        .header { border-bottom: 2px solid #2563eb; padding-bottom: 15px; margin-bottom: 25px; display: flex; justify-content: space-between; align-items: center; }
+        .card { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 15px; margin-bottom: 20px; }
+        .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 25px; }
+        .metric { background: #ffffff; border: 1px solid #cbd5e1; border-radius: 6px; padding: 12px; text-align: center; }
+        .metric .value { font-size: 24px; font-weight: bold; color: #0f172a; }
+        .metric .label { font-size: 12px; color: #64748b; text-transform: uppercase; margin-top: 4px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th { background: #f1f5f9; text-align: left; padding: 10px; font-size: 12px; font-weight: 600; text-transform: uppercase; color: #475569; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div>
+            <h1 style="margin: 0; color: #0f172a;">AI Code Guardian Security Report</h1>
+            <p style="margin: 5px 0 0 0; color: #64748b;">Executive Vulnerability & Compliance Assessment</p>
+        </div>
+        <div style="text-align: right;">
+            <span style="font-size: 18px; font-weight: bold; padding: 6px 12px; border-radius: 6px; background: #fee2e2; color: #991b1b;">
+                Warn - Merge Allowed (developer acknowledgement)
+            </span>
+        </div>
+    </div>
+
+    <div class="grid">
+        <div class="metric"><div class="value">32.8/100</div><div class="label">Security Score</div></div>
+        <div class="metric"><div class="value">54.9/100</div><div class="label">Overall Risk</div></div>
+        <div class="metric"><div class="value">28</div><div class="label">Total Findings</div></div>
+        <div class="metric"><div class="value">Cybersecurity</div><div class="label">Business Domain</div></div>
+    </div>
+
+    <div class="card">
+        <h3 style="margin-top: 0;">Repository Profile</h3>
+        <p style="margin: 0;">Primary Language: <strong>Python</strong> | Files Scanned: <strong>97</strong></p>
+    </div>
+
+    <h3>Detailed Vulnerability Findings</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Severity</th>
+                <th>Category</th>
+                <th>Location</th>
+                <th>Code Snippet</th>
+                <th>Recommendation</th>
+            </tr>
+        </thead>
+        <tbody>
+            
+            <tr style="border-bottom: 1px solid #e5e7eb;">
+                <td style="padding: 8px;"><span style="background: #ea580c; color: white; padding: 2px 8px; border-radius: 4px; font-weight: bold; font-size: 11px;">High</span></td>
+                <td style="padding: 8px;"><strong>Hardcoded Secret</strong><br><small style="color: #6b7280;">SEC-004</small></td>
+                <td style="padding: 8px;"><code>tests/test_llm_layer.py:27</code></td>
+                <td style="padding: 8px; font-family: monospace; font-size: 12px; background: #f9fafb;">cfg = LLMConfig(api_key="nvapi-x", base_url="http://insecure.example/v1")</td>
+                <td style="padding: 8px; font-size: 12px;">Mitigate Hardcoded Secret using secure coding practices.</td>
+            </tr>
+            
+            <tr style="border-bottom: 1px solid #e5e7eb;">
+                <td style="padding: 8px;"><span style="background: #ea580c; color: white; padding: 2px 8px; border-radius: 4px; font-weight: bold; font-size: 11px;">High</span></td>
+                <td style="padding: 8px;"><strong>Hardcoded Secret</strong><br><small style="color: #6b7280;">SEC-004</small></td>
+                <td style="padding: 8px;"><code>tests/test_llm_layer.py:32</code></td>
+                <td style="padding: 8px; font-family: monospace; font-size: 12px; background: #f9fafb;">secret = "nvapi-SUPERSECRETVALUE12345"</td>
+                <td style="padding: 8px; font-size: 12px;">Mitigate Hardcoded Secret using secure coding practices.</td>
+            </tr>
+            
+            <tr style="border-bottom: 1px solid #e5e7eb;">
+                <td style="padding: 8px;"><span style="background: #ea580c; color: white; padding: 2px 8px; border-radius: 4px; font-weight: bold; font-size: 11px;">High</span></td>
+                <td style="padding: 8px;"><strong>Hardcoded Secret</strong><br><small style="color: #6b7280;">SEC-004</small></td>
+                <td style="padding: 8px;"><code>tests/test_llm_layer.py:63</code></td>
+                <td style="padding: 8px; font-family: monospace; font-size: 12px; background: #f9fafb;">create_llm("gpt-9000", LLMConfig(api_key="nvapi-x"))</td>
+                <td style="padding: 8px; font-size: 12px;">Mitigate Hardcoded Secret using secure coding practices.</td>
+            </tr>
+            
+            <tr style="border-bottom: 1px solid #e5e7eb;">
+                <td style="padding: 8px;"><span style="background: #ea580c; color: white; padding: 2px 8px; border-radius: 4px; font-weight: bold; font-size: 11px;">High</span></td>
+                <td style="padding: 8px;"><strong>Hardcoded Secret</strong><br><small style="color: #6b7280;">SEC-004</small></td>
+                <td style="padding: 8px;"><code>tests/test_llm_layer.py:66</code></td>
+                <td style="padding: 8px; font-family: monospace; font-size: 12px; background: #f9fafb;">llm = create_llm("nemotron", LLMConfig(api_key="nvapi-x"))</td>
+                <td style="padding: 8px; font-size: 12px;">Mitigate Hardcoded Secret using secure coding practices.</td>
+            </tr>
+            
+            <tr style="border-bottom: 1px solid #e5e7eb;">
+                <td style="padding: 8px;"><span style="background: #ea580c; color: white; padding: 2px 8px; border-radius: 4px; font-weight: bold; font-size: 11px;">High</span></td>
+                <td style="padding: 8px;"><strong>Hardcoded Secret</strong><br><small style="color: #6b7280;">SEC-004</small></td>
+                <td style="padding: 8px;"><code>tests/test_llm_layer.py:80</code></td>
+                <td style="padding: 8px; font-family: monospace; font-size: 12px; background: #f9fafb;">return NemotronLLM(LLMConfig(api_key="nvapi-test", max_retries=3,</td>
+                <td style="padding: 8px; font-size: 12px;">Mitigate Hardcoded Secret using secure coding practices.</td>
+            </tr>
+            
+            <tr style="border-bottom: 1px solid #e5e7eb;">
+                <td style="padding: 8px;"><span style="background: #ea580c; color: white; padding: 2px 8px; border-radius: 4px; font-weight: bold; font-size: 11px;">High</span></td>
+                <td style="padding: 8px;"><strong>Hardcoded Secret</strong><br><small style="color: #6b7280;">SEC-004</small></td>
+                <td style="padding: 8px;"><code>tests/test_llm_layer.py:236</code></td>
+                <td style="padding: 8px; font-family: monospace; font-size: 12px; background: #f9fafb;">text = 'API_KEY = "nvapi-abcdefghijklmnopqrstuvwxyz123456"'</td>
+                <td style="padding: 8px; font-size: 12px;">Mitigate Hardcoded Secret using secure coding practices.</td>
+            </tr>
+            
+            <tr style="border-bottom: 1px solid #e5e7eb;">
+                <td style="padding: 8px;"><span style="background: #ea580c; color: white; padding: 2px 8px; border-radius: 4px; font-weight: bold; font-size: 11px;">High</span></td>
+                <td style="padding: 8px;"><strong>Hardcoded Secret</strong><br><small style="color: #6b7280;">SEC-004</small></td>
+                <td style="padding: 8px;"><code>tests/test_llm_layer.py:250</code></td>
+                <td style="padding: 8px; font-family: monospace; font-size: 12px; background: #f9fafb;">v = self.g.check_prompt('token = "ghp_abcdefghijklmnopqrstuvwxyz0123456789"')</td>
+                <td style="padding: 8px; font-size: 12px;">Mitigate Hardcoded Secret using secure coding practices.</td>
+            </tr>
+            
+            <tr style="border-bottom: 1px solid #e5e7eb;">
+                <td style="padding: 8px;"><span style="background: #ea580c; color: white; padding: 2px 8px; border-radius: 4px; font-weight: bold; font-size: 11px;">High</span></td>
+                <td style="padding: 8px;"><strong>Hardcoded Secret</strong><br><small style="color: #6b7280;">SEC-004</small></td>
+                <td style="padding: 8px;"><code>tests/test_scaffold.py:21</code></td>
+                <td style="padding: 8px; font-family: monospace; font-size: 12px; background: #f9fafb;">String apiKey="SECRET_KEY_9";</td>
+                <td style="padding: 8px; font-size: 12px;">Mitigate Hardcoded Secret using secure coding practices.</td>
+            </tr>
+            
+            <tr style="border-bottom: 1px solid #e5e7eb;">
+                <td style="padding: 8px;"><span style="background: #ea580c; color: white; padding: 2px 8px; border-radius: 4px; font-weight: bold; font-size: 11px;">High</span></td>
+                <td style="padding: 8px;"><strong>Hardcoded Secret</strong><br><small style="color: #6b7280;">SEC-004</small></td>
+                <td style="padding: 8px;"><code>tests/test_security_rule_engine.py:37</code></td>
+                <td style="padding: 8px; font-family: monospace; font-size: 12px; background: #f9fafb;">src = 'String apiKey = "SECRET_KEY_1";\nString API_KEY = "SECRET_KEY_2";'</td>
+                <td style="padding: 8px; font-size: 12px;">Mitigate Hardcoded Secret using secure coding practices.</td>
+            </tr>
+            
+            <tr style="border-bottom: 1px solid #e5e7eb;">
+                <td style="padding: 8px;"><span style="background: #ea580c; color: white; padding: 2px 8px; border-radius: 4px; font-weight: bold; font-size: 11px;">High</span></td>
+                <td style="padding: 8px;"><strong>Hardcoded Secret</strong><br><small style="color: #6b7280;">SEC-004</small></td>
+                <td style="padding: 8px;"><code>tests/test_security_rule_engine.py:58</code></td>
+                <td style="padding: 8px; font-family: monospace; font-size: 12px; background: #f9fafb;">src = 'String apiKey = "SECRET_KEY_1";'</td>
+                <td style="padding: 8px; font-size: 12px;">Mitigate Hardcoded Secret using secure coding practices.</td>
+            </tr>
+            
+            <tr style="border-bottom: 1px solid #e5e7eb;">
+                <td style="padding: 8px;"><span style="background: #ea580c; color: white; padding: 2px 8px; border-radius: 4px; font-weight: bold; font-size: 11px;">High</span></td>
+                <td style="padding: 8px;"><strong>Hardcoded Secret</strong><br><small style="color: #6b7280;">SEC-004</small></td>
+                <td style="padding: 8px;"><code>tests/test_security_rule_engine.py:66</code></td>
+                <td style="padding: 8px; font-family: monospace; font-size: 12px; background: #f9fafb;">src = 'String apiKey = "SECRET_KEY_1";'</td>
+                <td style="padding: 8px; font-size: 12px;">Mitigate Hardcoded Secret using secure coding practices.</td>
+            </tr>
+            
+            <tr style="border-bottom: 1px solid #e5e7eb;">
+                <td style="padding: 8px;"><span style="background: #ea580c; color: white; padding: 2px 8px; border-radius: 4px; font-weight: bold; font-size: 11px;">High</span></td>
+                <td style="padding: 8px;"><strong>Hardcoded Secret</strong><br><small style="color: #6b7280;">SEC-004</small></td>
+                <td style="padding: 8px;"><code>dashboard/chat_page.py:43</code></td>
+                <td style="padding: 8px; font-family: monospace; font-size: 12px; background: #f9fafb;">_KEY_COPILOT     = "acg_copilot"</td>
+                <td style="padding: 8px; font-size: 12px;">Mitigate Hardcoded Secret using secure coding practices.</td>
+            </tr>
+            
+            <tr style="border-bottom: 1px solid #e5e7eb;">
+                <td style="padding: 8px;"><span style="background: #ea580c; color: white; padding: 2px 8px; border-radius: 4px; font-weight: bold; font-size: 11px;">High</span></td>
+                <td style="padding: 8px;"><strong>Hardcoded Secret</strong><br><small style="color: #6b7280;">SEC-004</small></td>
+                <td style="padding: 8px;"><code>dashboard/chat_page.py:44</code></td>
+                <td style="padding: 8px; font-family: monospace; font-size: 12px; background: #f9fafb;">_KEY_CHAT_HIST   = "acg_chat_history"      # list of (role, text, citations)</td>
+                <td style="padding: 8px; font-size: 12px;">Mitigate Hardcoded Secret using secure coding practices.</td>
+            </tr>
+            
+            <tr style="border-bottom: 1px solid #e5e7eb;">
+                <td style="padding: 8px;"><span style="background: #ea580c; color: white; padding: 2px 8px; border-radius: 4px; font-weight: bold; font-size: 11px;">High</span></td>
+                <td style="padding: 8px;"><strong>Hardcoded Secret</strong><br><small style="color: #6b7280;">SEC-004</small></td>
+                <td style="padding: 8px;"><code>dashboard/chat_page.py:45</code></td>
+                <td style="padding: 8px; font-family: monospace; font-size: 12px; background: #f9fafb;">_KEY_INDEXING    = "acg_indexing_done"</td>
+                <td style="padding: 8px; font-size: 12px;">Mitigate Hardcoded Secret using secure coding practices.</td>
+            </tr>
+            
+            <tr style="border-bottom: 1px solid #e5e7eb;">
+                <td style="padding: 8px;"><span style="background: #ea580c; color: white; padding: 2px 8px; border-radius: 4px; font-weight: bold; font-size: 11px;">High</span></td>
+                <td style="padding: 8px;"><strong>Hardcoded Secret</strong><br><small style="color: #6b7280;">SEC-004</small></td>
+                <td style="padding: 8px;"><code>dashboard/chat_page.py:113</code></td>
+                <td style="padding: 8px; font-family: monospace; font-size: 12px; background: #f9fafb;">key="acg_model_input",</td>
+                <td style="padding: 8px; font-size: 12px;">Mitigate Hardcoded Secret using secure coding practices.</td>
+            </tr>
+            
+            <tr style="border-bottom: 1px solid #e5e7eb;">
+                <td style="padding: 8px;"><span style="background: #ea580c; color: white; padding: 2px 8px; border-radius: 4px; font-weight: bold; font-size: 11px;">High</span></td>
+                <td style="padding: 8px;"><strong>Hardcoded Secret</strong><br><small style="color: #6b7280;">SEC-004</small></td>
+                <td style="padding: 8px;"><code>dashboard/chat_page.py:115</code></td>
+                <td style="padding: 8px; font-family: monospace; font-size: 12px; background: #f9fafb;">if st.button("Apply model", key="acg_apply_model"):</td>
+                <td style="padding: 8px; font-size: 12px;">Mitigate Hardcoded Secret using secure coding practices.</td>
+            </tr>
+            
+            <tr style="border-bottom: 1px solid #e5e7eb;">
+                <td style="padding: 8px;"><span style="background: #ea580c; color: white; padding: 2px 8px; border-radius: 4px; font-weight: bold; font-size: 11px;">High</span></td>
+                <td style="padding: 8px;"><strong>Hardcoded Secret</strong><br><small style="color: #6b7280;">SEC-004</small></td>
+                <td style="padding: 8px;"><code>dashboard/chat_page.py:122</code></td>
+                <td style="padding: 8px; font-family: monospace; font-size: 12px; background: #f9fafb;">if st.button("🗑️ Clear chat history", key="acg_clear_hist"):</td>
+                <td style="padding: 8px; font-size: 12px;">Mitigate Hardcoded Secret using secure coding practices.</td>
+            </tr>
+            
+            <tr style="border-bottom: 1px solid #e5e7eb;">
+                <td style="padding: 8px;"><span style="background: #ea580c; color: white; padding: 2px 8px; border-radius: 4px; font-weight: bold; font-size: 11px;">High</span></td>
+                <td style="padding: 8px;"><strong>Hardcoded Secret</strong><br><small style="color: #6b7280;">SEC-004</small></td>
+                <td style="padding: 8px;"><code>dashboard/chat_page.py:203</code></td>
+                <td style="padding: 8px; font-family: monospace; font-size: 12px; background: #f9fafb;">key="acg_file_upload",</td>
+                <td style="padding: 8px; font-size: 12px;">Mitigate Hardcoded Secret using secure coding practices.</td>
+            </tr>
+            
+            <tr style="border-bottom: 1px solid #e5e7eb;">
+                <td style="padding: 8px;"><span style="background: #ea580c; color: white; padding: 2px 8px; border-radius: 4px; font-weight: bold; font-size: 11px;">High</span></td>
+                <td style="padding: 8px;"><strong>Hardcoded Secret</strong><br><small style="color: #6b7280;">SEC-004</small></td>
+                <td style="padding: 8px;"><code>dashboard/chat_page.py:206</code></td>
+                <td style="padding: 8px; font-family: monospace; font-size: 12px; background: #f9fafb;">if uploaded and st.button("📚 Index uploaded files", key="acg_idx_upload"):</td>
+                <td style="padding: 8px; font-size: 12px;">Mitigate Hardcoded Secret using secure coding practices.</td>
+            </tr>
+            
+            <tr style="border-bottom: 1px solid #e5e7eb;">
+                <td style="padding: 8px;"><span style="background: #ea580c; color: white; padding: 2px 8px; border-radius: 4px; font-weight: bold; font-size: 11px;">High</span></td>
+                <td style="padding: 8px;"><strong>Hardcoded Secret</strong><br><small style="color: #6b7280;">SEC-004</small></td>
+                <td style="padding: 8px;"><code>dashboard/chat_page.py:210</code></td>
+                <td style="padding: 8px; font-family: monospace; font-size: 12px; background: #f9fafb;">dir_path = st.text_input("Local path", key="acg_dir_path",</td>
+                <td style="padding: 8px; font-size: 12px;">Mitigate Hardcoded Secret using secure coding practices.</td>
+            </tr>
+            
+            <tr style="border-bottom: 1px solid #e5e7eb;">
+                <td style="padding: 8px;"><span style="background: #ea580c; color: white; padding: 2px 8px; border-radius: 4px; font-weight: bold; font-size: 11px;">High</span></td>
+                <td style="padding: 8px;"><strong>Hardcoded Secret</strong><br><small style="color: #6b7280;">SEC-004</small></td>
+                <td style="padding: 8px;"><code>dashboard/chat_page.py:212</code></td>
+                <td style="padding: 8px; font-family: monospace; font-size: 12px; background: #f9fafb;">if st.button("📚 Index directory", key="acg_idx_dir"):</td>
+                <td style="padding: 8px; font-size: 12px;">Mitigate Hardcoded Secret using secure coding practices.</td>
+            </tr>
+            
+            <tr style="border-bottom: 1px solid #e5e7eb;">
+                <td style="padding: 8px;"><span style="background: #ea580c; color: white; padding: 2px 8px; border-radius: 4px; font-weight: bold; font-size: 11px;">High</span></td>
+                <td style="padding: 8px;"><strong>Hardcoded Secret</strong><br><small style="color: #6b7280;">SEC-004</small></td>
+                <td style="padding: 8px;"><code>dashboard/app.py:96</code></td>
+                <td style="padding: 8px; font-family: monospace; font-size: 12px; background: #f9fafb;">key="code_upload",</td>
+                <td style="padding: 8px; font-size: 12px;">Mitigate Hardcoded Secret using secure coding practices.</td>
+            </tr>
+            
+            <tr style="border-bottom: 1px solid #e5e7eb;">
+                <td style="padding: 8px;"><span style="background: #ea580c; color: white; padding: 2px 8px; border-radius: 4px; font-weight: bold; font-size: 11px;">High</span></td>
+                <td style="padding: 8px;"><strong>Hardcoded Secret</strong><br><small style="color: #6b7280;">SEC-004</small></td>
+                <td style="padding: 8px;"><code>dashboard/app.py:112</code></td>
+                <td style="padding: 8px; font-family: monospace; font-size: 12px; background: #f9fafb;">key="github_url_input",</td>
+                <td style="padding: 8px; font-size: 12px;">Mitigate Hardcoded Secret using secure coding practices.</td>
+            </tr>
+            
+            <tr style="border-bottom: 1px solid #e5e7eb;">
+                <td style="padding: 8px;"><span style="background: #ea580c; color: white; padding: 2px 8px; border-radius: 4px; font-weight: bold; font-size: 11px;">High</span></td>
+                <td style="padding: 8px;"><strong>Hardcoded Secret</strong><br><small style="color: #6b7280;">SEC-004</small></td>
+                <td style="padding: 8px;"><code>dashboard/app.py:126</code></td>
+                <td style="padding: 8px; font-family: monospace; font-size: 12px; background: #f9fafb;">key="req_upload",</td>
+                <td style="padding: 8px; font-size: 12px;">Mitigate Hardcoded Secret using secure coding practices.</td>
+            </tr>
+            
+            <tr style="border-bottom: 1px solid #e5e7eb;">
+                <td style="padding: 8px;"><span style="background: #ea580c; color: white; padding: 2px 8px; border-radius: 4px; font-weight: bold; font-size: 11px;">High</span></td>
+                <td style="padding: 8px;"><strong>Hardcoded Secret</strong><br><small style="color: #6b7280;">SEC-004</small></td>
+                <td style="padding: 8px;"><code>dashboard/app.py:141</code></td>
+                <td style="padding: 8px; font-family: monospace; font-size: 12px; background: #f9fafb;">key="policy_upload",</td>
+                <td style="padding: 8px; font-size: 12px;">Mitigate Hardcoded Secret using secure coding practices.</td>
+            </tr>
+            
+            <tr style="border-bottom: 1px solid #e5e7eb;">
+                <td style="padding: 8px;"><span style="background: #ea580c; color: white; padding: 2px 8px; border-radius: 4px; font-weight: bold; font-size: 11px;">High</span></td>
+                <td style="padding: 8px;"><strong>Hardcoded Secret</strong><br><small style="color: #6b7280;">SEC-004</small></td>
+                <td style="padding: 8px;"><code>dashboard/app.py:506</code></td>
+                <td style="padding: 8px; font-family: monospace; font-size: 12px; background: #f9fafb;">default=sev_opts, key="sec_filter")</td>
+                <td style="padding: 8px; font-size: 12px;">Mitigate Hardcoded Secret using secure coding practices.</td>
+            </tr>
+            
+            <tr style="border-bottom: 1px solid #e5e7eb;">
+                <td style="padding: 8px;"><span style="background: #2563eb; color: white; padding: 2px 8px; border-radius: 4px; font-weight: bold; font-size: 11px;">Low</span></td>
+                <td style="padding: 8px;"><strong>Unpinned Dependency</strong><br><small style="color: #6b7280;">DEP-001</small></td>
+                <td style="padding: 8px;"><code>requirements.txt:1</code></td>
+                <td style="padding: 8px; font-family: monospace; font-size: 12px; background: #f9fafb;">plotly (PyPI) has no pinned version</td>
+                <td style="padding: 8px; font-size: 12px;">Pin dependency versions for reproducible, auditable builds.</td>
+            </tr>
+            
+            <tr style="border-bottom: 1px solid #e5e7eb;">
+                <td style="padding: 8px;"><span style="background: #4b5563; color: white; padding: 2px 8px; border-radius: 4px; font-weight: bold; font-size: 11px;">Info</span></td>
+                <td style="padding: 8px;"><strong>Quantum Migration Inventory</strong><br><small style="color: #6b7280;">QNT-ECC-ECDSA</small></td>
+                <td style="padding: 8px;"><code>tests/test_scaffold.py:138</code></td>
+                <td style="padding: 8px; font-family: monospace; font-size: 12px; background: #f9fafb;">assert self._scan("key = ec.generate_private_key(ec.SECP256R1())", "a.py")</td>
+                <td style="padding: 8px; font-size: 12px;">Replace with ML-DSA (Dilithium) or SLH-DSA (SPHINCS+) (FIPS 204 (ML-DSA) / FIPS 205 (SLH-DSA)). ECDSA/ECDH rely on the elliptic curve discrete log problem, which Shor's Algorithm solves efficiently.</td>
+            </tr>
+            
+        </tbody>
+    </table>
+</body>
+</html>

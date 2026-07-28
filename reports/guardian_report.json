@@ -1,0 +1,838 @@
+{
+  "tool": {
+    "name": "AI Code Guardian",
+    "version": "2.0.0"
+  },
+  "repository": {
+    "root": ".",
+    "primary_language": "Python",
+    "languages": {
+      "Python": 100.0
+    },
+    "frameworks": [
+      "Streamlit"
+    ],
+    "build_tools": [
+      "Python (PEP 517)",
+      "pip"
+    ],
+    "architecture": [
+      "backend"
+    ],
+    "is_monorepo": false,
+    "has_api_spec": false,
+    "manifest_files": [
+      "requirements.txt",
+      "pyproject.toml"
+    ],
+    "total_files": 118
+  },
+  "scan": {
+    "target": ".",
+    "files_scanned": 97,
+    "duration_seconds": 0.0,
+    "total_findings": 28,
+    "by_severity": {
+      "High": 26,
+      "Low": 1,
+      "Info": 1
+    },
+    "by_category": {
+      "Hardcoded Secret": 26,
+      "Unpinned Dependency": 1,
+      "Quantum Migration Inventory": 1
+    },
+    "findings": [
+      {
+        "category": "Hardcoded Secret",
+        "severity": "High",
+        "rule_id": "SEC-004",
+        "file": "tests/test_llm_layer.py",
+        "line": 27,
+        "snippet": "cfg = LLMConfig(api_key=\"nvapi-x\", base_url=\"http://insecure.example/v1\")",
+        "recommendation": "Mitigate Hardcoded Secret using secure coding practices.",
+        "cwe": null,
+        "owasp": null,
+        "confidence": 0.85,
+        "tainted": false,
+        "finding_id": "9ea70b2055da9a06"
+      },
+      {
+        "category": "Hardcoded Secret",
+        "severity": "High",
+        "rule_id": "SEC-004",
+        "file": "tests/test_llm_layer.py",
+        "line": 32,
+        "snippet": "secret = \"nvapi-SUPERSECRETVALUE12345\"",
+        "recommendation": "Mitigate Hardcoded Secret using secure coding practices.",
+        "cwe": null,
+        "owasp": null,
+        "confidence": 0.85,
+        "tainted": false,
+        "finding_id": "12badf5c7ef093fc"
+      },
+      {
+        "category": "Hardcoded Secret",
+        "severity": "High",
+        "rule_id": "SEC-004",
+        "file": "tests/test_llm_layer.py",
+        "line": 63,
+        "snippet": "create_llm(\"gpt-9000\", LLMConfig(api_key=\"nvapi-x\"))",
+        "recommendation": "Mitigate Hardcoded Secret using secure coding practices.",
+        "cwe": null,
+        "owasp": null,
+        "confidence": 0.85,
+        "tainted": false,
+        "finding_id": "d44737cbc175b0a1"
+      },
+      {
+        "category": "Hardcoded Secret",
+        "severity": "High",
+        "rule_id": "SEC-004",
+        "file": "tests/test_llm_layer.py",
+        "line": 66,
+        "snippet": "llm = create_llm(\"nemotron\", LLMConfig(api_key=\"nvapi-x\"))",
+        "recommendation": "Mitigate Hardcoded Secret using secure coding practices.",
+        "cwe": null,
+        "owasp": null,
+        "confidence": 0.85,
+        "tainted": false,
+        "finding_id": "b849be3f383d8696"
+      },
+      {
+        "category": "Hardcoded Secret",
+        "severity": "High",
+        "rule_id": "SEC-004",
+        "file": "tests/test_llm_layer.py",
+        "line": 80,
+        "snippet": "return NemotronLLM(LLMConfig(api_key=\"nvapi-test\", max_retries=3,",
+        "recommendation": "Mitigate Hardcoded Secret using secure coding practices.",
+        "cwe": null,
+        "owasp": null,
+        "confidence": 0.85,
+        "tainted": false,
+        "finding_id": "305c340bde55ef54"
+      },
+      {
+        "category": "Hardcoded Secret",
+        "severity": "High",
+        "rule_id": "SEC-004",
+        "file": "tests/test_llm_layer.py",
+        "line": 236,
+        "snippet": "text = 'API_KEY = \"nvapi-abcdefghijklmnopqrstuvwxyz123456\"'",
+        "recommendation": "Mitigate Hardcoded Secret using secure coding practices.",
+        "cwe": null,
+        "owasp": null,
+        "confidence": 0.85,
+        "tainted": false,
+        "finding_id": "8b5a886d2d1d362c"
+      },
+      {
+        "category": "Hardcoded Secret",
+        "severity": "High",
+        "rule_id": "SEC-004",
+        "file": "tests/test_llm_layer.py",
+        "line": 250,
+        "snippet": "v = self.g.check_prompt('token = \"ghp_abcdefghijklmnopqrstuvwxyz0123456789\"')",
+        "recommendation": "Mitigate Hardcoded Secret using secure coding practices.",
+        "cwe": null,
+        "owasp": null,
+        "confidence": 0.85,
+        "tainted": false,
+        "finding_id": "dd1e46c1e0973c2c"
+      },
+      {
+        "category": "Hardcoded Secret",
+        "severity": "High",
+        "rule_id": "SEC-004",
+        "file": "tests/test_scaffold.py",
+        "line": 21,
+        "snippet": "String apiKey=\"SECRET_KEY_9\";",
+        "recommendation": "Mitigate Hardcoded Secret using secure coding practices.",
+        "cwe": null,
+        "owasp": null,
+        "confidence": 0.85,
+        "tainted": false,
+        "finding_id": "7675af67aff07342"
+      },
+      {
+        "category": "Hardcoded Secret",
+        "severity": "High",
+        "rule_id": "SEC-004",
+        "file": "tests/test_security_rule_engine.py",
+        "line": 37,
+        "snippet": "src = 'String apiKey = \"SECRET_KEY_1\";\\nString API_KEY = \"SECRET_KEY_2\";'",
+        "recommendation": "Mitigate Hardcoded Secret using secure coding practices.",
+        "cwe": null,
+        "owasp": null,
+        "confidence": 0.85,
+        "tainted": false,
+        "finding_id": "12599db7edb3dc9f"
+      },
+      {
+        "category": "Hardcoded Secret",
+        "severity": "High",
+        "rule_id": "SEC-004",
+        "file": "tests/test_security_rule_engine.py",
+        "line": 58,
+        "snippet": "src = 'String apiKey = \"SECRET_KEY_1\";'",
+        "recommendation": "Mitigate Hardcoded Secret using secure coding practices.",
+        "cwe": null,
+        "owasp": null,
+        "confidence": 0.85,
+        "tainted": false,
+        "finding_id": "9deb0e737bea15c2"
+      },
+      {
+        "category": "Hardcoded Secret",
+        "severity": "High",
+        "rule_id": "SEC-004",
+        "file": "tests/test_security_rule_engine.py",
+        "line": 66,
+        "snippet": "src = 'String apiKey = \"SECRET_KEY_1\";'",
+        "recommendation": "Mitigate Hardcoded Secret using secure coding practices.",
+        "cwe": null,
+        "owasp": null,
+        "confidence": 0.85,
+        "tainted": false,
+        "finding_id": "b254e383493a0fcf"
+      },
+      {
+        "category": "Hardcoded Secret",
+        "severity": "High",
+        "rule_id": "SEC-004",
+        "file": "dashboard/chat_page.py",
+        "line": 43,
+        "snippet": "_KEY_COPILOT     = \"acg_copilot\"",
+        "recommendation": "Mitigate Hardcoded Secret using secure coding practices.",
+        "cwe": null,
+        "owasp": null,
+        "confidence": 0.85,
+        "tainted": false,
+        "finding_id": "617fbb18d746c044"
+      },
+      {
+        "category": "Hardcoded Secret",
+        "severity": "High",
+        "rule_id": "SEC-004",
+        "file": "dashboard/chat_page.py",
+        "line": 44,
+        "snippet": "_KEY_CHAT_HIST   = \"acg_chat_history\"      # list of (role, text, citations)",
+        "recommendation": "Mitigate Hardcoded Secret using secure coding practices.",
+        "cwe": null,
+        "owasp": null,
+        "confidence": 0.85,
+        "tainted": false,
+        "finding_id": "1af0e177eb11983a"
+      },
+      {
+        "category": "Hardcoded Secret",
+        "severity": "High",
+        "rule_id": "SEC-004",
+        "file": "dashboard/chat_page.py",
+        "line": 45,
+        "snippet": "_KEY_INDEXING    = \"acg_indexing_done\"",
+        "recommendation": "Mitigate Hardcoded Secret using secure coding practices.",
+        "cwe": null,
+        "owasp": null,
+        "confidence": 0.85,
+        "tainted": false,
+        "finding_id": "9c9da4023e1889cd"
+      },
+      {
+        "category": "Hardcoded Secret",
+        "severity": "High",
+        "rule_id": "SEC-004",
+        "file": "dashboard/chat_page.py",
+        "line": 113,
+        "snippet": "key=\"acg_model_input\",",
+        "recommendation": "Mitigate Hardcoded Secret using secure coding practices.",
+        "cwe": null,
+        "owasp": null,
+        "confidence": 0.85,
+        "tainted": false,
+        "finding_id": "80a8247da5f1b172"
+      },
+      {
+        "category": "Hardcoded Secret",
+        "severity": "High",
+        "rule_id": "SEC-004",
+        "file": "dashboard/chat_page.py",
+        "line": 115,
+        "snippet": "if st.button(\"Apply model\", key=\"acg_apply_model\"):",
+        "recommendation": "Mitigate Hardcoded Secret using secure coding practices.",
+        "cwe": null,
+        "owasp": null,
+        "confidence": 0.85,
+        "tainted": false,
+        "finding_id": "13c23d046c688943"
+      },
+      {
+        "category": "Hardcoded Secret",
+        "severity": "High",
+        "rule_id": "SEC-004",
+        "file": "dashboard/chat_page.py",
+        "line": 122,
+        "snippet": "if st.button(\"\ud83d\uddd1\ufe0f Clear chat history\", key=\"acg_clear_hist\"):",
+        "recommendation": "Mitigate Hardcoded Secret using secure coding practices.",
+        "cwe": null,
+        "owasp": null,
+        "confidence": 0.85,
+        "tainted": false,
+        "finding_id": "fb48ca534ec75493"
+      },
+      {
+        "category": "Hardcoded Secret",
+        "severity": "High",
+        "rule_id": "SEC-004",
+        "file": "dashboard/chat_page.py",
+        "line": 203,
+        "snippet": "key=\"acg_file_upload\",",
+        "recommendation": "Mitigate Hardcoded Secret using secure coding practices.",
+        "cwe": null,
+        "owasp": null,
+        "confidence": 0.85,
+        "tainted": false,
+        "finding_id": "81763fe5086dfbb4"
+      },
+      {
+        "category": "Hardcoded Secret",
+        "severity": "High",
+        "rule_id": "SEC-004",
+        "file": "dashboard/chat_page.py",
+        "line": 206,
+        "snippet": "if uploaded and st.button(\"\ud83d\udcda Index uploaded files\", key=\"acg_idx_upload\"):",
+        "recommendation": "Mitigate Hardcoded Secret using secure coding practices.",
+        "cwe": null,
+        "owasp": null,
+        "confidence": 0.85,
+        "tainted": false,
+        "finding_id": "b76601d7d30dd60c"
+      },
+      {
+        "category": "Hardcoded Secret",
+        "severity": "High",
+        "rule_id": "SEC-004",
+        "file": "dashboard/chat_page.py",
+        "line": 210,
+        "snippet": "dir_path = st.text_input(\"Local path\", key=\"acg_dir_path\",",
+        "recommendation": "Mitigate Hardcoded Secret using secure coding practices.",
+        "cwe": null,
+        "owasp": null,
+        "confidence": 0.85,
+        "tainted": false,
+        "finding_id": "a167d44255ea09ac"
+      },
+      {
+        "category": "Hardcoded Secret",
+        "severity": "High",
+        "rule_id": "SEC-004",
+        "file": "dashboard/chat_page.py",
+        "line": 212,
+        "snippet": "if st.button(\"\ud83d\udcda Index directory\", key=\"acg_idx_dir\"):",
+        "recommendation": "Mitigate Hardcoded Secret using secure coding practices.",
+        "cwe": null,
+        "owasp": null,
+        "confidence": 0.85,
+        "tainted": false,
+        "finding_id": "67d714c4a9b95103"
+      },
+      {
+        "category": "Hardcoded Secret",
+        "severity": "High",
+        "rule_id": "SEC-004",
+        "file": "dashboard/app.py",
+        "line": 96,
+        "snippet": "key=\"code_upload\",",
+        "recommendation": "Mitigate Hardcoded Secret using secure coding practices.",
+        "cwe": null,
+        "owasp": null,
+        "confidence": 0.85,
+        "tainted": false,
+        "finding_id": "f68e5073cf8ffa97"
+      },
+      {
+        "category": "Hardcoded Secret",
+        "severity": "High",
+        "rule_id": "SEC-004",
+        "file": "dashboard/app.py",
+        "line": 112,
+        "snippet": "key=\"github_url_input\",",
+        "recommendation": "Mitigate Hardcoded Secret using secure coding practices.",
+        "cwe": null,
+        "owasp": null,
+        "confidence": 0.85,
+        "tainted": false,
+        "finding_id": "64fef2c7719be79a"
+      },
+      {
+        "category": "Hardcoded Secret",
+        "severity": "High",
+        "rule_id": "SEC-004",
+        "file": "dashboard/app.py",
+        "line": 126,
+        "snippet": "key=\"req_upload\",",
+        "recommendation": "Mitigate Hardcoded Secret using secure coding practices.",
+        "cwe": null,
+        "owasp": null,
+        "confidence": 0.85,
+        "tainted": false,
+        "finding_id": "ee7e1bf572331bc4"
+      },
+      {
+        "category": "Hardcoded Secret",
+        "severity": "High",
+        "rule_id": "SEC-004",
+        "file": "dashboard/app.py",
+        "line": 141,
+        "snippet": "key=\"policy_upload\",",
+        "recommendation": "Mitigate Hardcoded Secret using secure coding practices.",
+        "cwe": null,
+        "owasp": null,
+        "confidence": 0.85,
+        "tainted": false,
+        "finding_id": "c4cbd1cee80260ff"
+      },
+      {
+        "category": "Hardcoded Secret",
+        "severity": "High",
+        "rule_id": "SEC-004",
+        "file": "dashboard/app.py",
+        "line": 506,
+        "snippet": "default=sev_opts, key=\"sec_filter\")",
+        "recommendation": "Mitigate Hardcoded Secret using secure coding practices.",
+        "cwe": null,
+        "owasp": null,
+        "confidence": 0.85,
+        "tainted": false,
+        "finding_id": "15631affc2a1bb35"
+      },
+      {
+        "category": "Unpinned Dependency",
+        "severity": "Low",
+        "rule_id": "DEP-001",
+        "file": "requirements.txt",
+        "line": 1,
+        "snippet": "plotly (PyPI) has no pinned version",
+        "recommendation": "Pin dependency versions for reproducible, auditable builds.",
+        "cwe": null,
+        "owasp": null,
+        "confidence": 0.9,
+        "tainted": false,
+        "finding_id": "356d20496f1e14b3"
+      },
+      {
+        "category": "Quantum Migration Inventory",
+        "severity": "Info",
+        "rule_id": "QNT-ECC-ECDSA",
+        "file": "tests/test_scaffold.py",
+        "line": 138,
+        "snippet": "assert self._scan(\"key = ec.generate_private_key(ec.SECP256R1())\", \"a.py\")",
+        "recommendation": "Replace with ML-DSA (Dilithium) or SLH-DSA (SPHINCS+) (FIPS 204 (ML-DSA) / FIPS 205 (SLH-DSA)). ECDSA/ECDH rely on the elliptic curve discrete log problem, which Shor's Algorithm solves efficiently.",
+        "cwe": null,
+        "owasp": null,
+        "confidence": 0.85,
+        "tainted": false,
+        "finding_id": "af29fcb3b175b555"
+      }
+    ]
+  },
+  "risk": {
+    "security_score": 32.83,
+    "alignment_score": 75.0,
+    "maintainability_score": 80.0,
+    "overall_risk_score": 54.91,
+    "pr_risk": 67.17,
+    "merge_decision": "Warn - Merge Allowed (developer acknowledgement)",
+    "findings": [
+      {
+        "finding_id": "9ea70b2055da9a06",
+        "category": "Hardcoded Secret",
+        "severity": "High",
+        "crs": 67.3,
+        "cvss_base": 0.8,
+        "ml_confidence": 0.85,
+        "business_context_score": 0.5,
+        "reachability": 0.6,
+        "epss": 0.48
+      },
+      {
+        "finding_id": "12badf5c7ef093fc",
+        "category": "Hardcoded Secret",
+        "severity": "High",
+        "crs": 67.3,
+        "cvss_base": 0.8,
+        "ml_confidence": 0.85,
+        "business_context_score": 0.5,
+        "reachability": 0.6,
+        "epss": 0.48
+      },
+      {
+        "finding_id": "d44737cbc175b0a1",
+        "category": "Hardcoded Secret",
+        "severity": "High",
+        "crs": 67.3,
+        "cvss_base": 0.8,
+        "ml_confidence": 0.85,
+        "business_context_score": 0.5,
+        "reachability": 0.6,
+        "epss": 0.48
+      },
+      {
+        "finding_id": "b849be3f383d8696",
+        "category": "Hardcoded Secret",
+        "severity": "High",
+        "crs": 67.3,
+        "cvss_base": 0.8,
+        "ml_confidence": 0.85,
+        "business_context_score": 0.5,
+        "reachability": 0.6,
+        "epss": 0.48
+      },
+      {
+        "finding_id": "305c340bde55ef54",
+        "category": "Hardcoded Secret",
+        "severity": "High",
+        "crs": 67.3,
+        "cvss_base": 0.8,
+        "ml_confidence": 0.85,
+        "business_context_score": 0.5,
+        "reachability": 0.6,
+        "epss": 0.48
+      },
+      {
+        "finding_id": "8b5a886d2d1d362c",
+        "category": "Hardcoded Secret",
+        "severity": "High",
+        "crs": 67.3,
+        "cvss_base": 0.8,
+        "ml_confidence": 0.85,
+        "business_context_score": 0.5,
+        "reachability": 0.6,
+        "epss": 0.48
+      },
+      {
+        "finding_id": "dd1e46c1e0973c2c",
+        "category": "Hardcoded Secret",
+        "severity": "High",
+        "crs": 67.3,
+        "cvss_base": 0.8,
+        "ml_confidence": 0.85,
+        "business_context_score": 0.5,
+        "reachability": 0.6,
+        "epss": 0.48
+      },
+      {
+        "finding_id": "7675af67aff07342",
+        "category": "Hardcoded Secret",
+        "severity": "High",
+        "crs": 67.3,
+        "cvss_base": 0.8,
+        "ml_confidence": 0.85,
+        "business_context_score": 0.5,
+        "reachability": 0.6,
+        "epss": 0.48
+      },
+      {
+        "finding_id": "12599db7edb3dc9f",
+        "category": "Hardcoded Secret",
+        "severity": "High",
+        "crs": 67.3,
+        "cvss_base": 0.8,
+        "ml_confidence": 0.85,
+        "business_context_score": 0.5,
+        "reachability": 0.6,
+        "epss": 0.48
+      },
+      {
+        "finding_id": "9deb0e737bea15c2",
+        "category": "Hardcoded Secret",
+        "severity": "High",
+        "crs": 67.3,
+        "cvss_base": 0.8,
+        "ml_confidence": 0.85,
+        "business_context_score": 0.5,
+        "reachability": 0.6,
+        "epss": 0.48
+      },
+      {
+        "finding_id": "b254e383493a0fcf",
+        "category": "Hardcoded Secret",
+        "severity": "High",
+        "crs": 67.3,
+        "cvss_base": 0.8,
+        "ml_confidence": 0.85,
+        "business_context_score": 0.5,
+        "reachability": 0.6,
+        "epss": 0.48
+      },
+      {
+        "finding_id": "617fbb18d746c044",
+        "category": "Hardcoded Secret",
+        "severity": "High",
+        "crs": 67.3,
+        "cvss_base": 0.8,
+        "ml_confidence": 0.85,
+        "business_context_score": 0.5,
+        "reachability": 0.6,
+        "epss": 0.48
+      },
+      {
+        "finding_id": "1af0e177eb11983a",
+        "category": "Hardcoded Secret",
+        "severity": "High",
+        "crs": 67.3,
+        "cvss_base": 0.8,
+        "ml_confidence": 0.85,
+        "business_context_score": 0.5,
+        "reachability": 0.6,
+        "epss": 0.48
+      },
+      {
+        "finding_id": "9c9da4023e1889cd",
+        "category": "Hardcoded Secret",
+        "severity": "High",
+        "crs": 67.3,
+        "cvss_base": 0.8,
+        "ml_confidence": 0.85,
+        "business_context_score": 0.5,
+        "reachability": 0.6,
+        "epss": 0.48
+      },
+      {
+        "finding_id": "80a8247da5f1b172",
+        "category": "Hardcoded Secret",
+        "severity": "High",
+        "crs": 67.3,
+        "cvss_base": 0.8,
+        "ml_confidence": 0.85,
+        "business_context_score": 0.5,
+        "reachability": 0.6,
+        "epss": 0.48
+      },
+      {
+        "finding_id": "13c23d046c688943",
+        "category": "Hardcoded Secret",
+        "severity": "High",
+        "crs": 67.3,
+        "cvss_base": 0.8,
+        "ml_confidence": 0.85,
+        "business_context_score": 0.5,
+        "reachability": 0.6,
+        "epss": 0.48
+      },
+      {
+        "finding_id": "fb48ca534ec75493",
+        "category": "Hardcoded Secret",
+        "severity": "High",
+        "crs": 67.3,
+        "cvss_base": 0.8,
+        "ml_confidence": 0.85,
+        "business_context_score": 0.5,
+        "reachability": 0.6,
+        "epss": 0.48
+      },
+      {
+        "finding_id": "81763fe5086dfbb4",
+        "category": "Hardcoded Secret",
+        "severity": "High",
+        "crs": 67.3,
+        "cvss_base": 0.8,
+        "ml_confidence": 0.85,
+        "business_context_score": 0.5,
+        "reachability": 0.6,
+        "epss": 0.48
+      },
+      {
+        "finding_id": "b76601d7d30dd60c",
+        "category": "Hardcoded Secret",
+        "severity": "High",
+        "crs": 67.3,
+        "cvss_base": 0.8,
+        "ml_confidence": 0.85,
+        "business_context_score": 0.5,
+        "reachability": 0.6,
+        "epss": 0.48
+      },
+      {
+        "finding_id": "a167d44255ea09ac",
+        "category": "Hardcoded Secret",
+        "severity": "High",
+        "crs": 67.3,
+        "cvss_base": 0.8,
+        "ml_confidence": 0.85,
+        "business_context_score": 0.5,
+        "reachability": 0.6,
+        "epss": 0.48
+      },
+      {
+        "finding_id": "67d714c4a9b95103",
+        "category": "Hardcoded Secret",
+        "severity": "High",
+        "crs": 67.3,
+        "cvss_base": 0.8,
+        "ml_confidence": 0.85,
+        "business_context_score": 0.5,
+        "reachability": 0.6,
+        "epss": 0.48
+      },
+      {
+        "finding_id": "f68e5073cf8ffa97",
+        "category": "Hardcoded Secret",
+        "severity": "High",
+        "crs": 67.3,
+        "cvss_base": 0.8,
+        "ml_confidence": 0.85,
+        "business_context_score": 0.5,
+        "reachability": 0.6,
+        "epss": 0.48
+      },
+      {
+        "finding_id": "64fef2c7719be79a",
+        "category": "Hardcoded Secret",
+        "severity": "High",
+        "crs": 67.3,
+        "cvss_base": 0.8,
+        "ml_confidence": 0.85,
+        "business_context_score": 0.5,
+        "reachability": 0.6,
+        "epss": 0.48
+      },
+      {
+        "finding_id": "ee7e1bf572331bc4",
+        "category": "Hardcoded Secret",
+        "severity": "High",
+        "crs": 67.3,
+        "cvss_base": 0.8,
+        "ml_confidence": 0.85,
+        "business_context_score": 0.5,
+        "reachability": 0.6,
+        "epss": 0.48
+      },
+      {
+        "finding_id": "c4cbd1cee80260ff",
+        "category": "Hardcoded Secret",
+        "severity": "High",
+        "crs": 67.3,
+        "cvss_base": 0.8,
+        "ml_confidence": 0.85,
+        "business_context_score": 0.5,
+        "reachability": 0.6,
+        "epss": 0.48
+      },
+      {
+        "finding_id": "15631affc2a1bb35",
+        "category": "Hardcoded Secret",
+        "severity": "High",
+        "crs": 67.3,
+        "cvss_base": 0.8,
+        "ml_confidence": 0.85,
+        "business_context_score": 0.5,
+        "reachability": 0.6,
+        "epss": 0.48
+      },
+      {
+        "finding_id": "356d20496f1e14b3",
+        "category": "Unpinned Dependency",
+        "severity": "Low",
+        "crs": 50.3,
+        "cvss_base": 0.3,
+        "ml_confidence": 0.9,
+        "business_context_score": 0.5,
+        "reachability": 0.6,
+        "epss": 0.18
+      },
+      {
+        "finding_id": "af29fcb3b175b555",
+        "category": "Quantum Migration Inventory",
+        "severity": "Info",
+        "crs": 42.1,
+        "cvss_base": 0.1,
+        "ml_confidence": 0.85,
+        "business_context_score": 0.5,
+        "reachability": 0.6,
+        "epss": 0.06
+      }
+    ]
+  },
+  "analyzers": {
+    "dependencies": 3,
+    "infrastructure": 0,
+    "quantum": 1
+  },
+  "quantum_summary": {
+    "target": ".",
+    "total_crypto_usages": 10,
+    "by_threat": {
+      "Medium": 8,
+      "Critical": 1,
+      "Low": 1
+    },
+    "by_family": {
+      "MD5": 2,
+      "ECC": 1,
+      "SHA": 7
+    },
+    "top_files": [
+      [
+        "tests/test_scaffold.py",
+        2
+      ],
+      [
+        "guardian/ai/scan_context.py",
+        2
+      ],
+      [
+        "tests/test_new_engines.py",
+        1
+      ],
+      [
+        "guardian/core/models.py",
+        1
+      ],
+      [
+        "guardian/intent/legacy/models.py",
+        1
+      ]
+    ]
+  },
+  "business_domain": {
+    "domain": "Cybersecurity",
+    "confidence": 0.555,
+    "alternatives": [
+      [
+        "Retail / E-commerce",
+        0.107
+      ],
+      [
+        "Insurance",
+        0.085
+      ],
+      [
+        "Banking / FinTech",
+        0.064
+      ]
+    ],
+    "evidence": {
+      "Cybersecurity": [
+        "scanner",
+        "vulnerability",
+        "threat",
+        "cve",
+        "owasp",
+        "exploit",
+        "siem",
+        "malware"
+      ]
+    },
+    "reasoning": "Top evidence terms ['scanner', 'vulnerability', 'threat', 'cve', 'owasp'] matched the 'Cybersecurity' vocabulary across docs, paths, and identifiers, outscoring 9 alternative domains."
+  },
+  "discovery": {
+    "source_files": 97,
+    "manifest_files": 2,
+    "infrastructure_files": 0,
+    "doc_files": 7,
+    "truncated": false
+  },
+  "duration_seconds": 0.18
+}
