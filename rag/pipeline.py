@@ -1,8 +1,8 @@
 from typing import Dict
 
-from retriever import Retriever
-from llm import SecurityLLM
-
+from rag.retriever import Retriever
+from rag.llm import SecurityLLM
+from rag.query_builder import QueryBuilder
 
 class RAGPipeline:
 
@@ -15,10 +15,7 @@ class RAGPipeline:
 
     def enhance(self, finding: Dict) -> Dict:
 
-        query = (
-            f"{finding['category']} "
-            f"{finding['snippet']}"
-        )
+        query = QueryBuilder.build(finding)
 
         retrieved_docs = self.retriever.search(query)
 

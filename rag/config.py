@@ -9,11 +9,7 @@ EMBEDDING_MODEL = "all-MiniLM-L6-v2"
 # ------------------------
 # Retrievalfrom pathlib import Path
 
-# ------------------------
-# Embedding Model
-# ------------------------
 
-EMBEDDING_MODEL = "all-MiniLM-L6-v2"
 
 # ------------------------
 # Retrieval

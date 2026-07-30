@@ -3,8 +3,8 @@ from typing import Dict, List
 
 import numpy as np
 
-from faiss_manager import VectorStore
-from config import TOP_K
+from rag.faiss_manager import VectorStore
+from rag.config import TOP_K
 
 logging.basicConfig(level=logging.INFO)
 
@@ -74,7 +74,11 @@ class Retriever:
 
             metadata = self.vector_store.metadata[idx].copy()
 
-            metadata["score"] = float(score)
+            metadata["score"] = round(float(score), 4)
+
+            # Skip very weak matches
+            if metadata["score"] < 0.30:
+                continue
 
             results.append(metadata)
 

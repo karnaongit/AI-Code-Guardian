@@ -17,8 +17,9 @@ class SecurityEngine(ast.NodeVisitor):
             tree = ast.parse(source_code)
             self.visit(tree)
 
-        except Exception:
-            pass
+        except Exception as e:
+            import traceback
+            traceback.print_exc()
 
         return ScanResult(
             target=file_name,
@@ -42,16 +43,23 @@ class SecurityEngine(ast.NodeVisitor):
 
         if function_name in RULES:
 
-            category, severity, recommendation = RULES[function_name]
+            rule = RULES[function_name]
+
+            category = rule["category"]
+            severity = rule["severity"]
+            recommendation = rule["recommendation"]
 
             self.findings.append(
-                SecurityFinding(
-                    category=category,
-                    severity=severity,
-                    file=self.file_name,
-                    line=node.lineno,
-                    snippet=function_name,
-                    recommendation=recommendation
+    SecurityFinding(
+        rule_id=rule.get("rule_id", "CUSTOM"),
+
+        category=rule["category"],
+        severity=rule["severity"],
+        confidence=rule.get("confidence", 1.0),
+        file=self.file_name,
+        line=node.lineno,
+        snippet=function_name,
+        recommendation=rule["recommendation"],
                 )
             )
 

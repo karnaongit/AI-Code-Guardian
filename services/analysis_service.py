@@ -1,7 +1,12 @@
+from dataclasses import asdict
+
 from services.github_service import GitHubService
 from scanner.parser import PythonParser
 from scanner.security_engine import SecurityEngine
 from scanner.serializer import ResponseSerializer
+
+from rag.pipeline import RAGPipeline
+
 
 class AnalysisService:
 
@@ -9,6 +14,7 @@ class AnalysisService:
         self.github = GitHubService()
         self.parser = PythonParser()
         self.security = SecurityEngine()
+        self.rag = RAGPipeline()
 
     def analyze_repository(self, repo_name: str):
 
@@ -16,6 +22,8 @@ class AnalysisService:
         # Repository Information
         # -----------------------------------------
         repository = self.github.get_repository(repo_name)
+        print(repository)
+        print(type(repository))
 
         # -----------------------------------------
         # Fetch Python Files
@@ -56,7 +64,26 @@ class AnalysisService:
                     source_code,
                     file["path"]
                 )
+                
+                print(file["path"])
+                print("Findings:", len(security.findings))
+                print(security.findings)
 
+                # -------------------------
+                # RAG Enhancement
+                # -------------------------
+                enhanced_findings = []
+
+                for finding in security.findings:
+                    finding_dict = asdict(finding)
+                    enhanced = self.rag.enhance(finding_dict)
+                    enhanced_findings.append(enhanced)
+
+                security.findings = enhanced_findings
+
+                # -------------------------
+                # Metrics
+                # -------------------------
                 if analysis:
 
                     metrics = analysis["metrics"]
@@ -66,20 +93,20 @@ class AnalysisService:
                     total_imports += metrics["imports"]
                     total_lines += metrics["lines"]
 
-                total_findings += security.total_findings
+                total_findings += len(security.findings)
 
                 # -------------------------
-                # Convert Security Findings
+                # Serialize
                 # -------------------------
                 serialized_security = ResponseSerializer.serialize(security)
 
                 analysis_results.append(
-    {
-        "file": file["path"],
-        "analysis": ResponseSerializer.serialize(analysis),
-        "security": serialized_security,
-    }
-)
+                    {
+                        "file": file["path"],
+                        "analysis": ResponseSerializer.serialize(analysis),
+                        "security": serialized_security,
+                    }
+                )
 
             except Exception as e:
 
@@ -89,14 +116,16 @@ class AnalysisService:
                         "error": str(e),
                     }
                 )
+
         return {
-    "summary": {
-        "files_scanned": len(python_files),
-        "functions": total_functions,
-        "classes": total_classes,
-        "imports": total_imports,
-        "lines": total_lines,
-        "security_findings": total_findings,
-    }
-}
-        
+            "summary": {
+                "repository": f"{repository['owner']}/{repository['name']}",
+                "files_scanned": len(python_files),
+                "functions": total_functions,
+                "classes": total_classes,
+                "imports": total_imports,
+                "lines": total_lines,
+                "security_findings": total_findings,
+            },
+            "results": analysis_results,
+        }

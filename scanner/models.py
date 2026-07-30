@@ -1,17 +1,31 @@
 from dataclasses import dataclass, field
 import hashlib
 
+from typing import List
+
 
 @dataclass
 class SecurityFinding:
-    category: str
-    severity: str
-    file: str
-    line: int
-    snippet: str
-    recommendation: str
-    confidence: float = 0.9
-    finding_id: str = field(default="", init=False)
+    finding_id: str = field(init=False)
+
+    rule_id: str = ""
+    category: str = ""
+    severity: str = ""
+    confidence: float = 1.0
+
+    language: str = "Python"
+    file: str = ""
+    line: int = 0
+    snippet: str = ""
+    cwe: str = ""
+    owasp: str = ""
+    description: str = ""
+    recommendation: str = ""
+    references: List[str] = field(default_factory=list)
+
+    why: str = ""
+    how_to_fix: str = ""
+    example_attack: str = ""
 
     def __post_init__(self):
         basis = f"{self.file}:{self.line}:{self.category}"

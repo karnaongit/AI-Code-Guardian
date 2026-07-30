@@ -6,7 +6,7 @@ from typing import List, Dict, Tuple
 import numpy as np
 from sentence_transformers import SentenceTransformer
 
-from config import (
+from rag.config import (
     EMBEDDING_MODEL,
     INDEX_PATH,
     METADATA_PATH,
@@ -58,8 +58,13 @@ class VectorStore:
         for idx, row in dataframe.iterrows():
 
             document = f"""
+# Python Application Security Knowledge
+
 Source:
 {row["source"]}
+
+Knowledge Type:
+Security Vulnerability Reference
 
 Vulnerability:
 {row["vulnerability"]}
@@ -69,20 +74,30 @@ Description:
 
 Recommendation:
 {row["recommendation"]}
+
+Reference:
+{row["url"]}
+
+This document provides guidance for identifying, understanding,
+and mitigating Python application security vulnerabilities.
 """
 
             documents.append(document)
 
             metadata.append(
-                {
-                    "id": idx,
-                    "source": row["source"],
-                    "vulnerability": row["vulnerability"],
-                    "description": row["description"],
-                    "recommendation": row["recommendation"],
-                    "url": row["url"],
-                }
-            )
+{
+    "id": idx,
+    "source": row["source"],
+    "vulnerability": row["vulnerability"],
+    "description": row["description"],
+    "recommendation": row["recommendation"],
+    "url": row["url"],
+
+    # Future filtering support
+    "language": "python",
+    "document_type": "security_reference",
+}
+)
 
         logging.info(
             f"{len(documents)} knowledge documents created."
@@ -181,3 +196,9 @@ Recommendation:
             and
             METADATA_PATH.exists()
         )
+        
+        
+        
+#         # {
+#   "repo_name": "pallets/flask"
+# }
