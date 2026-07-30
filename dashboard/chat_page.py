@@ -88,10 +88,15 @@ def render_chat_page(
     risk_report=None,
     bi_report=None,
     quantum_report=None,
+    report=None,
 ) -> None:
     """
     Render the full AI Copilot chat page.
     Call from the main dashboard tab.
+
+    `report` is the unified pipeline report dict — the shape the dashboard
+    now produces. The individual object arguments are the pre-refactor
+    signature and are still honoured, so any other caller keeps working.
     """
     st.subheader("🤖 AI Security Copilot")
     st.caption("Ask anything about your codebase, findings, or security policy — powered by NVIDIA Nemotron + local RAG.")
@@ -141,7 +146,8 @@ def render_chat_page(
         return
 
     # ── Index scan results (auto, once per session) ───────────────────
-    _auto_index_reports(copilot, scan_result, risk_report, bi_report, quantum_report)
+    _auto_index_reports(copilot, scan_result, risk_report, bi_report,
+                        quantum_report, report)
 
     # ── Two-column layout: chat | index panel ─────────────────────────
     chat_col, panel_col = st.columns([3, 1])
@@ -158,7 +164,8 @@ def render_chat_page(
 # Auto-index reports from the current scan session
 # ---------------------------------------------------------------------------
 
-def _auto_index_reports(copilot, scan_result, risk_report, bi_report, quantum_report) -> None:
+def _auto_index_reports(copilot, scan_result, risk_report, bi_report,
+                        quantum_report, report=None) -> None:
     """Index the latest scan results into the vector store (once per session)."""
     if st.session_state.get(_KEY_INDEXING):
         return
@@ -166,6 +173,15 @@ def _auto_index_reports(copilot, scan_result, risk_report, bi_report, quantum_re
     indexed_something = False
     with st.spinner("📚 Indexing scan results into AI knowledge base..."):
         try:
+            if report:
+                # Unified pipeline report: index each section under its own
+                # name so retrieval can target security, business intent or
+                # crypto questions separately.
+                copilot.index_scan_report(report, "scan_report.json")
+                if report.get("business_intent"):
+                    copilot.index_business_intent(report["business_intent"])
+                if report.get("quantum"):
+                    copilot.index_quantum_report(report["quantum"])
             if scan_result:
                 copilot.index_scan_report(scan_result.to_dict(), "scan_report.json")
                 indexed_something = True

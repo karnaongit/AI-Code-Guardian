@@ -1,0 +1,2114 @@
+{
+  "$schema": "https://raw.githubusercontent.com/oasis-tcs/sarif-spec/master/Schemata/sarif-schema-2.1.0.json",
+  "version": "2.1.0",
+  "runs": [
+    {
+      "tool": {
+        "driver": {
+          "name": "AI Code Guardian",
+          "version": "2.1.0",
+          "informationUri": "https://github.com/ai-code-guardian",
+          "rules": [
+            {
+              "id": "SEC-004",
+              "name": "Hardcoded Secret",
+              "shortDescription": {
+                "text": "Hardcoded Secret"
+              },
+              "help": {
+                "text": "Mitigate Hardcoded Secret using secure coding practices."
+              },
+              "properties": {
+                "cwe": null,
+                "owasp": null
+              }
+            },
+            {
+              "id": "QNT-SHA-1",
+              "name": "Quantum Migration Inventory",
+              "shortDescription": {
+                "text": "Quantum Migration Inventory"
+              },
+              "help": {
+                "text": "Migrate to SHA-384 or SHA3-256 (NIST SP 800-107r1). Chosen-prefix collisions demonstrated; NIST-deprecated for all uses."
+              },
+              "properties": {
+                "cwe": "CWE-327",
+                "owasp": "A02:2021"
+              }
+            },
+            {
+              "id": "SEC-005",
+              "name": "Weak Crypto",
+              "shortDescription": {
+                "text": "Weak Crypto"
+              },
+              "help": {
+                "text": "Use SHA-256 or stronger for hashing (Argon2id/bcrypt/scrypt for passwords), and AES-256-GCM for symmetric encryption."
+              },
+              "properties": {
+                "cwe": "CWE-327",
+                "owasp": "A02:2021"
+              }
+            },
+            {
+              "id": "SEC-006",
+              "name": "Broken Authentication",
+              "shortDescription": {
+                "text": "Broken Authentication"
+              },
+              "help": {
+                "text": "Keep certificate and hostname verification enabled and require TLS 1.2+ (prefer TLS 1.3)."
+              },
+              "properties": {
+                "cwe": "CWE-295",
+                "owasp": "A07:2021"
+              }
+            },
+            {
+              "id": "SEC-010",
+              "name": "Sensitive Logging",
+              "shortDescription": {
+                "text": "Sensitive Logging"
+              },
+              "help": {
+                "text": "Redact or mask sensitive fields before logging; log identifiers rather than values."
+              },
+              "properties": {
+                "cwe": "CWE-532",
+                "owasp": "A09:2021"
+              }
+            },
+            {
+              "id": "DEP-001",
+              "name": "Unpinned Dependency",
+              "shortDescription": {
+                "text": "Unpinned Dependency"
+              },
+              "help": {
+                "text": "Pin dependency versions for reproducible, auditable builds."
+              },
+              "properties": {
+                "cwe": null,
+                "owasp": null
+              }
+            }
+          ]
+        }
+      },
+      "results": [
+        {
+          "ruleId": "SEC-004",
+          "ruleIndex": 0,
+          "level": "error",
+          "message": {
+            "text": "Hardcoded Secret: Mitigate Hardcoded Secret using secure coding practices."
+          },
+          "partialFingerprints": {
+            "guardianFindingId": "d0eb862b70fc7be3"
+          },
+          "properties": {
+            "source": "DETERMINISTIC",
+            "engine": "legacy:python",
+            "language": "python",
+            "function": "",
+            "confidence": 0.85,
+            "tainted": false,
+            "evidenceIds": [],
+            "recommendation": "Mitigate Hardcoded Secret using secure coding practices."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "dashboard\\app.py"
+                },
+                "region": {
+                  "startLine": 97,
+                  "snippet": {
+                    "text": "key=\"code_upload\","
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "SEC-004",
+          "ruleIndex": 0,
+          "level": "error",
+          "message": {
+            "text": "Hardcoded Secret: Mitigate Hardcoded Secret using secure coding practices."
+          },
+          "partialFingerprints": {
+            "guardianFindingId": "8437bde76bc4c705"
+          },
+          "properties": {
+            "source": "DETERMINISTIC",
+            "engine": "legacy:python",
+            "language": "python",
+            "function": "",
+            "confidence": 0.85,
+            "tainted": false,
+            "evidenceIds": [],
+            "recommendation": "Mitigate Hardcoded Secret using secure coding practices."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "dashboard\\app.py"
+                },
+                "region": {
+                  "startLine": 113,
+                  "snippet": {
+                    "text": "key=\"github_url_input\","
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "SEC-004",
+          "ruleIndex": 0,
+          "level": "error",
+          "message": {
+            "text": "Hardcoded Secret: Mitigate Hardcoded Secret using secure coding practices."
+          },
+          "partialFingerprints": {
+            "guardianFindingId": "82c531a640c1ea11"
+          },
+          "properties": {
+            "source": "DETERMINISTIC",
+            "engine": "legacy:python",
+            "language": "python",
+            "function": "",
+            "confidence": 0.85,
+            "tainted": false,
+            "evidenceIds": [],
+            "recommendation": "Mitigate Hardcoded Secret using secure coding practices."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "dashboard\\app.py"
+                },
+                "region": {
+                  "startLine": 127,
+                  "snippet": {
+                    "text": "key=\"req_upload\","
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "SEC-004",
+          "ruleIndex": 0,
+          "level": "error",
+          "message": {
+            "text": "Hardcoded Secret: Mitigate Hardcoded Secret using secure coding practices."
+          },
+          "partialFingerprints": {
+            "guardianFindingId": "160f607b8b70a721"
+          },
+          "properties": {
+            "source": "DETERMINISTIC",
+            "engine": "legacy:python",
+            "language": "python",
+            "function": "",
+            "confidence": 0.85,
+            "tainted": false,
+            "evidenceIds": [],
+            "recommendation": "Mitigate Hardcoded Secret using secure coding practices."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "dashboard\\app.py"
+                },
+                "region": {
+                  "startLine": 142,
+                  "snippet": {
+                    "text": "key=\"policy_upload\","
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "SEC-004",
+          "ruleIndex": 0,
+          "level": "error",
+          "message": {
+            "text": "Hardcoded Secret: Mitigate Hardcoded Secret using secure coding practices."
+          },
+          "partialFingerprints": {
+            "guardianFindingId": "bc236cf3ec664bd2"
+          },
+          "properties": {
+            "source": "DETERMINISTIC",
+            "engine": "legacy:python",
+            "language": "python",
+            "function": "",
+            "confidence": 0.85,
+            "tainted": false,
+            "evidenceIds": [],
+            "recommendation": "Mitigate Hardcoded Secret using secure coding practices."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "dashboard\\chat_page.py"
+                },
+                "region": {
+                  "startLine": 43,
+                  "snippet": {
+                    "text": "_KEY_COPILOT     = \"acg_copilot\""
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "SEC-004",
+          "ruleIndex": 0,
+          "level": "error",
+          "message": {
+            "text": "Hardcoded Secret: Mitigate Hardcoded Secret using secure coding practices."
+          },
+          "partialFingerprints": {
+            "guardianFindingId": "baad36fc73a2c215"
+          },
+          "properties": {
+            "source": "DETERMINISTIC",
+            "engine": "legacy:python",
+            "language": "python",
+            "function": "",
+            "confidence": 0.85,
+            "tainted": false,
+            "evidenceIds": [],
+            "recommendation": "Mitigate Hardcoded Secret using secure coding practices."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "dashboard\\chat_page.py"
+                },
+                "region": {
+                  "startLine": 118,
+                  "snippet": {
+                    "text": "key=\"acg_model_input\","
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "SEC-004",
+          "ruleIndex": 0,
+          "level": "error",
+          "message": {
+            "text": "Hardcoded Secret: Mitigate Hardcoded Secret using secure coding practices."
+          },
+          "partialFingerprints": {
+            "guardianFindingId": "7fd32065452ece61"
+          },
+          "properties": {
+            "source": "DETERMINISTIC",
+            "engine": "legacy:python",
+            "language": "python",
+            "function": "",
+            "confidence": 0.85,
+            "tainted": false,
+            "evidenceIds": [],
+            "recommendation": "Mitigate Hardcoded Secret using secure coding practices."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "dashboard\\chat_page.py"
+                },
+                "region": {
+                  "startLine": 127,
+                  "snippet": {
+                    "text": "if st.button(\"\ud83d\uddd1\ufe0f Clear chat history\", key=\"acg_clear_hist\"):"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "SEC-004",
+          "ruleIndex": 0,
+          "level": "error",
+          "message": {
+            "text": "Hardcoded Secret: Mitigate Hardcoded Secret using secure coding practices."
+          },
+          "partialFingerprints": {
+            "guardianFindingId": "d69a5958069ef3a1"
+          },
+          "properties": {
+            "source": "DETERMINISTIC",
+            "engine": "legacy:python",
+            "language": "python",
+            "function": "",
+            "confidence": 0.85,
+            "tainted": false,
+            "evidenceIds": [],
+            "recommendation": "Mitigate Hardcoded Secret using secure coding practices."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "dashboard\\chat_page.py"
+                },
+                "region": {
+                  "startLine": 219,
+                  "snippet": {
+                    "text": "key=\"acg_file_upload\","
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "SEC-004",
+          "ruleIndex": 0,
+          "level": "error",
+          "message": {
+            "text": "Hardcoded Secret: Mitigate Hardcoded Secret using secure coding practices."
+          },
+          "partialFingerprints": {
+            "guardianFindingId": "bceea9aa5ac86175"
+          },
+          "properties": {
+            "source": "DETERMINISTIC",
+            "engine": "legacy:python",
+            "language": "python",
+            "function": "",
+            "confidence": 0.85,
+            "tainted": false,
+            "evidenceIds": [],
+            "recommendation": "Mitigate Hardcoded Secret using secure coding practices."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "dashboard\\chat_page.py"
+                },
+                "region": {
+                  "startLine": 226,
+                  "snippet": {
+                    "text": "dir_path = st.text_input(\"Local path\", key=\"acg_dir_path\","
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "QNT-SHA-1",
+          "ruleIndex": 1,
+          "level": "note",
+          "message": {
+            "text": "Quantum Migration Inventory: SHA-1 is classically broken: Chosen-prefix collisions demonstrated; NIST-deprecated for all uses."
+          },
+          "partialFingerprints": {
+            "guardianFindingId": "3f046f6304f2cdb7"
+          },
+          "properties": {
+            "source": "DETERMINISTIC",
+            "engine": "quantum",
+            "language": "python",
+            "function": "_make_doc_id",
+            "confidence": 1.0,
+            "tainted": false,
+            "evidenceIds": [
+              "E241"
+            ],
+            "recommendation": "Migrate to SHA-384 or SHA3-256 (NIST SP 800-107r1). Chosen-prefix collisions demonstrated; NIST-deprecated for all uses."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "guardian\\ai\\document_loader.py"
+                },
+                "region": {
+                  "startLine": 108,
+                  "snippet": {
+                    "text": "return hashlib.sha1(basis.encode()).hexdigest()[:16]"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "SEC-005",
+          "ruleIndex": 2,
+          "level": "error",
+          "message": {
+            "text": "Weak Crypto: hashlib.sha1 performs hashing with SHA-1. SHA-1 is collision-broken and deprecated by NIST."
+          },
+          "partialFingerprints": {
+            "guardianFindingId": "43d825935ba666ea"
+          },
+          "properties": {
+            "source": "DETERMINISTIC",
+            "engine": "security",
+            "language": "python",
+            "function": "_make_doc_id",
+            "confidence": 0.95,
+            "tainted": false,
+            "evidenceIds": [
+              "E16"
+            ],
+            "recommendation": "Use SHA-256 or stronger for hashing (Argon2id/bcrypt/scrypt for passwords), and AES-256-GCM for symmetric encryption."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "guardian\\ai\\document_loader.py"
+                },
+                "region": {
+                  "startLine": 108,
+                  "endLine": 108,
+                  "snippet": {
+                    "text": "return hashlib.sha1(basis.encode()).hexdigest()[:16]"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "QNT-SHA-1",
+          "ruleIndex": 1,
+          "level": "note",
+          "message": {
+            "text": "Quantum Migration Inventory: SHA-1 is classically broken: Chosen-prefix collisions demonstrated; NIST-deprecated for all uses."
+          },
+          "partialFingerprints": {
+            "guardianFindingId": "30115e40815579f0"
+          },
+          "properties": {
+            "source": "DETERMINISTIC",
+            "engine": "quantum",
+            "language": "python",
+            "function": "findings_to_documents",
+            "confidence": 1.0,
+            "tainted": false,
+            "evidenceIds": [
+              "E243",
+              "E244"
+            ],
+            "recommendation": "Migrate to SHA-384 or SHA3-256 (NIST SP 800-107r1). Chosen-prefix collisions demonstrated; NIST-deprecated for all uses. (2 usages in this file)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "guardian\\ai\\scan_context.py"
+                },
+                "region": {
+                  "startLine": 48,
+                  "snippet": {
+                    "text": "doc_id=hashlib.sha1(text.encode()).hexdigest()[:16],"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "SEC-005",
+          "ruleIndex": 2,
+          "level": "error",
+          "message": {
+            "text": "Weak Crypto: hashlib.sha1 performs hashing with SHA-1. SHA-1 is collision-broken and deprecated by NIST."
+          },
+          "partialFingerprints": {
+            "guardianFindingId": "c4c4044af8d710d0"
+          },
+          "properties": {
+            "source": "DETERMINISTIC",
+            "engine": "security",
+            "language": "python",
+            "function": "findings_to_documents",
+            "confidence": 0.95,
+            "tainted": false,
+            "evidenceIds": [
+              "E81"
+            ],
+            "recommendation": "Use SHA-256 or stronger for hashing (Argon2id/bcrypt/scrypt for passwords), and AES-256-GCM for symmetric encryption."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "guardian\\ai\\scan_context.py"
+                },
+                "region": {
+                  "startLine": 48,
+                  "endLine": 48,
+                  "snippet": {
+                    "text": "doc_id=hashlib.sha1(text.encode()).hexdigest()[:16],"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "SEC-005",
+          "ruleIndex": 2,
+          "level": "error",
+          "message": {
+            "text": "Weak Crypto: hashlib.sha1 performs hashing with SHA-1. SHA-1 is collision-broken and deprecated by NIST."
+          },
+          "partialFingerprints": {
+            "guardianFindingId": "1c0f1e706c0c2150"
+          },
+          "properties": {
+            "source": "DETERMINISTIC",
+            "engine": "security",
+            "language": "python",
+            "function": "findings_to_documents",
+            "confidence": 0.95,
+            "tainted": false,
+            "evidenceIds": [
+              "E82"
+            ],
+            "recommendation": "Use SHA-256 or stronger for hashing (Argon2id/bcrypt/scrypt for passwords), and AES-256-GCM for symmetric encryption."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "guardian\\ai\\scan_context.py"
+                },
+                "region": {
+                  "startLine": 69,
+                  "endLine": 69,
+                  "snippet": {
+                    "text": "doc_id=hashlib.sha1(summary_content.encode()).hexdigest()[:16],"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "QNT-SHA-1",
+          "ruleIndex": 1,
+          "level": "note",
+          "message": {
+            "text": "Quantum Migration Inventory: SHA-1 is classically broken: Chosen-prefix collisions demonstrated; NIST-deprecated for all uses."
+          },
+          "partialFingerprints": {
+            "guardianFindingId": "97476f8611e2256d"
+          },
+          "properties": {
+            "source": "DETERMINISTIC",
+            "engine": "quantum",
+            "language": "python",
+            "function": "__post_init__",
+            "confidence": 1.0,
+            "tainted": false,
+            "evidenceIds": [
+              "E246"
+            ],
+            "recommendation": "Migrate to SHA-384 or SHA3-256 (NIST SP 800-107r1). Chosen-prefix collisions demonstrated; NIST-deprecated for all uses."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "guardian\\core\\models.py"
+                },
+                "region": {
+                  "startLine": 77,
+                  "snippet": {
+                    "text": "self.finding_id = hashlib.sha1(basis.encode()).hexdigest()[:16]"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "SEC-005",
+          "ruleIndex": 2,
+          "level": "error",
+          "message": {
+            "text": "Weak Crypto: hashlib.sha1 performs hashing with SHA-1. SHA-1 is collision-broken and deprecated by NIST."
+          },
+          "partialFingerprints": {
+            "guardianFindingId": "888a5711d45b9704"
+          },
+          "properties": {
+            "source": "DETERMINISTIC",
+            "engine": "security",
+            "language": "python",
+            "function": "__post_init__",
+            "confidence": 0.95,
+            "tainted": false,
+            "evidenceIds": [
+              "E97"
+            ],
+            "recommendation": "Use SHA-256 or stronger for hashing (Argon2id/bcrypt/scrypt for passwords), and AES-256-GCM for symmetric encryption."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "guardian\\core\\models.py"
+                },
+                "region": {
+                  "startLine": 77,
+                  "endLine": 77,
+                  "snippet": {
+                    "text": "self.finding_id = hashlib.sha1(basis.encode()).hexdigest()[:16]"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "SEC-006",
+          "ruleIndex": 3,
+          "level": "error",
+          "message": {
+            "text": "Broken Authentication: TLS certificate/hostname verification appears disabled at INSECURE_TRANSPORT."
+          },
+          "partialFingerprints": {
+            "guardianFindingId": "eee3ec56f07f01a8"
+          },
+          "properties": {
+            "source": "DETERMINISTIC",
+            "engine": "security",
+            "language": "python",
+            "function": "",
+            "confidence": 0.8,
+            "tainted": false,
+            "evidenceIds": [
+              "E119",
+              "E120"
+            ],
+            "recommendation": "Keep certificate and hostname verification enabled and require TLS 1.2+ (prefer TLS 1.3)."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "guardian\\engines\\security.py"
+                },
+                "region": {
+                  "startLine": 103,
+                  "endLine": 108,
+                  "snippet": {
+                    "text": "INSECURE_TRANSPORT = re.compile("
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "SEC-006",
+          "ruleIndex": 3,
+          "level": "error",
+          "message": {
+            "text": "Broken Authentication: TLS certificate/hostname verification appears disabled at re.search."
+          },
+          "partialFingerprints": {
+            "guardianFindingId": "23b607df3a294e7d"
+          },
+          "properties": {
+            "source": "DETERMINISTIC",
+            "engine": "security",
+            "language": "python",
+            "function": "_insecure_transport_finding",
+            "confidence": 0.8,
+            "tainted": false,
+            "evidenceIds": [
+              "E121"
+            ],
+            "recommendation": "Keep certificate and hostname verification enabled and require TLS 1.2+ (prefer TLS 1.3)."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "guardian\\engines\\security.py"
+                },
+                "region": {
+                  "startLine": 314,
+                  "endLine": 316,
+                  "snippet": {
+                    "text": "if disabled_verification and re.search(r\"(?i)(rejectUnauthorized|check_hostname|\""
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "QNT-SHA-1",
+          "ruleIndex": 1,
+          "level": "note",
+          "message": {
+            "text": "Quantum Migration Inventory: SHA-1 is classically broken: Chosen-prefix collisions demonstrated; NIST-deprecated for all uses."
+          },
+          "partialFingerprints": {
+            "guardianFindingId": "43f6711961a17753"
+          },
+          "properties": {
+            "source": "DETERMINISTIC",
+            "engine": "quantum",
+            "language": "python",
+            "function": "__post_init__",
+            "confidence": 1.0,
+            "tainted": false,
+            "evidenceIds": [
+              "E248"
+            ],
+            "recommendation": "Migrate to SHA-384 or SHA3-256 (NIST SP 800-107r1). Chosen-prefix collisions demonstrated; NIST-deprecated for all uses."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "guardian\\evidence\\models.py"
+                },
+                "region": {
+                  "startLine": 104,
+                  "snippet": {
+                    "text": "self.fingerprint = hashlib.sha1(basis.encode()).hexdigest()[:16]"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "SEC-005",
+          "ruleIndex": 2,
+          "level": "error",
+          "message": {
+            "text": "Weak Crypto: hashlib.sha1 performs hashing with SHA-1. SHA-1 is collision-broken and deprecated by NIST."
+          },
+          "partialFingerprints": {
+            "guardianFindingId": "ba0c743519bdc61d"
+          },
+          "properties": {
+            "source": "DETERMINISTIC",
+            "engine": "security",
+            "language": "python",
+            "function": "__post_init__",
+            "confidence": 0.95,
+            "tainted": false,
+            "evidenceIds": [
+              "E124"
+            ],
+            "recommendation": "Use SHA-256 or stronger for hashing (Argon2id/bcrypt/scrypt for passwords), and AES-256-GCM for symmetric encryption."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "guardian\\evidence\\models.py"
+                },
+                "region": {
+                  "startLine": 104,
+                  "endLine": 104,
+                  "snippet": {
+                    "text": "self.fingerprint = hashlib.sha1(basis.encode()).hexdigest()[:16]"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "SEC-006",
+          "ruleIndex": 3,
+          "level": "error",
+          "message": {
+            "text": "Broken Authentication: TLS certificate/hostname verification appears disabled at _AUTH_BYPASS."
+          },
+          "partialFingerprints": {
+            "guardianFindingId": "3ce5464fe3b58f0c"
+          },
+          "properties": {
+            "source": "DETERMINISTIC",
+            "engine": "security",
+            "language": "python",
+            "function": "",
+            "confidence": 0.8,
+            "tainted": false,
+            "evidenceIds": [
+              "E128",
+              "E129"
+            ],
+            "recommendation": "Keep certificate and hostname verification enabled and require TLS 1.2+ (prefer TLS 1.3)."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "guardian\\intent\\legacy\\matcher.py"
+                },
+                "region": {
+                  "startLine": 32,
+                  "endLine": 35,
+                  "snippet": {
+                    "text": "_AUTH_BYPASS = re.compile("
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "QNT-SHA-1",
+          "ruleIndex": 1,
+          "level": "note",
+          "message": {
+            "text": "Quantum Migration Inventory: SHA-1 is classically broken: Chosen-prefix collisions demonstrated; NIST-deprecated for all uses."
+          },
+          "partialFingerprints": {
+            "guardianFindingId": "c02f87975547b11e"
+          },
+          "properties": {
+            "source": "DETERMINISTIC",
+            "engine": "quantum",
+            "language": "python",
+            "function": "__post_init__",
+            "confidence": 1.0,
+            "tainted": false,
+            "evidenceIds": [
+              "E250"
+            ],
+            "recommendation": "Migrate to SHA-384 or SHA3-256 (NIST SP 800-107r1). Chosen-prefix collisions demonstrated; NIST-deprecated for all uses."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "guardian\\intent\\legacy\\models.py"
+                },
+                "region": {
+                  "startLine": 61,
+                  "snippet": {
+                    "text": "self.rule_id = hashlib.sha1(basis.encode()).hexdigest()[:12]"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "SEC-005",
+          "ruleIndex": 2,
+          "level": "error",
+          "message": {
+            "text": "Weak Crypto: hashlib.sha1 performs hashing with SHA-1. SHA-1 is collision-broken and deprecated by NIST."
+          },
+          "partialFingerprints": {
+            "guardianFindingId": "626eb92f921c6909"
+          },
+          "properties": {
+            "source": "DETERMINISTIC",
+            "engine": "security",
+            "language": "python",
+            "function": "__post_init__",
+            "confidence": 0.95,
+            "tainted": false,
+            "evidenceIds": [
+              "E146"
+            ],
+            "recommendation": "Use SHA-256 or stronger for hashing (Argon2id/bcrypt/scrypt for passwords), and AES-256-GCM for symmetric encryption."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "guardian\\intent\\legacy\\models.py"
+                },
+                "region": {
+                  "startLine": 61,
+                  "endLine": 61,
+                  "snippet": {
+                    "text": "self.rule_id = hashlib.sha1(basis.encode()).hexdigest()[:12]"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "SEC-006",
+          "ruleIndex": 3,
+          "level": "error",
+          "message": {
+            "text": "Broken Authentication: TLS certificate/hostname verification appears disabled at steps.append."
+          },
+          "partialFingerprints": {
+            "guardianFindingId": "e5b687a9e2474f22"
+          },
+          "properties": {
+            "source": "DETERMINISTIC",
+            "engine": "security",
+            "language": "python",
+            "function": "_build_fix_steps",
+            "confidence": 0.8,
+            "tainted": false,
+            "evidenceIds": [
+              "E147"
+            ],
+            "recommendation": "Keep certificate and hostname verification enabled and require TLS 1.2+ (prefer TLS 1.3)."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "guardian\\intent\\legacy\\models.py"
+                },
+                "region": {
+                  "startLine": 185,
+                  "endLine": 188,
+                  "snippet": {
+                    "text": "steps.append("
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "SEC-010",
+          "ruleIndex": 4,
+          "level": "error",
+          "message": {
+            "text": "Sensitive Logging: 'secret' is passed to log.warning, so it can reach log storage and aggregation systems in clear text."
+          },
+          "partialFingerprints": {
+            "guardianFindingId": "6564f7512ddf8486"
+          },
+          "properties": {
+            "source": "DETERMINISTIC",
+            "engine": "security",
+            "language": "python",
+            "function": "check_prompt",
+            "confidence": 0.75,
+            "tainted": false,
+            "evidenceIds": [
+              "E148"
+            ],
+            "recommendation": "Redact or mask sensitive fields before logging; log identifiers rather than values."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "guardian\\llm\\guardrails.py"
+                },
+                "region": {
+                  "startLine": 157,
+                  "endLine": 157,
+                  "snippet": {
+                    "text": "log.warning(\"Redacted %d suspected secret(s) from outbound prompt\", redactions)"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "QNT-SHA-1",
+          "ruleIndex": 1,
+          "level": "note",
+          "message": {
+            "text": "Quantum Migration Inventory: SHA-1 is classically broken: Chosen-prefix collisions demonstrated; NIST-deprecated for all uses."
+          },
+          "partialFingerprints": {
+            "guardianFindingId": "b35feff08517d749"
+          },
+          "properties": {
+            "source": "DETERMINISTIC",
+            "engine": "quantum",
+            "language": "python",
+            "function": "__post_init__",
+            "confidence": 1.0,
+            "tainted": false,
+            "evidenceIds": [
+              "E252"
+            ],
+            "recommendation": "Migrate to SHA-384 or SHA3-256 (NIST SP 800-107r1). Chosen-prefix collisions demonstrated; NIST-deprecated for all uses."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "guardian\\policy\\models.py"
+                },
+                "region": {
+                  "startLine": 116,
+                  "snippet": {
+                    "text": "self.policy_id = \"P\" + hashlib.sha1(basis.encode()).hexdigest()[:10]"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "SEC-005",
+          "ruleIndex": 2,
+          "level": "error",
+          "message": {
+            "text": "Weak Crypto: hashlib.sha1 performs hashing with SHA-1. SHA-1 is collision-broken and deprecated by NIST."
+          },
+          "partialFingerprints": {
+            "guardianFindingId": "983845cd78ac70e0"
+          },
+          "properties": {
+            "source": "DETERMINISTIC",
+            "engine": "security",
+            "language": "python",
+            "function": "__post_init__",
+            "confidence": 0.95,
+            "tainted": false,
+            "evidenceIds": [
+              "E158"
+            ],
+            "recommendation": "Use SHA-256 or stronger for hashing (Argon2id/bcrypt/scrypt for passwords), and AES-256-GCM for symmetric encryption."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "guardian\\policy\\models.py"
+                },
+                "region": {
+                  "startLine": 116,
+                  "endLine": 116,
+                  "snippet": {
+                    "text": "self.policy_id = \"P\" + hashlib.sha1(basis.encode()).hexdigest()[:10]"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "QNT-SHA-1",
+          "ruleIndex": 1,
+          "level": "note",
+          "message": {
+            "text": "Quantum Migration Inventory: SHA-1 is classically broken: Chosen-prefix collisions demonstrated; NIST-deprecated for all uses."
+          },
+          "partialFingerprints": {
+            "guardianFindingId": "dac52c822ef2cbbf"
+          },
+          "properties": {
+            "source": "DETERMINISTIC",
+            "engine": "quantum",
+            "language": "python",
+            "function": "__post_init__",
+            "confidence": 1.0,
+            "tainted": false,
+            "evidenceIds": [
+              "E254"
+            ],
+            "recommendation": "Migrate to SHA-384 or SHA3-256 (NIST SP 800-107r1). Chosen-prefix collisions demonstrated; NIST-deprecated for all uses."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "guardian\\quantum\\models.py"
+                },
+                "region": {
+                  "startLine": 54,
+                  "snippet": {
+                    "text": "self.usage_id = hashlib.sha1(basis.encode()).hexdigest()[:12]"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "SEC-005",
+          "ruleIndex": 2,
+          "level": "error",
+          "message": {
+            "text": "Weak Crypto: hashlib.sha1 performs hashing with SHA-1. SHA-1 is collision-broken and deprecated by NIST."
+          },
+          "partialFingerprints": {
+            "guardianFindingId": "60f281545bdcd048"
+          },
+          "properties": {
+            "source": "DETERMINISTIC",
+            "engine": "security",
+            "language": "python",
+            "function": "__post_init__",
+            "confidence": 0.95,
+            "tainted": false,
+            "evidenceIds": [
+              "E159"
+            ],
+            "recommendation": "Use SHA-256 or stronger for hashing (Argon2id/bcrypt/scrypt for passwords), and AES-256-GCM for symmetric encryption."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "guardian\\quantum\\models.py"
+                },
+                "region": {
+                  "startLine": 54,
+                  "endLine": 54,
+                  "snippet": {
+                    "text": "self.usage_id = hashlib.sha1(basis.encode()).hexdigest()[:12]"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "SEC-006",
+          "ruleIndex": 3,
+          "level": "error",
+          "message": {
+            "text": "Broken Authentication: TLS certificate/hostname verification appears disabled at re.compile."
+          },
+          "partialFingerprints": {
+            "guardianFindingId": "7d7fb4ad09d2a42f"
+          },
+          "properties": {
+            "source": "DETERMINISTIC",
+            "engine": "security",
+            "language": "python",
+            "function": "",
+            "confidence": 0.8,
+            "tainted": false,
+            "evidenceIds": [
+              "E164"
+            ],
+            "recommendation": "Keep certificate and hostname verification enabled and require TLS 1.2+ (prefer TLS 1.3)."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "guardian\\scanner\\_engine.py"
+                },
+                "region": {
+                  "startLine": 80,
+                  "endLine": 80,
+                  "snippet": {
+                    "text": "re.compile(r'X509TrustManager\\(\\)\\s*\\{'),"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "SEC-006",
+          "ruleIndex": 3,
+          "level": "error",
+          "message": {
+            "text": "Broken Authentication: TLS certificate/hostname verification appears disabled at re.compile."
+          },
+          "partialFingerprints": {
+            "guardianFindingId": "91887b3da66fcfe8"
+          },
+          "properties": {
+            "source": "DETERMINISTIC",
+            "engine": "security",
+            "language": "python",
+            "function": "",
+            "confidence": 0.8,
+            "tainted": false,
+            "evidenceIds": [
+              "E165"
+            ],
+            "recommendation": "Keep certificate and hostname verification enabled and require TLS 1.2+ (prefer TLS 1.3)."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "guardian\\scanner\\_engine.py"
+                },
+                "region": {
+                  "startLine": 81,
+                  "endLine": 81,
+                  "snippet": {
+                    "text": "re.compile(r'\\btrustAllCerts\\b'),"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "SEC-006",
+          "ruleIndex": 3,
+          "level": "error",
+          "message": {
+            "text": "Broken Authentication: TLS certificate/hostname verification appears disabled at re.compile."
+          },
+          "partialFingerprints": {
+            "guardianFindingId": "cdb29383fb03a63b"
+          },
+          "properties": {
+            "source": "DETERMINISTIC",
+            "engine": "security",
+            "language": "python",
+            "function": "",
+            "confidence": 0.8,
+            "tainted": false,
+            "evidenceIds": [
+              "E169"
+            ],
+            "recommendation": "Keep certificate and hostname verification enabled and require TLS 1.2+ (prefer TLS 1.3)."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "guardian\\scanner\\rust\\plugin.py"
+                },
+                "region": {
+                  "startLine": 30,
+                  "endLine": 30,
+                  "snippet": {
+                    "text": "re.compile(r'danger_accept_invalid_certs\\s*\\(\\s*true\\s*\\)|danger_accept_invalid_hostnames\\s*\\(\\s*true\\s*\\)'),"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "QNT-SHA-1",
+          "ruleIndex": 1,
+          "level": "note",
+          "message": {
+            "text": "Quantum Migration Inventory: SHA-1 is classically broken: Chosen-prefix collisions demonstrated; NIST-deprecated for all uses."
+          },
+          "partialFingerprints": {
+            "guardianFindingId": "bdf9b8921241536e"
+          },
+          "properties": {
+            "source": "DETERMINISTIC",
+            "engine": "quantum",
+            "language": "python",
+            "function": "__post_init__",
+            "confidence": 1.0,
+            "tainted": false,
+            "evidenceIds": [
+              "E258"
+            ],
+            "recommendation": "Migrate to SHA-384 or SHA3-256 (NIST SP 800-107r1). Chosen-prefix collisions demonstrated; NIST-deprecated for all uses."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "guardian\\ust\\models.py"
+                },
+                "region": {
+                  "startLine": 123,
+                  "snippet": {
+                    "text": "self.node_id = hashlib.sha1(basis.encode()).hexdigest()[:16]"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "SEC-005",
+          "ruleIndex": 2,
+          "level": "error",
+          "message": {
+            "text": "Weak Crypto: hashlib.sha1 performs hashing with SHA-1. SHA-1 is collision-broken and deprecated by NIST."
+          },
+          "partialFingerprints": {
+            "guardianFindingId": "ae92a1da855eca12"
+          },
+          "properties": {
+            "source": "DETERMINISTIC",
+            "engine": "security",
+            "language": "python",
+            "function": "__post_init__",
+            "confidence": 0.95,
+            "tainted": false,
+            "evidenceIds": [
+              "E177"
+            ],
+            "recommendation": "Use SHA-256 or stronger for hashing (Argon2id/bcrypt/scrypt for passwords), and AES-256-GCM for symmetric encryption."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "guardian\\ust\\models.py"
+                },
+                "region": {
+                  "startLine": 123,
+                  "endLine": 123,
+                  "snippet": {
+                    "text": "self.node_id = hashlib.sha1(basis.encode()).hexdigest()[:16]"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "SEC-006",
+          "ruleIndex": 3,
+          "level": "error",
+          "message": {
+            "text": "Broken Authentication: TLS certificate/hostname verification appears disabled at CryptoSignature."
+          },
+          "partialFingerprints": {
+            "guardianFindingId": "53c063ccd6ec65fc"
+          },
+          "properties": {
+            "source": "DETERMINISTIC",
+            "engine": "security",
+            "language": "python",
+            "function": "",
+            "confidence": 0.8,
+            "tainted": false,
+            "evidenceIds": [
+              "E178"
+            ],
+            "recommendation": "Keep certificate and hostname verification enabled and require TLS 1.2+ (prefer TLS 1.3)."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "guardian\\ust\\tagging.py"
+                },
+                "region": {
+                  "startLine": 217,
+                  "endLine": 218,
+                  "snippet": {
+                    "text": "CryptoSignature((\"danger_accept_invalid_certs\", \"danger_accept_invalid_hostnames\"),"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "DEP-001",
+          "ruleIndex": 5,
+          "level": "note",
+          "message": {
+            "text": "Unpinned Dependency: Pin dependency versions for reproducible, auditable builds."
+          },
+          "partialFingerprints": {
+            "guardianFindingId": "356d20496f1e14b3"
+          },
+          "properties": {
+            "source": "DETERMINISTIC",
+            "engine": "analyzer:dependencies",
+            "language": "",
+            "function": "",
+            "confidence": 0.9,
+            "tainted": false,
+            "evidenceIds": [
+              "E262"
+            ],
+            "recommendation": "Pin dependency versions for reproducible, auditable builds."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "requirements.txt"
+                },
+                "region": {
+                  "startLine": 1,
+                  "snippet": {
+                    "text": "pandas (PyPI) has no pinned version"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "SEC-006",
+          "ruleIndex": 3,
+          "level": "error",
+          "message": {
+            "text": "Broken Authentication: TLS certificate/hostname verification appears disabled at ctx."
+          },
+          "partialFingerprints": {
+            "guardianFindingId": "5dc3b60d4912b8f6"
+          },
+          "properties": {
+            "source": "DETERMINISTIC",
+            "engine": "security",
+            "language": "python",
+            "function": "test_disabled_tls_verification_rust",
+            "confidence": 0.8,
+            "tainted": false,
+            "evidenceIds": [
+              "E187"
+            ],
+            "recommendation": "Keep certificate and hostname verification enabled and require TLS 1.2+ (prefer TLS 1.3)."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "tests\\test_engines.py"
+                },
+                "region": {
+                  "startLine": 143,
+                  "endLine": 145,
+                  "snippet": {
+                    "text": "ctx = make_context(tmp_path, {\"c.rs\": ("
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "SEC-004",
+          "ruleIndex": 0,
+          "level": "error",
+          "message": {
+            "text": "Hardcoded Secret: Mitigate Hardcoded Secret using secure coding practices."
+          },
+          "partialFingerprints": {
+            "guardianFindingId": "75f835590c7eff46"
+          },
+          "properties": {
+            "source": "DETERMINISTIC",
+            "engine": "legacy:python",
+            "language": "python",
+            "function": "",
+            "confidence": 0.85,
+            "tainted": false,
+            "evidenceIds": [],
+            "recommendation": "Mitigate Hardcoded Secret using secure coding practices."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "tests\\test_engines.py"
+                },
+                "region": {
+                  "startLine": 153,
+                  "snippet": {
+                    "text": "\"def f(password):\\n    logger.info('login password=' + password)\\n\")})"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "SEC-004",
+          "ruleIndex": 0,
+          "level": "error",
+          "message": {
+            "text": "Hardcoded Secret: 'API_KEY' is assigned a high-entropy literal in source code."
+          },
+          "partialFingerprints": {
+            "guardianFindingId": "ed654306bc5a1fc0"
+          },
+          "properties": {
+            "source": "DETERMINISTIC",
+            "engine": "security",
+            "language": "python",
+            "function": "test_hardcoded_secret_detected",
+            "confidence": 0.85,
+            "tainted": false,
+            "evidenceIds": [
+              "E189"
+            ],
+            "recommendation": "Mitigate Hardcoded Secret using secure coding practices."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "tests\\test_engines.py"
+                },
+                "region": {
+                  "startLine": 168,
+                  "snippet": {
+                    "text": "'API_KEY = \"sk-9f8a7b6c5d4e3f2a1b0c9d8e7f6a5b4c\"\\n')})"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "SEC-004",
+          "ruleIndex": 0,
+          "level": "error",
+          "message": {
+            "text": "Hardcoded Secret: Mitigate Hardcoded Secret using secure coding practices."
+          },
+          "partialFingerprints": {
+            "guardianFindingId": "c857facbb2f0ac3b"
+          },
+          "properties": {
+            "source": "DETERMINISTIC",
+            "engine": "legacy:python",
+            "language": "python",
+            "function": "",
+            "confidence": 0.85,
+            "tainted": false,
+            "evidenceIds": [],
+            "recommendation": "Mitigate Hardcoded Secret using secure coding practices."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "tests\\test_engines.py"
+                },
+                "region": {
+                  "startLine": 178,
+                  "snippet": {
+                    "text": "ctx = make_context(tmp_path, {\"c.py\": 'api_key = \"your-api-key-here\"\\n'})"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "SEC-004",
+          "ruleIndex": 0,
+          "level": "error",
+          "message": {
+            "text": "Hardcoded Secret: 'api_key' is assigned a high-entropy literal in source code."
+          },
+          "partialFingerprints": {
+            "guardianFindingId": "902e9b84cf460609"
+          },
+          "properties": {
+            "source": "DETERMINISTIC",
+            "engine": "security",
+            "language": "python",
+            "function": "test_rejects_plaintext_http",
+            "confidence": 0.85,
+            "tainted": false,
+            "evidenceIds": [
+              "E193"
+            ],
+            "recommendation": "Mitigate Hardcoded Secret using secure coding practices."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "tests\\test_llm_layer.py"
+                },
+                "region": {
+                  "startLine": 27,
+                  "snippet": {
+                    "text": "cfg = LLMConfig(api_key=\"nvapi-x\", base_url=\"http://insecure.example/v1\")"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "SEC-004",
+          "ruleIndex": 0,
+          "level": "error",
+          "message": {
+            "text": "Hardcoded Secret: Mitigate Hardcoded Secret using secure coding practices."
+          },
+          "partialFingerprints": {
+            "guardianFindingId": "a7e084ce93486d38"
+          },
+          "properties": {
+            "source": "DETERMINISTIC",
+            "engine": "legacy:python",
+            "language": "python",
+            "function": "",
+            "confidence": 0.85,
+            "tainted": false,
+            "evidenceIds": [],
+            "recommendation": "Mitigate Hardcoded Secret using secure coding practices."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "tests\\test_llm_layer.py"
+                },
+                "region": {
+                  "startLine": 32,
+                  "snippet": {
+                    "text": "secret = \"nvapi-SUPERSECRETVALUE12345\""
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "SEC-004",
+          "ruleIndex": 0,
+          "level": "error",
+          "message": {
+            "text": "Hardcoded Secret: 'api_key' is assigned a high-entropy literal in source code."
+          },
+          "partialFingerprints": {
+            "guardianFindingId": "4c3dcbcd712cb7c2"
+          },
+          "properties": {
+            "source": "DETERMINISTIC",
+            "engine": "security",
+            "language": "python",
+            "function": "test_unknown_provider_rejected",
+            "confidence": 0.85,
+            "tainted": false,
+            "evidenceIds": [
+              "E194"
+            ],
+            "recommendation": "Mitigate Hardcoded Secret using secure coding practices."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "tests\\test_llm_layer.py"
+                },
+                "region": {
+                  "startLine": 63,
+                  "snippet": {
+                    "text": "create_llm(\"gpt-9000\", LLMConfig(api_key=\"nvapi-x\"))"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "SEC-004",
+          "ruleIndex": 0,
+          "level": "error",
+          "message": {
+            "text": "Hardcoded Secret: 'api_key' is assigned a high-entropy literal in source code."
+          },
+          "partialFingerprints": {
+            "guardianFindingId": "fb7bafd0a84b0cf2"
+          },
+          "properties": {
+            "source": "DETERMINISTIC",
+            "engine": "security",
+            "language": "python",
+            "function": "test_returns_base_llm",
+            "confidence": 0.85,
+            "tainted": false,
+            "evidenceIds": [
+              "E195"
+            ],
+            "recommendation": "Mitigate Hardcoded Secret using secure coding practices."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "tests\\test_llm_layer.py"
+                },
+                "region": {
+                  "startLine": 66,
+                  "snippet": {
+                    "text": "llm = create_llm(\"nemotron\", LLMConfig(api_key=\"nvapi-x\"))"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "SEC-004",
+          "ruleIndex": 0,
+          "level": "error",
+          "message": {
+            "text": "Hardcoded Secret: 'api_key' is assigned a high-entropy literal in source code."
+          },
+          "partialFingerprints": {
+            "guardianFindingId": "dc242e91c57a3f7a"
+          },
+          "properties": {
+            "source": "DETERMINISTIC",
+            "engine": "security",
+            "language": "python",
+            "function": "_llm",
+            "confidence": 0.85,
+            "tainted": false,
+            "evidenceIds": [
+              "E196"
+            ],
+            "recommendation": "Mitigate Hardcoded Secret using secure coding practices."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "tests\\test_llm_layer.py"
+                },
+                "region": {
+                  "startLine": 80,
+                  "snippet": {
+                    "text": "return NemotronLLM(LLMConfig(api_key=\"nvapi-test\", max_retries=3,"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "SEC-004",
+          "ruleIndex": 0,
+          "level": "error",
+          "message": {
+            "text": "Hardcoded Secret: 'API_KEY' is assigned a high-entropy literal in source code."
+          },
+          "partialFingerprints": {
+            "guardianFindingId": "4136a491ac61f9aa"
+          },
+          "properties": {
+            "source": "DETERMINISTIC",
+            "engine": "security",
+            "language": "python",
+            "function": "test_redacts_nvidia_key",
+            "confidence": 0.85,
+            "tainted": false,
+            "evidenceIds": [
+              "E197"
+            ],
+            "recommendation": "Mitigate Hardcoded Secret using secure coding practices."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "tests\\test_llm_layer.py"
+                },
+                "region": {
+                  "startLine": 236,
+                  "snippet": {
+                    "text": "text = 'API_KEY = \"nvapi-abcdefghijklmnopqrstuvwxyz123456\"'"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "SEC-004",
+          "ruleIndex": 0,
+          "level": "error",
+          "message": {
+            "text": "Hardcoded Secret: Mitigate Hardcoded Secret using secure coding practices."
+          },
+          "partialFingerprints": {
+            "guardianFindingId": "889bacf99247897e"
+          },
+          "properties": {
+            "source": "DETERMINISTIC",
+            "engine": "legacy:python",
+            "language": "python",
+            "function": "",
+            "confidence": 0.85,
+            "tainted": false,
+            "evidenceIds": [],
+            "recommendation": "Mitigate Hardcoded Secret using secure coding practices."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "tests\\test_llm_layer.py"
+                },
+                "region": {
+                  "startLine": 250,
+                  "snippet": {
+                    "text": "v = self.g.check_prompt('token = \"ghp_abcdefghijklmnopqrstuvwxyz0123456789\"')"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "SEC-004",
+          "ruleIndex": 0,
+          "level": "error",
+          "message": {
+            "text": "Hardcoded Secret: 'API_KEY' is assigned a high-entropy literal in source code."
+          },
+          "partialFingerprints": {
+            "guardianFindingId": "e65250785d3f1751"
+          },
+          "properties": {
+            "source": "DETERMINISTIC",
+            "engine": "security",
+            "language": "python",
+            "function": "",
+            "confidence": 0.85,
+            "tainted": false,
+            "evidenceIds": [
+              "E211"
+            ],
+            "recommendation": "Mitigate Hardcoded Secret using secure coding practices."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "tests\\test_pipeline_integration.py"
+                },
+                "region": {
+                  "startLine": 30,
+                  "snippet": {
+                    "text": "private static final String API_KEY = \"sk-live-9f8a7b6c5d4e3f2a1b0c9d8e\";"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "SEC-004",
+          "ruleIndex": 0,
+          "level": "error",
+          "message": {
+            "text": "Hardcoded Secret: 'apiKey' is assigned a high-entropy literal in source code."
+          },
+          "partialFingerprints": {
+            "guardianFindingId": "6d63f504814aef23"
+          },
+          "properties": {
+            "source": "DETERMINISTIC",
+            "engine": "security",
+            "language": "python",
+            "function": "sample_repo",
+            "confidence": 0.85,
+            "tainted": false,
+            "evidenceIds": [
+              "E226"
+            ],
+            "recommendation": "Mitigate Hardcoded Secret using secure coding practices."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "tests\\test_scaffold.py"
+                },
+                "region": {
+                  "startLine": 21,
+                  "snippet": {
+                    "text": "String apiKey=\"SECRET_KEY_9\";"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "SEC-004",
+          "ruleIndex": 0,
+          "level": "error",
+          "message": {
+            "text": "Hardcoded Secret: 'apiKey' is assigned a high-entropy literal in source code."
+          },
+          "partialFingerprints": {
+            "guardianFindingId": "01fa3872c8edeab7"
+          },
+          "properties": {
+            "source": "DETERMINISTIC",
+            "engine": "security",
+            "language": "python",
+            "function": "test_java_hardcoded_secret_camelcase_and_snake_case",
+            "confidence": 0.85,
+            "tainted": false,
+            "evidenceIds": [
+              "E229"
+            ],
+            "recommendation": "Mitigate Hardcoded Secret using secure coding practices."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "tests\\test_security_rule_engine.py"
+                },
+                "region": {
+                  "startLine": 37,
+                  "snippet": {
+                    "text": "src = 'String apiKey = \"SECRET_KEY_1\";\\nString API_KEY = \"SECRET_KEY_2\";'"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "SEC-006",
+          "ruleIndex": 3,
+          "level": "error",
+          "message": {
+            "text": "Broken Authentication: TLS certificate/hostname verification appears disabled at src."
+          },
+          "partialFingerprints": {
+            "guardianFindingId": "d940770d5a582221"
+          },
+          "properties": {
+            "source": "DETERMINISTIC",
+            "engine": "security",
+            "language": "python",
+            "function": "test_java_trust_all_certs_detected",
+            "confidence": 0.8,
+            "tainted": false,
+            "evidenceIds": [
+              "E228"
+            ],
+            "recommendation": "Keep certificate and hostname verification enabled and require TLS 1.2+ (prefer TLS 1.3)."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "tests\\test_security_rule_engine.py"
+                },
+                "region": {
+                  "startLine": 51,
+                  "endLine": 51,
+                  "snippet": {
+                    "text": "src = \"X509TrustManager insecure = new X509TrustManager() {\""
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "SEC-004",
+          "ruleIndex": 0,
+          "level": "error",
+          "message": {
+            "text": "Hardcoded Secret: 'apiKey' is assigned a high-entropy literal in source code."
+          },
+          "partialFingerprints": {
+            "guardianFindingId": "be9c20dc7877c373"
+          },
+          "properties": {
+            "source": "DETERMINISTIC",
+            "engine": "security",
+            "language": "python",
+            "function": "test_finding_id_is_stable_for_dedup",
+            "confidence": 0.85,
+            "tainted": false,
+            "evidenceIds": [
+              "E230"
+            ],
+            "recommendation": "Mitigate Hardcoded Secret using secure coding practices."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "tests\\test_security_rule_engine.py"
+                },
+                "region": {
+                  "startLine": 58,
+                  "snippet": {
+                    "text": "src = 'String apiKey = \"SECRET_KEY_1\";'"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "SEC-004",
+          "ruleIndex": 0,
+          "level": "error",
+          "message": {
+            "text": "Hardcoded Secret: 'apiKey' is assigned a high-entropy literal in source code."
+          },
+          "partialFingerprints": {
+            "guardianFindingId": "9ed1bad6fdcaf6cd"
+          },
+          "properties": {
+            "source": "DETERMINISTIC",
+            "engine": "security",
+            "language": "python",
+            "function": "test_risk_report_produces_merge_decision",
+            "confidence": 0.85,
+            "tainted": false,
+            "evidenceIds": [
+              "E231"
+            ],
+            "recommendation": "Mitigate Hardcoded Secret using secure coding practices."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "tests\\test_security_rule_engine.py"
+                },
+                "region": {
+                  "startLine": 66,
+                  "snippet": {
+                    "text": "src = 'String apiKey = \"SECRET_KEY_1\";'"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,93 +1,152 @@
 """
-AI Vulnerability Verifier & False Positive Triage Engine
-========================================================
-Takes deterministic scan findings and verifies their exploitability and context
-using NVIDIA Nemotron reasoning. Redacts secrets via guardrails before transmission.
+AI Finding Verifier — False-Positive Triage
+===========================================
+Takes deterministic findings and asks Nemotron whether each high-severity
+one is exploitable in context, so a reviewer can prioritise.
+
+This module previously imported a class that does not exist
+(`LLMGuardrails`; the class is `GuardrailPipeline`), called
+`create_llm(config)` with the wrong signature, and invoked
+`llm.complete(prompt)` / `response.text` — neither of which is on
+`BaseLLM`. It therefore raised on import and could never have run. It is
+now routed through the shared reasoning service like every other
+contextual consumer, which redacts secrets and enforces the context
+budget on its behalf.
+
+Triage never deletes a finding. A suppressed false positive is
+confidence-demoted and annotated, so it stays in the report with the
+model's reasoning attached and a human can disagree.
 """
 from __future__ import annotations
 
-import json
 import logging
 from pathlib import Path
-from typing import Any, Dict, List, Optional
 
 from guardian.core.models import Finding
-from guardian.llm.config import LLMConfig
-from guardian.llm.factory import create_llm
-from guardian.llm.guardrails import LLMGuardrails
 
 log = logging.getLogger(__name__)
 
+TRIAGE_SCHEMA = """Return exactly one JSON object, no prose:
+{
+  "findings": [
+    {
+      "evidence_ids": ["<the finding id you were given>"],
+      "verdict": "true_positive|false_positive|needs_review",
+      "confidence": 0.0-1.0,
+      "reason": "<why, referring only to the code shown>",
+      "recommendation": "<action>"
+    }
+  ]
+}
+Judge only the code shown. If the surrounding context needed to decide is
+not present, return "needs_review" rather than guessing."""
+
+#: A false-positive verdict must be at least this confident to demote a
+#: finding. Below it, the deterministic result stands unchanged.
+SUPPRESSION_THRESHOLD = 0.7
+
 
 class AIFindingVerifier:
-    def __init__(self, config: Optional[LLMConfig] = None) -> None:
-        self.config = config or LLMConfig.from_env()
-        self.guardrails = LLMGuardrails()
+    """Contextual false-positive triage over high-severity findings."""
 
-    def verify_findings(self, repo_root: Path, findings: List[Finding]) -> List[Finding]:
-        """Run AI verification pass over high/critical findings to triage false positives."""
-        if not self.config.api_key:
-            log.info("NVIDIA_API_KEY not configured — skipping AI verification pass.")
+    def __init__(self, service=None, *, context_window: int = 10,
+                 max_findings: int = 25) -> None:
+        self._service = service
+        self.context_window = context_window
+        self.max_findings = max_findings
+
+    # ------------------------------------------------------------------
+    @property
+    def service(self):
+        if self._service is None:
+            from guardian.reasoning.gateway import NemotronReasoningService
+            self._service = NemotronReasoningService()
+        return self._service
+
+    def verify_findings(self, repo_root: Path,
+                        findings: list[Finding]) -> list[Finding]:
+        """Annotate high/critical findings with a triage verdict.
+
+        Returns the same list, in the same order. Findings are mutated in
+        place; none are removed.
+        """
+        try:
+            service = self.service
+        except Exception as exc:  # noqa: BLE001
+            log.info("AI verification unavailable: %s", exc)
             return findings
 
-        llm = create_llm(self.config)
-        verified: List[Finding] = []
+        if not service.configured:
+            log.info("NVIDIA_API_KEY not configured — skipping AI triage pass.")
+            return findings
 
-        for finding in findings:
-            if finding.severity not in ("High", "Critical"):
-                verified.append(finding)
-                continue
-
-            # Read code snippet window
-            file_path = repo_root / finding.file
-            context = self._get_context_window(file_path, finding.line)
-
-            # Redact secrets before sending to LLM
-            clean_context, _ = self.guardrails.redact_outbound_text(context)
-
-            prompt = (
-                f"You are a Senior Application Security Engineer. Analyze this potential vulnerability:\n\n"
-                f"Rule ID: {finding.rule_id}\n"
-                f"Category: {finding.category}\n"
-                f"Severity: {finding.severity}\n"
-                f"File: {finding.file} (Line {finding.line})\n"
-                f"Snippet: {finding.snippet}\n\n"
-                f"Code Context:\n```\n{clean_context}\n```\n\n"
-                f"Determine if this is a True Positive or False Positive.\n"
-                f"Respond ONLY in valid JSON format:\n"
-                f'{{"verdict": "true_positive"|"false_positive", "confidence": <0.0-1.0>, "explanation": "<reason>"}}'
-            )
-
+        candidates = [f for f in findings
+                      if f.severity in ("High", "Critical")][: self.max_findings]
+        for finding in candidates:
             try:
-                response = llm.complete(prompt)
-                res = json.loads(response.text)
-                verdict = res.get("verdict", "true_positive")
-                explanation = res.get("explanation", "")
-                conf = float(res.get("confidence", finding.confidence))
+                self._triage(repo_root, finding, service)
+            except Exception as exc:  # noqa: BLE001 — triage is best-effort
+                log.debug("AI triage skipped for %s: %s", finding.rule_id, exc)
+        return findings
 
-                if verdict == "false_positive" and conf >= 0.7:
-                    log.info("AI suppressed false positive finding %s in %s", finding.rule_id, finding.file)
-                    finding.confidence = 0.1
-                    finding.recommendation += f" [AI Triage: Suppressed as False Positive ({explanation})]"
-                else:
-                    finding.confidence = min(1.0, conf + 0.1)
-                    if explanation:
-                        finding.recommendation += f" [AI Verified: {explanation}]"
+    # ------------------------------------------------------------------
+    def _triage(self, repo_root: Path, finding: Finding, service) -> None:
+        from guardian.reasoning.gateway import ReasoningRequest
+        from guardian.reasoning.schemas import extract_json
 
-            except Exception as e:
-                log.debug("AI verification pass skipped for %s: %s", finding.rule_id, e)
+        snippet = self._context_window(Path(repo_root) / finding.file, finding.line)
+        if not snippet:
+            return
 
-            verified.append(finding)
+        result = service.reason(ReasoningRequest(
+            task="false_positive_triage",
+            instruction=(
+                f"Decide whether this scanner finding is exploitable in context.\n"
+                f"Rule: {finding.rule_id}\nCategory: {finding.category}\n"
+                f"Severity: {finding.severity}\n"
+                f"Location: {finding.file}:{finding.line}"
+                + (f" in {finding.function}()" if finding.function else "")
+                + (f"\nScanner reasoning: {finding.reason}" if finding.reason else "")),
+            schema_instruction=TRIAGE_SCHEMA,
+            evidence_block=f"FINDING ID: {finding.finding_id}\n"
+                           f"Flagged line: {finding.snippet}",
+            code_snippet=snippet,
+            snippet_label=f"{finding.file} around line {finding.line}",
+            cache_key_extra=finding.finding_id,
+        ))
+        if not result.available or result.response is None:
+            return
 
-        return verified
+        data = extract_json(result.response.raw) or {}
+        claims = data.get("findings") or []
+        if not claims or not isinstance(claims[0], dict):
+            return
 
-    def _get_context_window(self, file_path: Path, line_no: int, window: int = 10) -> str:
-        if not file_path.exists():
-            return ""
+        claim = claims[0]
+        verdict = str(claim.get("verdict", "")).strip().lower()
+        reason = str(claim.get("reason", "")).strip()[:300]
+        try:
+            confidence = float(claim.get("confidence", 0.0))
+        except (TypeError, ValueError):
+            confidence = 0.0
+
+        if verdict == "false_positive" and confidence >= SUPPRESSION_THRESHOLD:
+            # Demote, never delete: a model disagreeing with a deterministic
+            # detector is a signal for a reviewer, not a verdict.
+            finding.confidence = round(min(finding.confidence, 0.3), 3)
+            finding.recommendation += f"  [AI triage — likely false positive: {reason}]"
+            log.info("AI triage demoted %s at %s:%d", finding.rule_id,
+                     finding.file, finding.line)
+        elif verdict == "true_positive" and reason:
+            finding.recommendation += f"  [AI triage — confirmed exploitable: {reason}]"
+        elif reason:
+            finding.recommendation += f"  [AI triage — needs review: {reason}]"
+
+    def _context_window(self, file_path: Path, line_no: int) -> str:
         try:
             lines = file_path.read_text(encoding="utf-8", errors="ignore").splitlines()
-            start = max(0, line_no - window - 1)
-            end = min(len(lines), line_no + window)
-            return "\n".join(lines[start:end])
         except OSError:
             return ""
+        start = max(0, line_no - self.context_window - 1)
+        end = min(len(lines), line_no + self.context_window)
+        return "\n".join(lines[start:end])

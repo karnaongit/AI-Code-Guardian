@@ -39,6 +39,13 @@ class Finding:
     A single security finding. `to_dict()` output is intentionally flat
     and stable so it can feed directly into the Day-7 Risk Scorer and the
     Streamlit dashboard without transformation.
+
+    Fields after `tainted` were added by the UST/evidence refactor. They
+    are all optional with inert defaults, so every pre-existing detector
+    and reporter keeps working untouched; detectors that DO have the
+    information (language, enclosing function, supporting evidence IDs,
+    provenance) populate them so reports can explain *why* a finding
+    exists and whether a human or a model asserted it.
     """
     category: str
     severity: str
@@ -51,12 +58,27 @@ class Finding:
     owasp: Optional[str] = None
     confidence: float = 0.9          # detector self-reported confidence (0-1)
     tainted: bool = False            # True if confirmed via data-flow tracing
+
+    # -- provenance / explainability (UST + evidence refactor) ----------
+    language: str = ""
+    function: str = ""               # enclosing function/method when known
+    end_line: int = 0
+    column: int = 0
+    evidence_ids: list[str] = field(default_factory=list)
+    source: str = "DETERMINISTIC"    # DETERMINISTIC | AI_VALIDATED | AI_SUGGESTED
+    reason: str = ""                 # why this was raised, in one sentence
+    engine: str = ""                 # producing engine name
+
     finding_id: str = field(default="", init=False)
 
     def __post_init__(self):
         # Stable SHA-1 id for dedup across incremental scans (Day 4 design).
         basis = f"{self.file}:{self.line}:{self.category}:{self.rule_id}"
         self.finding_id = hashlib.sha1(basis.encode()).hexdigest()[:16]
+
+    @property
+    def is_ai(self) -> bool:
+        return self.source.startswith("AI")
 
     def to_dict(self) -> dict:
         return asdict(self) | {"finding_id": self.finding_id}

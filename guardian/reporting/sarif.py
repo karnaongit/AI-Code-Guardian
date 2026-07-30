@@ -38,17 +38,39 @@ class SarifReporter:
                     "help": {"text": f.get("recommendation", "")},
                     "properties": {"cwe": f.get("cwe"), "owasp": f.get("owasp")},
                 })
+            source = f.get("source", "DETERMINISTIC")
+            message = f"{f.get('category')}: {f.get('reason') or f.get('recommendation', '')}"
+            if source != "DETERMINISTIC":
+                # Reviewers must be able to tell a contextual AI claim from a
+                # proven detection without opening another report.
+                message = f"[{source}] {message}"
+
             results.append({
                 "ruleId": rule_id,
                 "ruleIndex": rules_index[rule_id],
                 "level": _SEVERITY_TO_LEVEL.get(f.get("severity", "Medium"), "warning"),
-                "message": {"text": f"{f.get('category')}: {f.get('recommendation', '')}"},
+                "message": {"text": message},
                 "partialFingerprints": {"guardianFindingId": f.get("finding_id", "")},
+                "properties": {
+                    "source": source,
+                    "engine": f.get("engine", ""),
+                    "language": f.get("language", ""),
+                    "function": f.get("function", ""),
+                    "confidence": f.get("confidence", 0.0),
+                    "tainted": f.get("tainted", False),
+                    "evidenceIds": f.get("evidence_ids", []),
+                    "recommendation": f.get("recommendation", ""),
+                },
                 "locations": [{
                     "physicalLocation": {
                         "artifactLocation": {"uri": f.get("file", "")},
-                        "region": {"startLine": max(1, int(f.get("line", 1))),
-                                   "snippet": {"text": f.get("snippet", "")}},
+                        "region": {
+                            "startLine": max(1, int(f.get("line", 1))),
+                            **({"endLine": int(f["end_line"])}
+                               if f.get("end_line") and int(f["end_line"]) >= int(f.get("line", 1))
+                               else {}),
+                            "snippet": {"text": f.get("snippet", "")},
+                        },
                     }
                 }],
             })
