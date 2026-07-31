@@ -34,11 +34,7 @@ try:
 except ImportError:
     _YAML_AVAILABLE = False
 
-try:
-    import pandas as pd
-    _PANDAS_AVAILABLE = True
-except ImportError:
-    _PANDAS_AVAILABLE = False
+from guardian.compat_pandas import pd, PANDAS_AVAILABLE as _PANDAS_AVAILABLE
 
 
 # ---------------------------------------------------------------------------
@@ -161,9 +157,13 @@ def _parse_xlsx(path: Path) -> list[Requirement]:
 
 
 def _parse_csv(path: Path) -> list[Requirement]:
-    if not _PANDAS_AVAILABLE:
-        raise ImportError("pandas required for CSV loading. pip install pandas")
-    df = pd.read_csv(path, encoding="utf-8", encoding_errors="replace").fillna("")
+    if _PANDAS_AVAILABLE and hasattr(pd, "read_csv"):
+        df = pd.read_csv(path, encoding="utf-8", encoding_errors="replace").fillna("")
+        return _df_to_requirements(df, path.stem, "csv")
+    import csv
+    with path.open("r", encoding="utf-8", errors="replace") as f:
+        reader = list(csv.DictReader(f))
+    df = pd.DataFrame(reader)
     return _df_to_requirements(df, path.stem, "csv")
 
 

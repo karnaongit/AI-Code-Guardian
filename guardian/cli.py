@@ -158,7 +158,7 @@ def main(argv: list[str] | None = None) -> int:
             print(f"  ! no reporter registered for {fmt}", file=sys.stderr)
             continue
         out = out_dir / f"guardian_report{reporter.file_extension}"
-        out.write_text(reporter.render(report))
+        out.write_text(reporter.render(report), encoding="utf-8")
         print(f"Report:       {out}")
 
     # CI gate

@@ -69,6 +69,13 @@ class Finding:
     reason: str = ""                 # why this was raised, in one sentence
     engine: str = ""                 # producing engine name
 
+    # -- reachability & AI reasoning enhancements -----------------------
+    is_exploitable: bool = False     # True if untrusted input reaches vulnerable sink
+    exploitability_score: float = 0.0 # 0.0 - 1.0 likelihood score
+    exploit_scenario: str = ""      # Short description of attack vector/payload
+    business_impact: str = ""       # Financial/compliance risk summary
+    remediation_patch: str = ""     # AST-safe diff or recommended fix code
+
     finding_id: str = field(default="", init=False)
 
     def __post_init__(self):
@@ -91,6 +98,7 @@ class ScanResult:
     findings: list[Finding] = field(default_factory=list)
     started_at: float = field(default_factory=time.time)
     finished_at: Optional[float] = None
+    scan_mode: str = "precision"
 
     def finish(self):
         self.finished_at = time.time()
@@ -99,6 +107,25 @@ class ScanResult:
     def duration_seconds(self) -> float:
         end = self.finished_at or time.time()
         return round(end - self.started_at, 3)
+
+    @property
+    def total_alerts(self) -> int:
+        return len(self.findings)
+
+    @property
+    def exploitable_count(self) -> int:
+        return sum(1 for f in self.findings if f.is_exploitable)
+
+    @property
+    def high_priority_count(self) -> int:
+        return sum(1 for f in self.findings if f.severity in (Severity.CRITICAL.value, Severity.HIGH.value))
+
+    @property
+    def immediate_risk_count(self) -> int:
+        return sum(
+            1 for f in self.findings
+            if f.is_exploitable and f.severity in (Severity.CRITICAL.value, Severity.HIGH.value)
+        )
 
     @property
     def counts_by_severity(self) -> dict:
@@ -117,9 +144,16 @@ class ScanResult:
     def to_dict(self) -> dict:
         return {
             "target": self.target,
+            "scan_mode": self.scan_mode,
             "files_scanned": self.files_scanned,
             "duration_seconds": self.duration_seconds,
             "total_findings": len(self.findings),
+            "funnel_metrics": {
+                "total_alerts": self.total_alerts,
+                "exploitable_count": self.exploitable_count,
+                "high_priority_count": self.high_priority_count,
+                "immediate_risk_count": self.immediate_risk_count,
+            },
             "by_severity": self.counts_by_severity,
             "by_category": self.counts_by_category,
             "findings": [f.to_dict() for f in self.findings],

@@ -228,4 +228,4 @@ discovery and classification, structured LLM parsing, invalid-evidence and
 hallucination rejection, API and RAG failure, unsupported languages,
 malformed sources and mixed-language repositories.
 
-See `ARCHITECTURE.md` for the full design.
+See `docs/ARCHITECTURE.md` for the full design.

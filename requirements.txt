@@ -1,6 +1,11 @@
 # ── Core (required) ──────────────────────────────────────────────────────
 pyyaml>=6.0
 
+# ── Database & Persistence ────────────────────────────────────────────────
+sqlmodel>=0.0.14
+asyncpg>=0.28.0
+pgvector>=0.2.0
+
 # ── Tree-sitter parsing foundation (multi-language UST) ──────────────────
 # The UST degrades to stdlib-AST (Python) and regex (all languages) when
 # these are absent, so a scan still works — with lower confidence and

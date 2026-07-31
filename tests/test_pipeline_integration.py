@@ -364,6 +364,7 @@ class TestResilience:
 
     def test_ai_enabled_without_credentials_still_completes(self, tmp_path, monkeypatch):
         monkeypatch.delenv("NVIDIA_API_KEY", raising=False)
+        monkeypatch.setattr("guardian.llm.config.load_dotenv", lambda *a, **kw: 0)
         (tmp_path / "a.py").write_text(
             "def f(user_input):\n    cursor.execute('S ' + user_input)\n")
         cfg = GuardianConfig()

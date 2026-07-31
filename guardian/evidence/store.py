@@ -4,27 +4,25 @@ Shared Evidence Store
 The repository-level source of truth. Every deterministic engine
 publishes here; every reasoning layer reads from here.
 
-Why this exists
----------------
-Before this, each module built its own prompt and shipped whatever
-source it liked to the LLM. That made cost unbounded, grounding
-impossible to verify, and hallucinations undetectable. With a store:
-
-  * evidence IDs are stable and quotable, so an AI claim can be checked
-    mechanically ("does E102 exist, and does it say what you claim?");
-  * selection is explicit — a reasoning task asks for the few evidence
-    items it needs rather than dumping a repository;
-  * deduplication is centralised, so two engines observing the same line
-    do not double-count into the risk score.
+Integrated with PostgreSQL + pgvector persistence when active,
+with unconditional in-memory fallback for offline/unit test execution.
 """
 from __future__ import annotations
 
+import asyncio
 import logging
 import threading
 from collections import defaultdict
 from typing import Iterable, Iterator, Optional
 
 from guardian.evidence.models import Evidence, EvidenceType
+
+try:
+    from guardian.db.models import EvidenceItemTable
+    from guardian.db.session import get_async_session, is_postgres_available
+    HAS_DB_MODULE = True
+except ImportError:
+    HAS_DB_MODULE = False
 
 log = logging.getLogger(__name__)
 
@@ -41,6 +39,41 @@ class EvidenceStore:
         self._by_source: dict[str, list[str]] = defaultdict(list)
         self._counter = 0
         self._lock = threading.Lock()
+
+    def _sync_to_postgres(self, evidence: Evidence) -> None:
+        """Helper to asynchronously persist evidence to Postgres if available."""
+        if not HAS_DB_MODULE:
+            return
+
+        async def _save():
+            if await is_postgres_available():
+                session_factory = get_async_session()
+                async with session_factory() as session:
+                    db_item = EvidenceItemTable(
+                        file_path=evidence.file or "",
+                        line_start=evidence.line or 0,
+                        line_end=evidence.end_line or evidence.line or 0,
+                        ast_node_type=evidence.type.value if hasattr(evidence.type, "value") else str(evidence.type),
+                        snippet=evidence.snippet or "",
+                        evidence_key=evidence.id,
+                        evidence_type=evidence.type.value if hasattr(evidence.type, "value") else str(evidence.type),
+                        source=evidence.source or "",
+                        symbol=evidence.symbol or "",
+                        operation=evidence.operation or "",
+                        confidence=evidence.confidence,
+                        fingerprint=evidence.fingerprint or "",
+                    )
+                    session.add(db_item)
+                    await session.commit()
+
+        try:
+            loop = asyncio.get_event_loop()
+            if loop.is_running():
+                loop.create_task(_save())
+            else:
+                loop.run_until_complete(_save())
+        except Exception as e:
+            log.debug(f"Async DB persistence skipped/failed: {e}")
 
     # -- publication ----------------------------------------------------
     def add(self, evidence: Evidence) -> Evidence:
@@ -59,7 +92,13 @@ class EvidenceStore:
             if evidence.file:
                 self._by_file[evidence.file].append(evidence.id)
             self._by_source[evidence.source].append(evidence.id)
+
+            self._sync_to_postgres(evidence)
             return evidence
+
+    def add_evidence(self, evidence: Evidence) -> Evidence:
+        """Alias for add() for signature compatibility."""
+        return self.add(evidence)
 
     def add_many(self, items: Iterable[Evidence]) -> list[Evidence]:
         return [self.add(e) for e in items]
@@ -67,6 +106,10 @@ class EvidenceStore:
     # -- lookup ---------------------------------------------------------
     def get(self, evidence_id: str) -> Optional[Evidence]:
         return self._items.get(evidence_id)
+
+    def get_evidence(self, evidence_id: str) -> Optional[Evidence]:
+        """Alias for get() for signature compatibility."""
+        return self.get(evidence_id)
 
     def exists(self, evidence_id: str) -> bool:
         return evidence_id in self._items
@@ -129,6 +172,20 @@ class EvidenceStore:
             out.append(e)
         out.sort(key=lambda e: (-e.confidence, e.file, e.line))
         return out[:limit] if limit else out
+
+    def query(self, **kwargs) -> list[Evidence]:
+        """Alias for search() for signature compatibility."""
+        return self.search(**kwargs)
+
+    def clear(self) -> None:
+        """Clear all stored evidence items."""
+        with self._lock:
+            self._items.clear()
+            self._by_fingerprint.clear()
+            self._by_type.clear()
+            self._by_file.clear()
+            self._by_source.clear()
+            self._counter = 0
 
     # -- introspection ---------------------------------------------------
     def __len__(self) -> int:

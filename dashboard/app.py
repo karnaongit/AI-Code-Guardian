@@ -15,6 +15,7 @@ Run with: streamlit run dashboard/app.py
 """
 from __future__ import annotations
 
+import csv
 import io
 import json
 import os
@@ -28,12 +29,168 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-import pandas as pd
 import streamlit as st
 
 from guardian.config import GuardianConfig
 from guardian.core.pipeline import ScanPipeline
 from guardian.core.registry import load_builtin_plugins
+
+def _to_csv(records: list[dict]) -> str:
+    if not records:
+        return ""
+    out = io.StringIO()
+    if isinstance(records[0], dict):
+        fieldnames = list(records[0].keys())
+        writer = csv.DictWriter(out, fieldnames=fieldnames)
+        writer.writeheader()
+        writer.writerows(records)
+    else:
+        writer = csv.writer(out)
+        for row in records:
+            writer.writerow([row] if not isinstance(row, (list, tuple)) else row)
+    return out.getvalue()
+
+def st_dataframe(data, use_container_width=True, height=None):
+    if not data:
+        st.caption("No data.")
+        return
+    if isinstance(data, dict):
+        data = [{"Key": k, "Value": v} for k, v in data.items()]
+    if not isinstance(data, list):
+        return
+    keys = list(data[0].keys()) if data and isinstance(data[0], dict) else ["Value"]
+    html = ["<div style='max-height: 500px; overflow-y: auto; border: 1px solid #e6e6e6; border-radius: 4px;'>"]
+    html.append("<table style='width:100%; border-collapse: collapse; font-size: 14px;'>")
+    html.append("<thead><tr style='background-color: #f8f9fa; border-bottom: 2px solid #dee2e6;'>")
+    for k in keys:
+        html.append(f"<th style='padding: 10px; text-align: left; position: sticky; top: 0; background-color: #f8f9fa;'>{k}</th>")
+    html.append("</tr></thead><tbody>")
+    for row in data:
+        html.append("<tr style='border-bottom: 1px solid #eee;'>")
+        if isinstance(row, dict):
+            for k in keys:
+                val = row.get(k, '')
+                if val is None: val = ''
+                html.append(f"<td style='padding: 8px;'>{val}</td>")
+        else:
+            val = row if row is not None else ''
+            html.append(f"<td style='padding: 8px;'>{val}</td>")
+        html.append("</tr>")
+    html.append("</tbody></table></div>")
+    st.markdown("".join(html), unsafe_allow_html=True)
+
+def st_bar_chart(data: dict):
+    if not data:
+        return
+    if isinstance(data, list) and isinstance(data[0], dict):
+        # if it's a list of dicts with single key
+        pass
+    max_val = max((v for v in data.values() if isinstance(v, (int, float))), default=1)
+    if max_val == 0: max_val = 1
+    html = ["<div style='margin-top: 10px; margin-bottom: 20px;'>"]
+    for k, v in data.items():
+        if not isinstance(v, (int, float)): continue
+        width = int((v / max_val) * 100)
+        html.append(f"<div style='display: flex; align-items: center; margin-bottom: 8px;'>")
+        html.append(f"<div style='width: 140px; font-size: 13px; text-overflow: ellipsis; overflow: hidden; white-space: nowrap; padding-right: 10px;'>{k}</div>")
+        html.append(f"<div style='flex-grow: 1; background: #f0f2f6; height: 24px; border-radius: 4px; overflow: hidden;'>")
+        html.append(f"<div style='width: {width}%; background: #ff4b4b; height: 100%; border-radius: 4px;'></div>")
+        html.append("</div>")
+        html.append(f"<div style='width: 40px; text-align: right; font-size: 13px; font-weight: 600; padding-left: 10px;'>{v}</div>")
+        html.append("</div>")
+    html.append("</div>")
+    st.markdown("".join(html), unsafe_allow_html=True)
+
+def _get_file_icon(filename: str) -> str:
+    ext = filename.split(".")[-1].lower() if "." in filename else ""
+    return {
+        "py": "🐍",
+        "java": "☕",
+        "js": "📜",
+        "jsx": "📜",
+        "ts": "🟦",
+        "tsx": "🟦",
+        "rs": "🦀",
+        "json": "⚙️",
+        "yaml": "⚙️",
+        "yml": "⚙️",
+        "md": "📄",
+        "txt": "📝",
+        "zip": "📦",
+        "xml": "📋",
+        "html": "🌐",
+        "css": "🎨"
+    }.get(ext, "📄")
+
+def _render_sidebar_explorer(report: dict | None, scanned_files: list[str]):
+    st.sidebar.header("📁 Repository Explorer")
+    
+    if not scanned_files and report:
+        findings = report.get("scan", {}).get("findings", [])
+        evidence_items = report.get("evidence_items", [])
+        scanned_files = sorted(list({f.get("file").replace("\\", "/") for f in findings if f.get("file")} |
+                                   {e.get("file").replace("\\", "/") for e in evidence_items if e.get("file")}))
+
+    if not scanned_files:
+        st.sidebar.info("⬆️ Upload code or enter a GitHub repository URL to inspect directory structure and files.")
+        return
+
+    # Build finding severity lookup per file
+    finding_severities = {}
+    order = {"Critical": 0, "High": 1, "Medium": 2, "Low": 3, "Info": 4}
+    if report:
+        for f in report.get("scan", {}).get("findings", []):
+            fp = f.get("file", "").replace("\\", "/")
+            if fp:
+                sev = f.get("severity", "Info")
+                if fp not in finding_severities or order.get(sev, 5) < order.get(finding_severities[fp], 5):
+                    finding_severities[fp] = sev
+
+    # Overview stats in sidebar
+    st.sidebar.caption(f"📊 **{len(scanned_files)}** files scanned in repository")
+    
+    search_q = st.sidebar.text_input("🔍 Search files...", key="sidebar_file_search", placeholder="e.g. app.py, Auth.java")
+    filter_text = search_q.strip().lower()
+
+    # Organize files into directory tree
+    tree = {}
+    for path in scanned_files:
+        clean_path = path.replace("\\", "/").strip("/")
+        if not clean_path: continue
+        parts = clean_path.split("/")
+        curr = tree
+        for part in parts[:-1]:
+            if part not in curr or not isinstance(curr[part], dict):
+                curr[part] = {}
+            curr = curr[part]
+        curr[parts[-1]] = clean_path
+
+    def _render_dict(d: dict):
+        for name, val in sorted(d.items(), key=lambda x: (not isinstance(x[1], dict), x[0].lower())):
+            if isinstance(val, dict):
+                # Subdirectory
+                if filter_text:
+                    def _matches(subd):
+                        for k, v in subd.items():
+                            if isinstance(v, dict) and _matches(v): return True
+                            if isinstance(v, str) and filter_text in v.lower(): return True
+                        return False
+                    if not _matches(val):
+                        continue
+                with st.sidebar.expander(f"📁 {name}/", expanded=bool(filter_text)):
+                    _render_dict(val)
+            else:
+                rel_path = val
+                if filter_text and filter_text not in rel_path.lower():
+                    continue
+                icon = _get_file_icon(name)
+                badge = ""
+                if rel_path in finding_severities:
+                    s = finding_severities[rel_path]
+                    badge = " 🔴" if s in ("Critical", "High") else (" 🟡" if s in ("Medium", "Low") else " 🔵")
+                st.sidebar.markdown(f"<div style='font-size: 13px; margin-left: 6px; font-family: monospace;'>{icon} {name}{badge}</div>", unsafe_allow_html=True)
+
+    _render_dict(tree)
 
 # ─── Page config ────────────────────────────────────────────────────────────
 st.set_page_config(page_title="AI Code Guardian", layout="wide", page_icon="🛡️")
@@ -257,18 +414,15 @@ def _build_results_zip(report: dict) -> bytes:
 
         findings = report.get("scan", {}).get("findings", [])
         if findings:
-            zf.writestr(f"{root}/all_findings.csv",
-                        pd.DataFrame(findings).to_csv(index=False))
+            zf.writestr(f"{root}/all_findings.csv", _to_csv(findings))
 
         evidence = report.get("evidence_items", [])
         if evidence:
-            zf.writestr(f"{root}/evidence.csv",
-                        pd.DataFrame(evidence).to_csv(index=False))
+            zf.writestr(f"{root}/evidence.csv", _to_csv(evidence))
 
         cbom = report.get("quantum")
         if cbom and cbom.get("entries"):
-            zf.writestr(f"{root}/quantum_cbom.csv",
-                        pd.DataFrame(cbom["entries"]).to_csv(index=False))
+            zf.writestr(f"{root}/quantum_cbom.csv", _to_csv(cbom["entries"]))
 
         bi = report.get("business_intent")
         if bi:
@@ -276,9 +430,9 @@ def _build_results_zip(report: dict) -> bytes:
                         json.dumps(bi, indent=2, default=str))
             if bi.get("verdicts"):
                 zf.writestr(f"{root}/business_intent_verdicts.csv",
-                            pd.DataFrame([{k: v for k, v in row.items()
-                                           if k != "implementations"}
-                                          for row in bi["verdicts"]]).to_csv(index=False))
+                            _to_csv([{k: v for k, v in row.items()
+                                     if k != "implementations"}
+                                    for row in bi["verdicts"]]))
 
         zf.writestr(f"{root}/executive_summary.txt", _executive_summary(report))
 
@@ -335,11 +489,11 @@ def _executive_summary(report: dict) -> str:
     return "\n".join(lines)
 
 
-def _findings_frame(findings: list[dict]) -> pd.DataFrame:
+def _findings_frame(findings: list[dict]) -> list[dict]:
     """Findings table with provenance and evidence columns."""
     if not findings:
-        return pd.DataFrame()
-    return pd.DataFrame([{
+        return []
+    return [{
         "Severity": f.get("severity", ""),
         "Source": {"DETERMINISTIC": "Static",
                    "AI_VALIDATED": "AI-validated",
@@ -354,7 +508,7 @@ def _findings_frame(findings: list[dict]) -> pd.DataFrame:
         "Evidence": ", ".join(f.get("evidence_ids", []) or []),
         "Confidence": f.get("confidence", 0.0),
         "Rule": f.get("rule_id") or "",
-    } for f in findings])
+    } for f in findings]
 
 
 # ═══════════════════════════════════════════════════════════════════════════
@@ -376,7 +530,9 @@ if run_btn and (code_files or github_url.strip()):
         code_dir.mkdir()
         with st.spinner("📦 Preparing code repository..."):
             _save_uploaded_code(code_files or [], code_dir, github_url.strip())
-            st.toast(f"✅ {len(list(code_dir.rglob('*')))} files ready")
+            scanned_files = sorted([str(p.relative_to(code_dir)).replace("\\", "/") for p in code_dir.rglob("*") if p.is_file()])
+            st.session_state["scanned_files"] = scanned_files
+            st.toast(f"✅ {len(scanned_files)} files ready")
 
         req_paths: list[Path] = []
         if req_files:
@@ -391,7 +547,7 @@ if run_btn and (code_files or github_url.strip()):
                 req_paths.append(saved_policy)
 
         cfg = GuardianConfig.load()
-        cfg.enable_ai = bool(st.session_state.get("enable_ai", False))
+        cfg.enable_ai = True
 
         with st.spinner("🔬 Building unified syntax tree and running all engines..."):
             report = ScanPipeline(cfg).scan(
@@ -414,13 +570,7 @@ if run_btn and (code_files or github_url.strip()):
 # ═══════════════════════════════════════════════════════════════════════════
 # RENDER RESULTS
 # ═══════════════════════════════════════════════════════════════════════════
-st.sidebar.header("⚙️ Analysis Options")
-st.sidebar.checkbox(
-    "Enable NVIDIA Nemotron contextual reasoning",
-    key="enable_ai",
-    help="Adds contextual analysis on top of deterministic results. "
-         "Requires NVIDIA_API_KEY. Deterministic findings are identical "
-         "whether this is on or off.")
+_render_sidebar_explorer(st.session_state.get("report"), st.session_state.get("scanned_files", []))
 
 if "report" not in st.session_state:
     st.info("⬆️ Upload code (or supply a GitHub URL) and run a scan to see results.")
@@ -473,14 +623,16 @@ with tab_overview:
         st.markdown("**Findings by severity**")
         by_sev = scan.get("by_severity") or {}
         if by_sev:
-            st.bar_chart(pd.Series(by_sev))
+            st_bar_chart(by_sev)
         else:
             st.caption("No findings.")
         st.markdown("**Findings by provenance**")
-        provenance = pd.Series([f.get("source", "DETERMINISTIC") for f in findings]).value_counts() \
-            if findings else pd.Series(dtype=int)
-        if not provenance.empty:
-            st.bar_chart(provenance)
+        prov_counts = {}
+        for f in findings:
+            src = f.get("source", "DETERMINISTIC")
+            prov_counts[src] = prov_counts.get(src, 0) + 1
+        if prov_counts:
+            st_bar_chart(prov_counts)
 
     with right:
         ust = report.get("ust") or {}
@@ -488,7 +640,7 @@ with tab_overview:
         st.caption(f"{ust.get('nodes', 0)} nodes across {ust.get('files', 0)} files · "
                    f"{ust.get('parse_failures', 0)} parse failures")
         if ust.get("languages"):
-            st.bar_chart(pd.Series(ust["languages"]))
+            st_bar_chart(ust["languages"])
         st.caption(f"Parsers used: {ust.get('parsers', {})}")
 
         evidence = report.get("evidence") or {}
@@ -496,13 +648,14 @@ with tab_overview:
         st.caption(f"{evidence.get('total', 0)} observations published by "
                    f"{len(evidence.get('by_source', {}))} detectors")
         if evidence.get("by_type"):
-            st.dataframe(pd.Series(evidence["by_type"], name="count"),
+            st_dataframe([{"Observation Type": k, "Count": v}
+                          for k, v in evidence["by_type"].items()],
                          use_container_width=True)
 
     if report.get("errors"):
         st.warning(f"⚠️ {len(report['errors'])} stage(s) failed and were skipped — "
                    f"results below are partial but valid.")
-        st.dataframe(pd.DataFrame(report["errors"]), use_container_width=True)
+        st_dataframe(report["errors"], use_container_width=True)
 
 
 # ── Security ─────────────────────────────────────────────────────────────────
@@ -534,7 +687,7 @@ with tab_sec:
                     if f.get("severity") in severities
                     and f.get("source") in sources
                     and (not languages or f.get("language") in languages)]
-        st.dataframe(_findings_frame(filtered), use_container_width=True, height=420)
+        st_dataframe(_findings_frame(filtered), use_container_width=True, height=420)
 
         st.divider()
         st.markdown("#### 🔍 Explain a finding")
@@ -555,13 +708,13 @@ with tab_sec:
                 cited = [store[i] for i in evidence_ids if i in store]
                 if cited:
                     st.markdown("**Supporting evidence**")
-                    st.dataframe(pd.DataFrame([{
+                    st_dataframe([{
                         "ID": e["id"], "Type": e["type"], "Detector": e["source"],
                         "Location": f"{e['file']}:{e['line']}",
                         "Observation": e["operation"],
                         "Detail": (e.get("description") or "")[:300],
                         "Confidence": e["confidence"],
-                    } for e in cited]), use_container_width=True)
+                    } for e in cited], use_container_width=True)
             else:
                 st.caption("No evidence records attached (legacy pattern detector).")
 
@@ -584,7 +737,7 @@ with tab_bi:
         verdicts = bi.get("verdicts", [])
         if verdicts:
             st.markdown("#### Verdicts")
-            st.dataframe(pd.DataFrame([{
+            st_dataframe([{
                 "Verdict": v["verdict"].replace("_", " ").title(),
                 "Policy": v["policy"],
                 "Requirement": (v.get("requirement") or "")[:180],
@@ -592,7 +745,7 @@ with tab_bi:
                     f"{i['function']}() @ {i['file']}:{i['line']}"
                     for i in v.get("implementations", [])) or "—",
                 "Control missing in": ", ".join(v.get("missing_control_in", []) or []) or "—",
-            } for v in verdicts]), use_container_width=True)
+            } for v in verdicts], use_container_width=True)
 
             st.markdown("#### Observed behaviour")
             st.caption("What the code actually does, read from the unified syntax "
@@ -614,16 +767,16 @@ with tab_bi:
         bi_findings = [f for f in findings if f.get("category") == "Business Intent Violation"]
         if bi_findings:
             st.markdown("#### Findings")
-            st.dataframe(_findings_frame(bi_findings), use_container_width=True)
+            st_dataframe(_findings_frame(bi_findings), use_container_width=True)
 
         if policies.get("policies"):
             with st.expander("📋 Extracted policies (structured from your requirements)"):
-                st.dataframe(pd.DataFrame([{
+                st_dataframe([{
                     "ID": p["policy_id"], "Action": p["action"],
                     "Required control": p["required_control"],
                     "Detail": p["control_detail"], "Condition": p["condition_text"],
                     "Testable": p["checkable"], "Source": p["source_text"][:140],
-                } for p in policies["policies"]]), use_container_width=True)
+                } for p in policies["policies"]], use_container_width=True)
 
 
 # ── Quantum ──────────────────────────────────────────────────────────────────
@@ -653,7 +806,7 @@ with tab_q:
                   "unknown": "⚪ Unresolved",
                   "quantum_safe": "🟢 Adequate today",
                   "post_quantum": "🔵 Post-quantum"}
-        st.dataframe(pd.DataFrame([{
+        st_dataframe([{
             "Algorithm": e["algorithm"],
             "Status": labels.get(e["status"], e["status"]),
             "Uses": e["occurrences"],
@@ -663,12 +816,11 @@ with tab_q:
             "NIST standard": e.get("nist_standard") or "—",
             "Rationale": e.get("rationale", "")[:200],
             "Evidence": ", ".join(e.get("evidence_ids", [])[:6]),
-        } for e in cbom["entries"]]), use_container_width=True)
+        } for e in cbom["entries"]], use_container_width=True)
 
         if cbom.get("crypto_dependencies"):
             with st.expander("📦 Cryptographic libraries in use"):
-                st.dataframe(pd.DataFrame(cbom["crypto_dependencies"]),
-                             use_container_width=True)
+                st_dataframe(cbom["crypto_dependencies"], use_container_width=True)
 
         contextual = cbom.get("contextual_analysis") or {}
         if contextual.get("status") == "analyzed":
@@ -680,7 +832,7 @@ with tab_q:
                           if f.get("category") == "Quantum Readiness"
                           and f.get("source", "").startswith("AI")]
             if quantum_ai:
-                st.dataframe(_findings_frame(quantum_ai), use_container_width=True)
+                st_dataframe(_findings_frame(quantum_ai), use_container_width=True)
             else:
                 st.caption("No contextual claims survived evidence validation.")
         elif contextual.get("status") in ("unavailable", "skipped"):
@@ -693,7 +845,7 @@ with tab_q:
             st.caption("Informational: using RSA/ECC today is a migration-planning "
                        "item, not a present-day vulnerability, so these do not drive "
                        "the security score.")
-            st.dataframe(_findings_frame(inventory), use_container_width=True)
+            st_dataframe(_findings_frame(inventory), use_container_width=True)
 
 
 # ── Dependencies ─────────────────────────────────────────────────────────────
@@ -710,7 +862,7 @@ with tab_dep:
                    f"{report.get('discovery', {}).get('manifest_files', 0)} manifest file(s).")
     else:
         st.metric("Dependency findings", len(dep_findings))
-        st.dataframe(_findings_frame(dep_findings), use_container_width=True)
+        st_dataframe(_findings_frame(dep_findings), use_container_width=True)
 
 
 # ── Infrastructure as Code ───────────────────────────────────────────────────
@@ -728,7 +880,7 @@ with tab_iac:
                    f"infrastructure file(s).")
     else:
         st.metric("IaC findings", len(iac_findings))
-        st.dataframe(_findings_frame(iac_findings), use_container_width=True)
+        st_dataframe(_findings_frame(iac_findings), use_container_width=True)
 
 
 # ── Risk ─────────────────────────────────────────────────────────────────────
@@ -738,11 +890,11 @@ with tab_risk:
     if dimensions:
         st.markdown("#### Dimensions and weights")
         weights = dimensions.get("weights", {})
-        st.dataframe(pd.DataFrame([{
+        st_dataframe([{
             "Dimension": name.replace("_", " ").title(),
             "Score": dimensions.get(name),
             "Weight": weights.get(name, "—"),
-        } for name in weights] or []), use_container_width=True)
+        } for name in weights] or [], use_container_width=True)
 
     contribution = risk.get("ai_contribution") or {}
     if contribution:
@@ -757,7 +909,7 @@ with tab_risk:
         st.markdown("#### Per-finding scores")
         st.caption("Every input is shown so a score can be argued with rather "
                    "than merely accepted.")
-        st.dataframe(pd.DataFrame([{
+        st_dataframe([{
             "Category": d.get("category"),
             "Severity": d.get("severity"),
             "Source": d.get("source"),
@@ -770,7 +922,7 @@ with tab_risk:
             "Source multiplier": d.get("source_multiplier"),
             "Evidence": d.get("evidence_count"),
             "Notes": "; ".join(d.get("notes", [])),
-        } for d in finding_risks]), use_container_width=True, height=380)
+        } for d in finding_risks], use_container_width=True, height=380)
 
 
 # ── Recommendations ──────────────────────────────────────────────────────────
@@ -808,12 +960,12 @@ with tab_rec:
                      if e.get("status") in ("quantum_vulnerable", "classically_broken")]
         if migration:
             st.markdown("#### 🔄 Cryptographic migration plan")
-            st.dataframe(pd.DataFrame([{
+            st_dataframe([{
                 "Algorithm": e["algorithm"], "Uses": e["occurrences"],
                 "Migrate to": e.get("migration_target"),
                 "Standard": e.get("nist_standard"),
                 "Files": ", ".join(e.get("files", [])[:3]),
-            } for e in migration]), use_container_width=True)
+            } for e in migration], use_container_width=True)
 
 
 # ── Reports ──────────────────────────────────────────────────────────────────
@@ -848,12 +1000,12 @@ with tab_rep:
     with st.expander("🧾 Evidence store (the basis for every finding)"):
         evidence_items = report.get("evidence_items", [])
         if evidence_items:
-            st.dataframe(pd.DataFrame([{
+            st_dataframe([{
                 "ID": e["id"], "Type": e["type"], "Detector": e["source"],
                 "Location": f"{e['file']}:{e['line']}" if e.get("file") else "",
                 "Symbol": e.get("symbol", ""), "Observation": e.get("operation", ""),
                 "Confidence": e.get("confidence"),
-            } for e in evidence_items]), use_container_width=True, height=380)
+            } for e in evidence_items], use_container_width=True, height=380)
         else:
             st.caption("No evidence recorded.")
 

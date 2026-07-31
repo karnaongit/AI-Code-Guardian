@@ -24,6 +24,90 @@
               }
             },
             {
+              "id": "JS-SQL ",
+              "name": "SQL Injection",
+              "shortDescription": {
+                "text": "SQL Injection"
+              },
+              "help": {
+                "text": "Mitigate SQL Injection using secure input validation, parameterization, and context-aware escaping."
+              },
+              "properties": {
+                "cwe": null,
+                "owasp": null
+              }
+            },
+            {
+              "id": "JS-INSE",
+              "name": "Insecure Random",
+              "shortDescription": {
+                "text": "Insecure Random"
+              },
+              "help": {
+                "text": "Mitigate Insecure Random using secure input validation, parameterization, and context-aware escaping."
+              },
+              "properties": {
+                "cwe": null,
+                "owasp": null
+              }
+            },
+            {
+              "id": "JS-XSS",
+              "name": "XSS",
+              "shortDescription": {
+                "text": "XSS"
+              },
+              "help": {
+                "text": "Mitigate XSS using secure input validation, parameterization, and context-aware escaping."
+              },
+              "properties": {
+                "cwe": null,
+                "owasp": null
+              }
+            },
+            {
+              "id": "UST-EVAL-001",
+              "name": "Code Injection",
+              "shortDescription": {
+                "text": "Code Injection"
+              },
+              "help": {
+                "text": "Remove dynamic evaluation of untrusted input; use an explicit parser or a mapping of permitted operations."
+              },
+              "properties": {
+                "cwe": "CWE-95",
+                "owasp": "A03:2021"
+              }
+            },
+            {
+              "id": "JS-EVAL",
+              "name": "Eval Injection",
+              "shortDescription": {
+                "text": "Eval Injection"
+              },
+              "help": {
+                "text": "Mitigate Eval Injection using secure input validation, parameterization, and context-aware escaping."
+              },
+              "properties": {
+                "cwe": null,
+                "owasp": null
+              }
+            },
+            {
+              "id": "SEC-007",
+              "name": "Path Traversal",
+              "shortDescription": {
+                "text": "Path Traversal"
+              },
+              "help": {
+                "text": "Resolve and canonicalise the path, then verify it stays inside the intended base directory before opening it."
+              },
+              "properties": {
+                "cwe": "CWE-22",
+                "owasp": "A01:2021"
+              }
+            },
+            {
               "id": "QNT-SHA-1",
               "name": "Quantum Migration Inventory",
               "shortDescription": {
@@ -105,7 +189,7 @@
             "text": "Hardcoded Secret: Mitigate Hardcoded Secret using secure coding practices."
           },
           "partialFingerprints": {
-            "guardianFindingId": "d0eb862b70fc7be3"
+            "guardianFindingId": "d72af22039ffc68c"
           },
           "properties": {
             "source": "DETERMINISTIC",
@@ -124,7 +208,43 @@
                   "uri": "dashboard\\app.py"
                 },
                 "region": {
-                  "startLine": 97,
+                  "startLine": 152,
+                  "snippet": {
+                    "text": "search_q = st.sidebar.text_input(\"\ud83d\udd0d Search files...\", key=\"sidebar_file_search\", placeholder=\"e.g. app.py, Auth.java\")"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "SEC-004",
+          "ruleIndex": 0,
+          "level": "error",
+          "message": {
+            "text": "Hardcoded Secret: Mitigate Hardcoded Secret using secure coding practices."
+          },
+          "partialFingerprints": {
+            "guardianFindingId": "720acb9cfa2b9546"
+          },
+          "properties": {
+            "source": "DETERMINISTIC",
+            "engine": "legacy:python",
+            "language": "python",
+            "function": "",
+            "confidence": 0.85,
+            "tainted": false,
+            "evidenceIds": [],
+            "recommendation": "Mitigate Hardcoded Secret using secure coding practices."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "dashboard\\app.py"
+                },
+                "region": {
+                  "startLine": 254,
                   "snippet": {
                     "text": "key=\"code_upload\","
                   }
@@ -141,7 +261,7 @@
             "text": "Hardcoded Secret: Mitigate Hardcoded Secret using secure coding practices."
           },
           "partialFingerprints": {
-            "guardianFindingId": "8437bde76bc4c705"
+            "guardianFindingId": "c44feb896148df70"
           },
           "properties": {
             "source": "DETERMINISTIC",
@@ -160,7 +280,7 @@
                   "uri": "dashboard\\app.py"
                 },
                 "region": {
-                  "startLine": 113,
+                  "startLine": 270,
                   "snippet": {
                     "text": "key=\"github_url_input\","
                   }
@@ -177,7 +297,7 @@
             "text": "Hardcoded Secret: Mitigate Hardcoded Secret using secure coding practices."
           },
           "partialFingerprints": {
-            "guardianFindingId": "82c531a640c1ea11"
+            "guardianFindingId": "1b80f1f9b371d43f"
           },
           "properties": {
             "source": "DETERMINISTIC",
@@ -196,7 +316,7 @@
                   "uri": "dashboard\\app.py"
                 },
                 "region": {
-                  "startLine": 127,
+                  "startLine": 284,
                   "snippet": {
                     "text": "key=\"req_upload\","
                   }
@@ -213,7 +333,7 @@
             "text": "Hardcoded Secret: Mitigate Hardcoded Secret using secure coding practices."
           },
           "partialFingerprints": {
-            "guardianFindingId": "160f607b8b70a721"
+            "guardianFindingId": "e192c385d3fe9138"
           },
           "properties": {
             "source": "DETERMINISTIC",
@@ -232,7 +352,7 @@
                   "uri": "dashboard\\app.py"
                 },
                 "region": {
-                  "startLine": 142,
+                  "startLine": 299,
                   "snippet": {
                     "text": "key=\"policy_upload\","
                   }
@@ -422,8 +542,997 @@
           ]
         },
         {
-          "ruleId": "QNT-SHA-1",
+          "ruleId": "JS-SQL ",
           "ruleIndex": 1,
+          "level": "error",
+          "message": {
+            "text": "SQL Injection: Mitigate SQL Injection using secure input validation, parameterization, and context-aware escaping."
+          },
+          "partialFingerprints": {
+            "guardianFindingId": "b04eddcafe3c16d1"
+          },
+          "properties": {
+            "source": "DETERMINISTIC",
+            "engine": "legacy:javascript",
+            "language": "javascript",
+            "function": "",
+            "confidence": 0.75,
+            "tainted": false,
+            "evidenceIds": [],
+            "recommendation": "Mitigate SQL Injection using secure input validation, parameterization, and context-aware escaping."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "frontend\\.next\\server\\app\\page.js"
+                },
+                "region": {
+                  "startLine": 107,
+                  "snippet": {
+                    "text": "eval(\"__webpack_require__.r(__webpack_exports__);\\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\\n/* harmony export */   \\\"default\\\": () => (/* binding */ Home)\\n/* harmony export "
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "SEC-004",
+          "ruleIndex": 0,
+          "level": "error",
+          "message": {
+            "text": "Hardcoded Secret: 'VALID_KEY_CHAR_RANGE' is assigned a high-entropy literal in source code."
+          },
+          "partialFingerprints": {
+            "guardianFindingId": "f00fff7be536780d"
+          },
+          "properties": {
+            "source": "DETERMINISTIC",
+            "engine": "security",
+            "language": "javascript",
+            "function": "\"(rsc)/./node_modules/@opentelemetry/api/build/esm/trace/internal/tracestate-validators.js\"",
+            "confidence": 0.85,
+            "tainted": false,
+            "evidenceIds": [
+              "E37"
+            ],
+            "recommendation": "Mitigate Hardcoded Secret using secure coding practices."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "frontend\\.next\\server\\vendor-chunks\\@opentelemetry.js"
+                },
+                "region": {
+                  "startLine": 390,
+                  "snippet": {
+                    "text": "eval(\"__webpack_require__.r(__webpack_exports__);\\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\\n/* harmony export */   validateKey: () => (/* binding */ validateKey),\\n/* harmony"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "JS-INSE",
+          "ruleIndex": 2,
+          "level": "note",
+          "message": {
+            "text": "Insecure Random: Mitigate Insecure Random using secure input validation, parameterization, and context-aware escaping."
+          },
+          "partialFingerprints": {
+            "guardianFindingId": "7a816ddbbf297483"
+          },
+          "properties": {
+            "source": "DETERMINISTIC",
+            "engine": "legacy:javascript",
+            "language": "javascript",
+            "function": "",
+            "confidence": 0.75,
+            "tainted": false,
+            "evidenceIds": [],
+            "recommendation": "Mitigate Insecure Random using secure input validation, parameterization, and context-aware escaping."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "frontend\\.next\\server\\vendor-chunks\\@xyflow.js"
+                },
+                "region": {
+                  "startLine": 20,
+                  "snippet": {
+                    "text": "eval(\"__webpack_require__.r(__webpack_exports__);\\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\\n/* harmony export */   Background: () => (/* binding */ Background),\\n/* harmony e"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "JS-INSE",
+          "ruleIndex": 2,
+          "level": "note",
+          "message": {
+            "text": "Insecure Random: Mitigate Insecure Random using secure input validation, parameterization, and context-aware escaping."
+          },
+          "partialFingerprints": {
+            "guardianFindingId": "0ddd227671078dc4"
+          },
+          "properties": {
+            "source": "DETERMINISTIC",
+            "engine": "legacy:javascript",
+            "language": "javascript",
+            "function": "",
+            "confidence": 0.75,
+            "tainted": false,
+            "evidenceIds": [],
+            "recommendation": "Mitigate Insecure Random using secure input validation, parameterization, and context-aware escaping."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "frontend\\.next\\server\\vendor-chunks\\next.js"
+                },
+                "region": {
+                  "startLine": 229,
+                  "snippet": {
+                    "text": "eval(\"/* module decorator */ module = __webpack_require__.nmd(module);\\n\\nObject.defineProperty(exports, \\\"__esModule\\\", ({\\n    value: true\\n}));\\nObject.defineProperty(exports, \\\"default\\\", ({\\n    "
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "JS-XSS",
+          "ruleIndex": 3,
+          "level": "warning",
+          "message": {
+            "text": "XSS: Mitigate XSS using secure input validation, parameterization, and context-aware escaping."
+          },
+          "partialFingerprints": {
+            "guardianFindingId": "1e77d26dbb54420e"
+          },
+          "properties": {
+            "source": "DETERMINISTIC",
+            "engine": "legacy:javascript",
+            "language": "javascript",
+            "function": "",
+            "confidence": 0.75,
+            "tainted": false,
+            "evidenceIds": [],
+            "recommendation": "Mitigate XSS using secure input validation, parameterization, and context-aware escaping."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "frontend\\.next\\server\\vendor-chunks\\next.js"
+                },
+                "region": {
+                  "startLine": 405,
+                  "snippet": {
+                    "text": "eval(\"/* eslint-disable */ // @ts-nocheck\\n// Copied from https://github.com/medialize/ally.js\\n// License: MIT\\n// Copyright (c) 2015 Rodney Rehm\\n//\\n// Entrypoint: ally.js/maintain/tab-focus\\n\\nObj"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "UST-EVAL-001",
+          "ruleIndex": 4,
+          "level": "error",
+          "message": {
+            "text": "Code Injection: Untrusted value __webpack_require__ flows into eval without sanitisation."
+          },
+          "partialFingerprints": {
+            "guardianFindingId": "1fb518945f5e24ef"
+          },
+          "properties": {
+            "source": "DETERMINISTIC",
+            "engine": "security",
+            "language": "javascript",
+            "function": "\"(ssr)/./node_modules/next/dist/server/future/route-modules/app-page/module.compiled.js?e149\"",
+            "confidence": 0.9,
+            "tainted": true,
+            "evidenceIds": [
+              "E113"
+            ],
+            "recommendation": "Remove dynamic evaluation of untrusted input; use an explicit parser or a mapping of permitted operations."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "frontend\\.next\\server\\vendor-chunks\\next.js"
+                },
+                "region": {
+                  "startLine": 1479,
+                  "endLine": 1479,
+                  "snippet": {
+                    "text": "eval(\"\\nif (false) {} else {\\n    if (false) {} else {\\n        if (true) {\\n            module.exports = __webpack_require__(/*! next/dist/compiled/next-server/app-page.runtime.dev.js */ \\\"next/dist/"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "UST-EVAL-001",
+          "ruleIndex": 4,
+          "level": "error",
+          "message": {
+            "text": "Code Injection: Untrusted value __webpack_require__ flows into eval without sanitisation."
+          },
+          "partialFingerprints": {
+            "guardianFindingId": "850633e51d8adc7b"
+          },
+          "properties": {
+            "source": "DETERMINISTIC",
+            "engine": "security",
+            "language": "javascript",
+            "function": "\"(ssr)/./node_modules/next/dist/server/future/route-modules/app-page/module.compiled.js?d969\"",
+            "confidence": 0.9,
+            "tainted": true,
+            "evidenceIds": [
+              "E160"
+            ],
+            "recommendation": "Remove dynamic evaluation of untrusted input; use an explicit parser or a mapping of permitted operations."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "frontend\\.next\\server\\vendor-chunks\\next.js"
+                },
+                "region": {
+                  "startLine": 2041,
+                  "endLine": 2041,
+                  "snippet": {
+                    "text": "eval(\"\\nif (false) {} else {\\n    if (false) {} else {\\n        if (true) {\\n            module.exports = __webpack_require__(/*! next/dist/compiled/next-server/app-page.runtime.dev.js */ \\\"next/dist/"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "UST-EVAL-001",
+          "ruleIndex": 4,
+          "level": "error",
+          "message": {
+            "text": "Code Injection: Untrusted value __webpack_require__ flows into eval without sanitisation."
+          },
+          "partialFingerprints": {
+            "guardianFindingId": "b67dcf244ed5c95e"
+          },
+          "properties": {
+            "source": "DETERMINISTIC",
+            "engine": "security",
+            "language": "javascript",
+            "function": "\"(ssr)/./node_modules/use-sync-external-store/shim/index.js\"",
+            "confidence": 0.9,
+            "tainted": true,
+            "evidenceIds": [
+              "E172"
+            ],
+            "recommendation": "Remove dynamic evaluation of untrusted input; use an explicit parser or a mapping of permitted operations."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "frontend\\.next\\server\\vendor-chunks\\use-sync-external-store.js"
+                },
+                "region": {
+                  "startLine": 40,
+                  "endLine": 40,
+                  "snippet": {
+                    "text": "eval(\"\\n\\nif (false) {} else {\\n  module.exports = __webpack_require__(/*! ../cjs/use-sync-external-store-shim.development.js */ \\\"(ssr)/./node_modules/use-sync-external-store/cjs/use-sync-external-st"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "UST-EVAL-001",
+          "ruleIndex": 4,
+          "level": "error",
+          "message": {
+            "text": "Code Injection: Untrusted value __webpack_require__ flows into eval without sanitisation."
+          },
+          "partialFingerprints": {
+            "guardianFindingId": "3b43d38e5c947178"
+          },
+          "properties": {
+            "source": "DETERMINISTIC",
+            "engine": "security",
+            "language": "javascript",
+            "function": "\"(ssr)/./node_modules/use-sync-external-store/shim/with-selector.js\"",
+            "confidence": 0.9,
+            "tainted": true,
+            "evidenceIds": [
+              "E173"
+            ],
+            "recommendation": "Remove dynamic evaluation of untrusted input; use an explicit parser or a mapping of permitted operations."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "frontend\\.next\\server\\vendor-chunks\\use-sync-external-store.js"
+                },
+                "region": {
+                  "startLine": 50,
+                  "endLine": 50,
+                  "snippet": {
+                    "text": "eval(\"\\n\\nif (false) {} else {\\n  module.exports = __webpack_require__(/*! ../cjs/use-sync-external-store-shim/with-selector.development.js */ \\\"(ssr)/./node_modules/use-sync-external-store/cjs/use-sy"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "JS-EVAL",
+          "ruleIndex": 5,
+          "level": "error",
+          "message": {
+            "text": "Eval Injection: Mitigate Eval Injection using secure input validation, parameterization, and context-aware escaping."
+          },
+          "partialFingerprints": {
+            "guardianFindingId": "9bf8251532cd59ba"
+          },
+          "properties": {
+            "source": "DETERMINISTIC",
+            "engine": "legacy:javascript",
+            "language": "javascript",
+            "function": "",
+            "confidence": 0.75,
+            "tainted": false,
+            "evidenceIds": [],
+            "recommendation": "Mitigate Eval Injection using secure input validation, parameterization, and context-aware escaping."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "frontend\\.next\\static\\chunks\\app-pages-internals.js"
+                },
+                "region": {
+                  "startLine": 17,
+                  "snippet": {
+                    "text": "eval(__webpack_require__.ts(\"Promise.resolve(/*! import() eager */).then(__webpack_require__.t.bind(__webpack_require__, /*! ./node_modules/next/dist/client/components/app-router.js */ \\\"(app-pages-br"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "JS-EVAL",
+          "ruleIndex": 5,
+          "level": "error",
+          "message": {
+            "text": "Eval Injection: Mitigate Eval Injection using secure input validation, parameterization, and context-aware escaping."
+          },
+          "partialFingerprints": {
+            "guardianFindingId": "ed2e8463aabd7906"
+          },
+          "properties": {
+            "source": "DETERMINISTIC",
+            "engine": "legacy:javascript",
+            "language": "javascript",
+            "function": "",
+            "confidence": 0.75,
+            "tainted": false,
+            "evidenceIds": [],
+            "recommendation": "Mitigate Eval Injection using secure input validation, parameterization, and context-aware escaping."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "frontend\\.next\\static\\chunks\\app-pages-internals.js"
+                },
+                "region": {
+                  "startLine": 28,
+                  "snippet": {
+                    "text": "eval(__webpack_require__.ts(\"\\nObject.defineProperty(exports, \\\"__esModule\\\", ({\\n    value: true\\n}));\\n0 && (0);\\nfunction _export(target, all) {\\n    for(var name in all)Object.defineProperty(targe"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "JS-EVAL",
+          "ruleIndex": 5,
+          "level": "error",
+          "message": {
+            "text": "Eval Injection: Mitigate Eval Injection using secure input validation, parameterization, and context-aware escaping."
+          },
+          "partialFingerprints": {
+            "guardianFindingId": "209a87908b4a19aa"
+          },
+          "properties": {
+            "source": "DETERMINISTIC",
+            "engine": "legacy:javascript",
+            "language": "javascript",
+            "function": "",
+            "confidence": 0.75,
+            "tainted": false,
+            "evidenceIds": [],
+            "recommendation": "Mitigate Eval Injection using secure input validation, parameterization, and context-aware escaping."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "frontend\\.next\\static\\chunks\\app-pages-internals.js"
+                },
+                "region": {
+                  "startLine": 39,
+                  "snippet": {
+                    "text": "eval(__webpack_require__.ts(\"/**\\n * The functions provided by this module are used to communicate certain properties\\n * about the currently running code so that Next.js can make decisions on how to "
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "JS-EVAL",
+          "ruleIndex": 5,
+          "level": "error",
+          "message": {
+            "text": "Eval Injection: Mitigate Eval Injection using secure input validation, parameterization, and context-aware escaping."
+          },
+          "partialFingerprints": {
+            "guardianFindingId": "12d83484c5057deb"
+          },
+          "properties": {
+            "source": "DETERMINISTIC",
+            "engine": "legacy:javascript",
+            "language": "javascript",
+            "function": "",
+            "confidence": 0.75,
+            "tainted": false,
+            "evidenceIds": [],
+            "recommendation": "Mitigate Eval Injection using secure input validation, parameterization, and context-aware escaping."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "frontend\\.next\\static\\chunks\\app-pages-internals.js"
+                },
+                "region": {
+                  "startLine": 50,
+                  "snippet": {
+                    "text": "eval(__webpack_require__.ts(\"\\nObject.defineProperty(exports, \\\"__esModule\\\", ({\\n    value: true\\n}));\\nObject.defineProperty(exports, \\\"ReflectAdapter\\\", ({\\n    enumerable: true,\\n    get: function"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "JS-EVAL",
+          "ruleIndex": 5,
+          "level": "error",
+          "message": {
+            "text": "Eval Injection: Mitigate Eval Injection using secure input validation, parameterization, and context-aware escaping."
+          },
+          "partialFingerprints": {
+            "guardianFindingId": "917717a28c3116ad"
+          },
+          "properties": {
+            "source": "DETERMINISTIC",
+            "engine": "legacy:javascript",
+            "language": "javascript",
+            "function": "",
+            "confidence": 0.75,
+            "tainted": false,
+            "evidenceIds": [],
+            "recommendation": "Mitigate Eval Injection using secure input validation, parameterization, and context-aware escaping."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "frontend\\.next\\static\\chunks\\app-pages-internals.js"
+                },
+                "region": {
+                  "startLine": 61,
+                  "snippet": {
+                    "text": "eval(__webpack_require__.ts(\"/* __next_internal_client_entry_do_not_use__  cjs */ \\nObject.defineProperty(exports, \\\"__esModule\\\", ({\\n    value: true\\n}));\\nObject.defineProperty(exports, \\\"ClientPag"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "JS-EVAL",
+          "ruleIndex": 5,
+          "level": "error",
+          "message": {
+            "text": "Eval Injection: Mitigate Eval Injection using secure input validation, parameterization, and context-aware escaping."
+          },
+          "partialFingerprints": {
+            "guardianFindingId": "36acfa5a8d7b0705"
+          },
+          "properties": {
+            "source": "DETERMINISTIC",
+            "engine": "legacy:javascript",
+            "language": "javascript",
+            "function": "",
+            "confidence": 0.75,
+            "tainted": false,
+            "evidenceIds": [],
+            "recommendation": "Mitigate Eval Injection using secure input validation, parameterization, and context-aware escaping."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "frontend\\.next\\static\\chunks\\app-pages-internals.js"
+                },
+                "region": {
+                  "startLine": 72,
+                  "snippet": {
+                    "text": "eval(__webpack_require__.ts(\"\\nObject.defineProperty(exports, \\\"__esModule\\\", ({\\n    value: true\\n}));\\n0 && (0);\\nfunction _export(target, all) {\\n    for(var name in all)Object.defineProperty(targe"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "JS-EVAL",
+          "ruleIndex": 5,
+          "level": "error",
+          "message": {
+            "text": "Eval Injection: Mitigate Eval Injection using secure input validation, parameterization, and context-aware escaping."
+          },
+          "partialFingerprints": {
+            "guardianFindingId": "9f3703e0b9e5dd7c"
+          },
+          "properties": {
+            "source": "DETERMINISTIC",
+            "engine": "legacy:javascript",
+            "language": "javascript",
+            "function": "",
+            "confidence": 0.75,
+            "tainted": false,
+            "evidenceIds": [],
+            "recommendation": "Mitigate Eval Injection using secure input validation, parameterization, and context-aware escaping."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "frontend\\.next\\static\\chunks\\app-pages-internals.js"
+                },
+                "region": {
+                  "startLine": 83,
+                  "snippet": {
+                    "text": "eval(__webpack_require__.ts(\"/* __next_internal_client_entry_do_not_use__  cjs */ \\nObject.defineProperty(exports, \\\"__esModule\\\", ({\\n    value: true\\n}));\\nObject.defineProperty(exports, \\\"default\\\""
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "JS-EVAL",
+          "ruleIndex": 5,
+          "level": "error",
+          "message": {
+            "text": "Eval Injection: Mitigate Eval Injection using secure input validation, parameterization, and context-aware escaping."
+          },
+          "partialFingerprints": {
+            "guardianFindingId": "b1c8ea0dea8c1cd8"
+          },
+          "properties": {
+            "source": "DETERMINISTIC",
+            "engine": "legacy:javascript",
+            "language": "javascript",
+            "function": "",
+            "confidence": 0.75,
+            "tainted": false,
+            "evidenceIds": [],
+            "recommendation": "Mitigate Eval Injection using secure input validation, parameterization, and context-aware escaping."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "frontend\\.next\\static\\chunks\\app-pages-internals.js"
+                },
+                "region": {
+                  "startLine": 94,
+                  "snippet": {
+                    "text": "eval(__webpack_require__.ts(\"/* __next_internal_client_entry_do_not_use__  cjs */ \\nObject.defineProperty(exports, \\\"__esModule\\\", ({\\n    value: true\\n}));\\nObject.defineProperty(exports, \\\"default\\\""
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "JS-EVAL",
+          "ruleIndex": 5,
+          "level": "error",
+          "message": {
+            "text": "Eval Injection: Mitigate Eval Injection using secure input validation, parameterization, and context-aware escaping."
+          },
+          "partialFingerprints": {
+            "guardianFindingId": "5b2e8b26d79d4e0b"
+          },
+          "properties": {
+            "source": "DETERMINISTIC",
+            "engine": "legacy:javascript",
+            "language": "javascript",
+            "function": "",
+            "confidence": 0.75,
+            "tainted": false,
+            "evidenceIds": [],
+            "recommendation": "Mitigate Eval Injection using secure input validation, parameterization, and context-aware escaping."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "frontend\\.next\\static\\chunks\\app-pages-internals.js"
+                },
+                "region": {
+                  "startLine": 105,
+                  "snippet": {
+                    "text": "eval(__webpack_require__.ts(\"\\nObject.defineProperty(exports, \\\"__esModule\\\", ({\\n    value: true\\n}));\\n0 && (0);\\nfunction _export(target, all) {\\n    for(var name in all)Object.defineProperty(targe"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "JS-EVAL",
+          "ruleIndex": 5,
+          "level": "error",
+          "message": {
+            "text": "Eval Injection: Mitigate Eval Injection using secure input validation, parameterization, and context-aware escaping."
+          },
+          "partialFingerprints": {
+            "guardianFindingId": "ed6064df90cf2810"
+          },
+          "properties": {
+            "source": "DETERMINISTIC",
+            "engine": "legacy:javascript",
+            "language": "javascript",
+            "function": "",
+            "confidence": 0.75,
+            "tainted": false,
+            "evidenceIds": [],
+            "recommendation": "Mitigate Eval Injection using secure input validation, parameterization, and context-aware escaping."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "frontend\\.next\\static\\chunks\\app-pages-internals.js"
+                },
+                "region": {
+                  "startLine": 116,
+                  "snippet": {
+                    "text": "eval(__webpack_require__.ts(\"\\nObject.defineProperty(exports, \\\"__esModule\\\", ({\\n    value: true\\n}));\\n0 && (0);\\nfunction _export(target, all) {\\n    for(var name in all)Object.defineProperty(targe"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "JS-EVAL",
+          "ruleIndex": 5,
+          "level": "error",
+          "message": {
+            "text": "Eval Injection: Mitigate Eval Injection using secure input validation, parameterization, and context-aware escaping."
+          },
+          "partialFingerprints": {
+            "guardianFindingId": "60e61bb0bb665aa9"
+          },
+          "properties": {
+            "source": "DETERMINISTIC",
+            "engine": "legacy:javascript",
+            "language": "javascript",
+            "function": "",
+            "confidence": 0.75,
+            "tainted": false,
+            "evidenceIds": [],
+            "recommendation": "Mitigate Eval Injection using secure input validation, parameterization, and context-aware escaping."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "frontend\\.next\\static\\chunks\\app-pages-internals.js"
+                },
+                "region": {
+                  "startLine": 127,
+                  "snippet": {
+                    "text": "eval(__webpack_require__.ts(\"/**\\n * Run function with `scroll-behavior: auto` applied to `<html/>`.\\n * This css change will be reverted after the function finishes.\\n */ \\nObject.defineProperty(expo"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "JS-EVAL",
+          "ruleIndex": 5,
+          "level": "error",
+          "message": {
+            "text": "Eval Injection: Mitigate Eval Injection using secure input validation, parameterization, and context-aware escaping."
+          },
+          "partialFingerprints": {
+            "guardianFindingId": "202c8a4ba3cf2491"
+          },
+          "properties": {
+            "source": "DETERMINISTIC",
+            "engine": "legacy:javascript",
+            "language": "javascript",
+            "function": "",
+            "confidence": 0.75,
+            "tainted": false,
+            "evidenceIds": [],
+            "recommendation": "Mitigate Eval Injection using secure input validation, parameterization, and context-aware escaping."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "frontend\\.next\\static\\chunks\\app\\layout.js"
+                },
+                "region": {
+                  "startLine": 17,
+                  "snippet": {
+                    "text": "eval(__webpack_require__.ts(\"Promise.resolve(/*! import() eager */).then(__webpack_require__.bind(__webpack_require__, /*! ./src/app/globals.css */ \\\"(app-pages-browser)/./src/app/globals.css\\\"));\\n//"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "JS-EVAL",
+          "ruleIndex": 5,
+          "level": "error",
+          "message": {
+            "text": "Eval Injection: Mitigate Eval Injection using secure input validation, parameterization, and context-aware escaping."
+          },
+          "partialFingerprints": {
+            "guardianFindingId": "e0b8f7ea62ce849d"
+          },
+          "properties": {
+            "source": "DETERMINISTIC",
+            "engine": "legacy:javascript",
+            "language": "javascript",
+            "function": "",
+            "confidence": 0.75,
+            "tainted": false,
+            "evidenceIds": [],
+            "recommendation": "Mitigate Eval Injection using secure input validation, parameterization, and context-aware escaping."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "frontend\\.next\\static\\chunks\\app\\layout.js"
+                },
+                "region": {
+                  "startLine": 28,
+                  "snippet": {
+                    "text": "eval(__webpack_require__.ts(\"__webpack_require__.r(__webpack_exports__);\\n/* harmony default export */ __webpack_exports__[\\\"default\\\"] = (\\\"0f76188b5c0b\\\");\\nif (true) { module.hot.accept() }\\n//# so"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "JS-INSE",
+          "ruleIndex": 2,
+          "level": "note",
+          "message": {
+            "text": "Insecure Random: Mitigate Insecure Random using secure input validation, parameterization, and context-aware escaping."
+          },
+          "partialFingerprints": {
+            "guardianFindingId": "732e11370ca04873"
+          },
+          "properties": {
+            "source": "DETERMINISTIC",
+            "engine": "legacy:javascript",
+            "language": "javascript",
+            "function": "",
+            "confidence": 0.75,
+            "tainted": false,
+            "evidenceIds": [],
+            "recommendation": "Mitigate Insecure Random using secure input validation, parameterization, and context-aware escaping."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "frontend\\.next\\static\\chunks\\polyfills.js"
+                },
+                "region": {
+                  "startLine": 1,
+                  "snippet": {
+                    "text": "!function(){var t=\"undefined\"!=typeof globalThis?globalThis:\"undefined\"!=typeof window?window:\"undefined\"!=typeof global?global:\"undefined\"!=typeof self?self:{};function e(t){var e={exports:{}};return"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "SEC-007",
+          "ruleIndex": 6,
+          "level": "error",
+          "message": {
+            "text": "Path Traversal: Untrusted value format flows into window.open without sanitisation."
+          },
+          "partialFingerprints": {
+            "guardianFindingId": "6d4c8cf30909efaf"
+          },
+          "properties": {
+            "source": "DETERMINISTIC",
+            "engine": "security",
+            "language": "typescript",
+            "function": "handleDownloadReport",
+            "confidence": 0.9,
+            "tainted": true,
+            "evidenceIds": [
+              "E208"
+            ],
+            "recommendation": "Resolve and canonicalise the path, then verify it stays inside the intended base directory before opening it."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "frontend\\src\\app\\page.tsx"
+                },
+                "region": {
+                  "startLine": 96,
+                  "endLine": 96,
+                  "snippet": {
+                    "text": "window.open(`${API_BASE}/api/v1/reports/download?format=${format}`, \"_blank\")"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "JS-SQL ",
+          "ruleIndex": 1,
+          "level": "error",
+          "message": {
+            "text": "SQL Injection: Mitigate SQL Injection using secure input validation, parameterization, and context-aware escaping."
+          },
+          "partialFingerprints": {
+            "guardianFindingId": "ea8413bdaa980491"
+          },
+          "properties": {
+            "source": "DETERMINISTIC",
+            "engine": "legacy:javascript",
+            "language": "javascript",
+            "function": "",
+            "confidence": 0.75,
+            "tainted": false,
+            "evidenceIds": [],
+            "recommendation": "Mitigate SQL Injection using secure input validation, parameterization, and context-aware escaping."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "frontend\\src\\app\\page.tsx"
+                },
+                "region": {
+                  "startLine": 114,
+                  "snippet": {
+                    "text": "snippet: `cursor.execute(\"SELECT * FROM users WHERE id = \" + user_input)`,"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "JS-SQL ",
+          "ruleIndex": 1,
+          "level": "error",
+          "message": {
+            "text": "SQL Injection: Mitigate SQL Injection using secure input validation, parameterization, and context-aware escaping."
+          },
+          "partialFingerprints": {
+            "guardianFindingId": "0fdfafcc4901994e"
+          },
+          "properties": {
+            "source": "DETERMINISTIC",
+            "engine": "legacy:javascript",
+            "language": "javascript",
+            "function": "",
+            "confidence": 0.75,
+            "tainted": false,
+            "evidenceIds": [],
+            "recommendation": "Mitigate SQL Injection using secure input validation, parameterization, and context-aware escaping."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "frontend\\src\\app\\page.tsx"
+                },
+                "region": {
+                  "startLine": 367,
+                  "snippet": {
+                    "text": "code={selectedFinding?.snippet || selectedFinding?.code_snippet || \"cursor.execute('SELECT * FROM users WHERE id = ' + user_input)\"}"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "JS-SQL ",
+          "ruleIndex": 1,
+          "level": "error",
+          "message": {
+            "text": "SQL Injection: Mitigate SQL Injection using secure input validation, parameterization, and context-aware escaping."
+          },
+          "partialFingerprints": {
+            "guardianFindingId": "0350931dd1ce79c3"
+          },
+          "properties": {
+            "source": "DETERMINISTIC",
+            "engine": "legacy:javascript",
+            "language": "javascript",
+            "function": "",
+            "confidence": 0.75,
+            "tainted": false,
+            "evidenceIds": [],
+            "recommendation": "Mitigate SQL Injection using secure input validation, parameterization, and context-aware escaping."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "frontend\\src\\components\\mindmap\\defaultData.ts"
+                },
+                "region": {
+                  "startLine": 47,
+                  "snippet": {
+                    "text": "codePreview: `def process_user_payment(user_id, amount):\\n    cursor.execute(\"SELECT * FROM accounts WHERE id = \" + user_id)`,"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "QNT-SHA-1",
+          "ruleIndex": 7,
           "level": "note",
           "message": {
             "text": "Quantum Migration Inventory: SHA-1 is classically broken: Chosen-prefix collisions demonstrated; NIST-deprecated for all uses."
@@ -439,7 +1548,7 @@
             "confidence": 1.0,
             "tainted": false,
             "evidenceIds": [
-              "E241"
+              "E453"
             ],
             "recommendation": "Migrate to SHA-384 or SHA3-256 (NIST SP 800-107r1). Chosen-prefix collisions demonstrated; NIST-deprecated for all uses."
           },
@@ -452,7 +1561,7 @@
                 "region": {
                   "startLine": 108,
                   "snippet": {
-                    "text": "return hashlib.sha1(basis.encode()).hexdigest()[:16]"
+                    "text": "hashlib.sha1(basis.encode())"
                   }
                 }
               }
@@ -461,7 +1570,7 @@
         },
         {
           "ruleId": "SEC-005",
-          "ruleIndex": 2,
+          "ruleIndex": 8,
           "level": "error",
           "message": {
             "text": "Weak Crypto: hashlib.sha1 performs hashing with SHA-1. SHA-1 is collision-broken and deprecated by NIST."
@@ -477,7 +1586,7 @@
             "confidence": 0.95,
             "tainted": false,
             "evidenceIds": [
-              "E16"
+              "E219"
             ],
             "recommendation": "Use SHA-256 or stronger for hashing (Argon2id/bcrypt/scrypt for passwords), and AES-256-GCM for symmetric encryption."
           },
@@ -491,7 +1600,7 @@
                   "startLine": 108,
                   "endLine": 108,
                   "snippet": {
-                    "text": "return hashlib.sha1(basis.encode()).hexdigest()[:16]"
+                    "text": "hashlib.sha1(basis.encode())"
                   }
                 }
               }
@@ -500,7 +1609,7 @@
         },
         {
           "ruleId": "QNT-SHA-1",
-          "ruleIndex": 1,
+          "ruleIndex": 7,
           "level": "note",
           "message": {
             "text": "Quantum Migration Inventory: SHA-1 is classically broken: Chosen-prefix collisions demonstrated; NIST-deprecated for all uses."
@@ -516,8 +1625,8 @@
             "confidence": 1.0,
             "tainted": false,
             "evidenceIds": [
-              "E243",
-              "E244"
+              "E455",
+              "E456"
             ],
             "recommendation": "Migrate to SHA-384 or SHA3-256 (NIST SP 800-107r1). Chosen-prefix collisions demonstrated; NIST-deprecated for all uses. (2 usages in this file)"
           },
@@ -530,7 +1639,7 @@
                 "region": {
                   "startLine": 48,
                   "snippet": {
-                    "text": "doc_id=hashlib.sha1(text.encode()).hexdigest()[:16],"
+                    "text": "hashlib.sha1(text.encode())"
                   }
                 }
               }
@@ -539,7 +1648,7 @@
         },
         {
           "ruleId": "SEC-005",
-          "ruleIndex": 2,
+          "ruleIndex": 8,
           "level": "error",
           "message": {
             "text": "Weak Crypto: hashlib.sha1 performs hashing with SHA-1. SHA-1 is collision-broken and deprecated by NIST."
@@ -555,7 +1664,7 @@
             "confidence": 0.95,
             "tainted": false,
             "evidenceIds": [
-              "E81"
+              "E284"
             ],
             "recommendation": "Use SHA-256 or stronger for hashing (Argon2id/bcrypt/scrypt for passwords), and AES-256-GCM for symmetric encryption."
           },
@@ -569,7 +1678,7 @@
                   "startLine": 48,
                   "endLine": 48,
                   "snippet": {
-                    "text": "doc_id=hashlib.sha1(text.encode()).hexdigest()[:16],"
+                    "text": "hashlib.sha1(text.encode())"
                   }
                 }
               }
@@ -578,7 +1687,7 @@
         },
         {
           "ruleId": "SEC-005",
-          "ruleIndex": 2,
+          "ruleIndex": 8,
           "level": "error",
           "message": {
             "text": "Weak Crypto: hashlib.sha1 performs hashing with SHA-1. SHA-1 is collision-broken and deprecated by NIST."
@@ -594,7 +1703,7 @@
             "confidence": 0.95,
             "tainted": false,
             "evidenceIds": [
-              "E82"
+              "E285"
             ],
             "recommendation": "Use SHA-256 or stronger for hashing (Argon2id/bcrypt/scrypt for passwords), and AES-256-GCM for symmetric encryption."
           },
@@ -608,7 +1717,7 @@
                   "startLine": 69,
                   "endLine": 69,
                   "snippet": {
-                    "text": "doc_id=hashlib.sha1(summary_content.encode()).hexdigest()[:16],"
+                    "text": "hashlib.sha1(summary_content.encode())"
                   }
                 }
               }
@@ -617,13 +1726,13 @@
         },
         {
           "ruleId": "QNT-SHA-1",
-          "ruleIndex": 1,
+          "ruleIndex": 7,
           "level": "note",
           "message": {
             "text": "Quantum Migration Inventory: SHA-1 is classically broken: Chosen-prefix collisions demonstrated; NIST-deprecated for all uses."
           },
           "partialFingerprints": {
-            "guardianFindingId": "97476f8611e2256d"
+            "guardianFindingId": "37b3c7d9b6ee7793"
           },
           "properties": {
             "source": "DETERMINISTIC",
@@ -633,7 +1742,7 @@
             "confidence": 1.0,
             "tainted": false,
             "evidenceIds": [
-              "E246"
+              "E458"
             ],
             "recommendation": "Migrate to SHA-384 or SHA3-256 (NIST SP 800-107r1). Chosen-prefix collisions demonstrated; NIST-deprecated for all uses."
           },
@@ -644,9 +1753,9 @@
                   "uri": "guardian\\core\\models.py"
                 },
                 "region": {
-                  "startLine": 77,
+                  "startLine": 84,
                   "snippet": {
-                    "text": "self.finding_id = hashlib.sha1(basis.encode()).hexdigest()[:16]"
+                    "text": "hashlib.sha1(basis.encode())"
                   }
                 }
               }
@@ -655,13 +1764,13 @@
         },
         {
           "ruleId": "SEC-005",
-          "ruleIndex": 2,
+          "ruleIndex": 8,
           "level": "error",
           "message": {
             "text": "Weak Crypto: hashlib.sha1 performs hashing with SHA-1. SHA-1 is collision-broken and deprecated by NIST."
           },
           "partialFingerprints": {
-            "guardianFindingId": "888a5711d45b9704"
+            "guardianFindingId": "93d5ce4b75ad2ecd"
           },
           "properties": {
             "source": "DETERMINISTIC",
@@ -671,7 +1780,7 @@
             "confidence": 0.95,
             "tainted": false,
             "evidenceIds": [
-              "E97"
+              "E301"
             ],
             "recommendation": "Use SHA-256 or stronger for hashing (Argon2id/bcrypt/scrypt for passwords), and AES-256-GCM for symmetric encryption."
           },
@@ -682,10 +1791,86 @@
                   "uri": "guardian\\core\\models.py"
                 },
                 "region": {
-                  "startLine": 77,
-                  "endLine": 77,
+                  "startLine": 84,
+                  "endLine": 84,
                   "snippet": {
-                    "text": "self.finding_id = hashlib.sha1(basis.encode()).hexdigest()[:16]"
+                    "text": "hashlib.sha1(basis.encode())"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "SEC-004",
+          "ruleIndex": 0,
+          "level": "error",
+          "message": {
+            "text": "Hardcoded Secret: 'foreign_key' is assigned a high-entropy literal in source code."
+          },
+          "partialFingerprints": {
+            "guardianFindingId": "73412805b4e554e2"
+          },
+          "properties": {
+            "source": "DETERMINISTIC",
+            "engine": "security",
+            "language": "python",
+            "function": "",
+            "confidence": 0.85,
+            "tainted": false,
+            "evidenceIds": [
+              "E311"
+            ],
+            "recommendation": "Mitigate Hardcoded Secret using secure coding practices."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "guardian\\db\\models.py"
+                },
+                "region": {
+                  "startLine": 38,
+                  "snippet": {
+                    "text": "scan_id: Optional[uuid.UUID] = Field(default=None, foreign_key=\"scantable.id\")"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "SEC-004",
+          "ruleIndex": 0,
+          "level": "error",
+          "message": {
+            "text": "Hardcoded Secret: 'foreign_key' is assigned a high-entropy literal in source code."
+          },
+          "partialFingerprints": {
+            "guardianFindingId": "a71e0198d3251cad"
+          },
+          "properties": {
+            "source": "DETERMINISTIC",
+            "engine": "security",
+            "language": "python",
+            "function": "",
+            "confidence": 0.85,
+            "tainted": false,
+            "evidenceIds": [
+              "E312"
+            ],
+            "recommendation": "Mitigate Hardcoded Secret using secure coding practices."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "guardian\\db\\models.py"
+                },
+                "region": {
+                  "startLine": 51,
+                  "snippet": {
+                    "text": "finding_id: Optional[uuid.UUID] = Field(default=None, foreign_key=\"findingtable.id\")"
                   }
                 }
               }
@@ -694,7 +1879,7 @@
         },
         {
           "ruleId": "SEC-006",
-          "ruleIndex": 3,
+          "ruleIndex": 9,
           "level": "error",
           "message": {
             "text": "Broken Authentication: TLS certificate/hostname verification appears disabled at INSECURE_TRANSPORT."
@@ -710,8 +1895,8 @@
             "confidence": 0.8,
             "tainted": false,
             "evidenceIds": [
-              "E119",
-              "E120"
+              "E326",
+              "E327"
             ],
             "recommendation": "Keep certificate and hostname verification enabled and require TLS 1.2+ (prefer TLS 1.3)."
           },
@@ -734,13 +1919,13 @@
         },
         {
           "ruleId": "SEC-006",
-          "ruleIndex": 3,
+          "ruleIndex": 9,
           "level": "error",
           "message": {
             "text": "Broken Authentication: TLS certificate/hostname verification appears disabled at re.search."
           },
           "partialFingerprints": {
-            "guardianFindingId": "23b607df3a294e7d"
+            "guardianFindingId": "a45ba2c8e634a37d"
           },
           "properties": {
             "source": "DETERMINISTIC",
@@ -750,7 +1935,7 @@
             "confidence": 0.8,
             "tainted": false,
             "evidenceIds": [
-              "E121"
+              "E328"
             ],
             "recommendation": "Keep certificate and hostname verification enabled and require TLS 1.2+ (prefer TLS 1.3)."
           },
@@ -761,10 +1946,10 @@
                   "uri": "guardian\\engines\\security.py"
                 },
                 "region": {
-                  "startLine": 314,
-                  "endLine": 316,
+                  "startLine": 332,
+                  "endLine": 334,
                   "snippet": {
-                    "text": "if disabled_verification and re.search(r\"(?i)(rejectUnauthorized|check_hostname|\""
+                    "text": "re.search(r\"(?i)(rejectUnauthorized|check_hostname|\""
                   }
                 }
               }
@@ -773,7 +1958,7 @@
         },
         {
           "ruleId": "QNT-SHA-1",
-          "ruleIndex": 1,
+          "ruleIndex": 7,
           "level": "note",
           "message": {
             "text": "Quantum Migration Inventory: SHA-1 is classically broken: Chosen-prefix collisions demonstrated; NIST-deprecated for all uses."
@@ -789,7 +1974,7 @@
             "confidence": 1.0,
             "tainted": false,
             "evidenceIds": [
-              "E248"
+              "E460"
             ],
             "recommendation": "Migrate to SHA-384 or SHA3-256 (NIST SP 800-107r1). Chosen-prefix collisions demonstrated; NIST-deprecated for all uses."
           },
@@ -802,7 +1987,7 @@
                 "region": {
                   "startLine": 104,
                   "snippet": {
-                    "text": "self.fingerprint = hashlib.sha1(basis.encode()).hexdigest()[:16]"
+                    "text": "hashlib.sha1(basis.encode())"
                   }
                 }
               }
@@ -811,7 +1996,7 @@
         },
         {
           "ruleId": "SEC-005",
-          "ruleIndex": 2,
+          "ruleIndex": 8,
           "level": "error",
           "message": {
             "text": "Weak Crypto: hashlib.sha1 performs hashing with SHA-1. SHA-1 is collision-broken and deprecated by NIST."
@@ -827,7 +2012,7 @@
             "confidence": 0.95,
             "tainted": false,
             "evidenceIds": [
-              "E124"
+              "E331"
             ],
             "recommendation": "Use SHA-256 or stronger for hashing (Argon2id/bcrypt/scrypt for passwords), and AES-256-GCM for symmetric encryption."
           },
@@ -841,7 +2026,7 @@
                   "startLine": 104,
                   "endLine": 104,
                   "snippet": {
-                    "text": "self.fingerprint = hashlib.sha1(basis.encode()).hexdigest()[:16]"
+                    "text": "hashlib.sha1(basis.encode())"
                   }
                 }
               }
@@ -850,7 +2035,7 @@
         },
         {
           "ruleId": "SEC-006",
-          "ruleIndex": 3,
+          "ruleIndex": 9,
           "level": "error",
           "message": {
             "text": "Broken Authentication: TLS certificate/hostname verification appears disabled at _AUTH_BYPASS."
@@ -866,8 +2051,8 @@
             "confidence": 0.8,
             "tainted": false,
             "evidenceIds": [
-              "E128",
-              "E129"
+              "E338",
+              "E339"
             ],
             "recommendation": "Keep certificate and hostname verification enabled and require TLS 1.2+ (prefer TLS 1.3)."
           },
@@ -890,7 +2075,7 @@
         },
         {
           "ruleId": "QNT-SHA-1",
-          "ruleIndex": 1,
+          "ruleIndex": 7,
           "level": "note",
           "message": {
             "text": "Quantum Migration Inventory: SHA-1 is classically broken: Chosen-prefix collisions demonstrated; NIST-deprecated for all uses."
@@ -906,7 +2091,7 @@
             "confidence": 1.0,
             "tainted": false,
             "evidenceIds": [
-              "E250"
+              "E462"
             ],
             "recommendation": "Migrate to SHA-384 or SHA3-256 (NIST SP 800-107r1). Chosen-prefix collisions demonstrated; NIST-deprecated for all uses."
           },
@@ -919,7 +2104,7 @@
                 "region": {
                   "startLine": 61,
                   "snippet": {
-                    "text": "self.rule_id = hashlib.sha1(basis.encode()).hexdigest()[:12]"
+                    "text": "hashlib.sha1(basis.encode())"
                   }
                 }
               }
@@ -928,7 +2113,7 @@
         },
         {
           "ruleId": "SEC-005",
-          "ruleIndex": 2,
+          "ruleIndex": 8,
           "level": "error",
           "message": {
             "text": "Weak Crypto: hashlib.sha1 performs hashing with SHA-1. SHA-1 is collision-broken and deprecated by NIST."
@@ -944,7 +2129,7 @@
             "confidence": 0.95,
             "tainted": false,
             "evidenceIds": [
-              "E146"
+              "E356"
             ],
             "recommendation": "Use SHA-256 or stronger for hashing (Argon2id/bcrypt/scrypt for passwords), and AES-256-GCM for symmetric encryption."
           },
@@ -958,7 +2143,7 @@
                   "startLine": 61,
                   "endLine": 61,
                   "snippet": {
-                    "text": "self.rule_id = hashlib.sha1(basis.encode()).hexdigest()[:12]"
+                    "text": "hashlib.sha1(basis.encode())"
                   }
                 }
               }
@@ -967,7 +2152,7 @@
         },
         {
           "ruleId": "SEC-006",
-          "ruleIndex": 3,
+          "ruleIndex": 9,
           "level": "error",
           "message": {
             "text": "Broken Authentication: TLS certificate/hostname verification appears disabled at steps.append."
@@ -983,7 +2168,7 @@
             "confidence": 0.8,
             "tainted": false,
             "evidenceIds": [
-              "E147"
+              "E357"
             ],
             "recommendation": "Keep certificate and hostname verification enabled and require TLS 1.2+ (prefer TLS 1.3)."
           },
@@ -1006,7 +2191,7 @@
         },
         {
           "ruleId": "SEC-010",
-          "ruleIndex": 4,
+          "ruleIndex": 10,
           "level": "error",
           "message": {
             "text": "Sensitive Logging: 'secret' is passed to log.warning, so it can reach log storage and aggregation systems in clear text."
@@ -1022,7 +2207,7 @@
             "confidence": 0.75,
             "tainted": false,
             "evidenceIds": [
-              "E148"
+              "E358"
             ],
             "recommendation": "Redact or mask sensitive fields before logging; log identifiers rather than values."
           },
@@ -1045,7 +2230,7 @@
         },
         {
           "ruleId": "QNT-SHA-1",
-          "ruleIndex": 1,
+          "ruleIndex": 7,
           "level": "note",
           "message": {
             "text": "Quantum Migration Inventory: SHA-1 is classically broken: Chosen-prefix collisions demonstrated; NIST-deprecated for all uses."
@@ -1061,7 +2246,7 @@
             "confidence": 1.0,
             "tainted": false,
             "evidenceIds": [
-              "E252"
+              "E464"
             ],
             "recommendation": "Migrate to SHA-384 or SHA3-256 (NIST SP 800-107r1). Chosen-prefix collisions demonstrated; NIST-deprecated for all uses."
           },
@@ -1074,7 +2259,7 @@
                 "region": {
                   "startLine": 116,
                   "snippet": {
-                    "text": "self.policy_id = \"P\" + hashlib.sha1(basis.encode()).hexdigest()[:10]"
+                    "text": "hashlib.sha1(basis.encode())"
                   }
                 }
               }
@@ -1083,7 +2268,7 @@
         },
         {
           "ruleId": "SEC-005",
-          "ruleIndex": 2,
+          "ruleIndex": 8,
           "level": "error",
           "message": {
             "text": "Weak Crypto: hashlib.sha1 performs hashing with SHA-1. SHA-1 is collision-broken and deprecated by NIST."
@@ -1099,7 +2284,7 @@
             "confidence": 0.95,
             "tainted": false,
             "evidenceIds": [
-              "E158"
+              "E368"
             ],
             "recommendation": "Use SHA-256 or stronger for hashing (Argon2id/bcrypt/scrypt for passwords), and AES-256-GCM for symmetric encryption."
           },
@@ -1113,7 +2298,7 @@
                   "startLine": 116,
                   "endLine": 116,
                   "snippet": {
-                    "text": "self.policy_id = \"P\" + hashlib.sha1(basis.encode()).hexdigest()[:10]"
+                    "text": "hashlib.sha1(basis.encode())"
                   }
                 }
               }
@@ -1122,7 +2307,7 @@
         },
         {
           "ruleId": "QNT-SHA-1",
-          "ruleIndex": 1,
+          "ruleIndex": 7,
           "level": "note",
           "message": {
             "text": "Quantum Migration Inventory: SHA-1 is classically broken: Chosen-prefix collisions demonstrated; NIST-deprecated for all uses."
@@ -1138,7 +2323,7 @@
             "confidence": 1.0,
             "tainted": false,
             "evidenceIds": [
-              "E254"
+              "E466"
             ],
             "recommendation": "Migrate to SHA-384 or SHA3-256 (NIST SP 800-107r1). Chosen-prefix collisions demonstrated; NIST-deprecated for all uses."
           },
@@ -1151,7 +2336,7 @@
                 "region": {
                   "startLine": 54,
                   "snippet": {
-                    "text": "self.usage_id = hashlib.sha1(basis.encode()).hexdigest()[:12]"
+                    "text": "hashlib.sha1(basis.encode())"
                   }
                 }
               }
@@ -1160,7 +2345,7 @@
         },
         {
           "ruleId": "SEC-005",
-          "ruleIndex": 2,
+          "ruleIndex": 8,
           "level": "error",
           "message": {
             "text": "Weak Crypto: hashlib.sha1 performs hashing with SHA-1. SHA-1 is collision-broken and deprecated by NIST."
@@ -1176,7 +2361,7 @@
             "confidence": 0.95,
             "tainted": false,
             "evidenceIds": [
-              "E159"
+              "E369"
             ],
             "recommendation": "Use SHA-256 or stronger for hashing (Argon2id/bcrypt/scrypt for passwords), and AES-256-GCM for symmetric encryption."
           },
@@ -1190,7 +2375,7 @@
                   "startLine": 54,
                   "endLine": 54,
                   "snippet": {
-                    "text": "self.usage_id = hashlib.sha1(basis.encode()).hexdigest()[:12]"
+                    "text": "hashlib.sha1(basis.encode())"
                   }
                 }
               }
@@ -1199,7 +2384,7 @@
         },
         {
           "ruleId": "SEC-006",
-          "ruleIndex": 3,
+          "ruleIndex": 9,
           "level": "error",
           "message": {
             "text": "Broken Authentication: TLS certificate/hostname verification appears disabled at re.compile."
@@ -1215,7 +2400,7 @@
             "confidence": 0.8,
             "tainted": false,
             "evidenceIds": [
-              "E164"
+              "E374"
             ],
             "recommendation": "Keep certificate and hostname verification enabled and require TLS 1.2+ (prefer TLS 1.3)."
           },
@@ -1229,7 +2414,7 @@
                   "startLine": 80,
                   "endLine": 80,
                   "snippet": {
-                    "text": "re.compile(r'X509TrustManager\\(\\)\\s*\\{'),"
+                    "text": "re.compile(r'X509TrustManager\\(\\)\\s*\\{')"
                   }
                 }
               }
@@ -1238,7 +2423,7 @@
         },
         {
           "ruleId": "SEC-006",
-          "ruleIndex": 3,
+          "ruleIndex": 9,
           "level": "error",
           "message": {
             "text": "Broken Authentication: TLS certificate/hostname verification appears disabled at re.compile."
@@ -1254,7 +2439,7 @@
             "confidence": 0.8,
             "tainted": false,
             "evidenceIds": [
-              "E165"
+              "E375"
             ],
             "recommendation": "Keep certificate and hostname verification enabled and require TLS 1.2+ (prefer TLS 1.3)."
           },
@@ -1268,7 +2453,7 @@
                   "startLine": 81,
                   "endLine": 81,
                   "snippet": {
-                    "text": "re.compile(r'\\btrustAllCerts\\b'),"
+                    "text": "re.compile(r'\\btrustAllCerts\\b')"
                   }
                 }
               }
@@ -1277,7 +2462,7 @@
         },
         {
           "ruleId": "SEC-006",
-          "ruleIndex": 3,
+          "ruleIndex": 9,
           "level": "error",
           "message": {
             "text": "Broken Authentication: TLS certificate/hostname verification appears disabled at re.compile."
@@ -1293,7 +2478,7 @@
             "confidence": 0.8,
             "tainted": false,
             "evidenceIds": [
-              "E169"
+              "E381"
             ],
             "recommendation": "Keep certificate and hostname verification enabled and require TLS 1.2+ (prefer TLS 1.3)."
           },
@@ -1307,7 +2492,7 @@
                   "startLine": 30,
                   "endLine": 30,
                   "snippet": {
-                    "text": "re.compile(r'danger_accept_invalid_certs\\s*\\(\\s*true\\s*\\)|danger_accept_invalid_hostnames\\s*\\(\\s*true\\s*\\)'),"
+                    "text": "re.compile(r'danger_accept_invalid_certs\\s*\\(\\s*true\\s*\\)|danger_accept_invalid_hostnames\\s*\\(\\s*true\\s*\\)')"
                   }
                 }
               }
@@ -1316,7 +2501,7 @@
         },
         {
           "ruleId": "QNT-SHA-1",
-          "ruleIndex": 1,
+          "ruleIndex": 7,
           "level": "note",
           "message": {
             "text": "Quantum Migration Inventory: SHA-1 is classically broken: Chosen-prefix collisions demonstrated; NIST-deprecated for all uses."
@@ -1332,7 +2517,7 @@
             "confidence": 1.0,
             "tainted": false,
             "evidenceIds": [
-              "E258"
+              "E470"
             ],
             "recommendation": "Migrate to SHA-384 or SHA3-256 (NIST SP 800-107r1). Chosen-prefix collisions demonstrated; NIST-deprecated for all uses."
           },
@@ -1345,7 +2530,7 @@
                 "region": {
                   "startLine": 123,
                   "snippet": {
-                    "text": "self.node_id = hashlib.sha1(basis.encode()).hexdigest()[:16]"
+                    "text": "hashlib.sha1(basis.encode())"
                   }
                 }
               }
@@ -1354,7 +2539,7 @@
         },
         {
           "ruleId": "SEC-005",
-          "ruleIndex": 2,
+          "ruleIndex": 8,
           "level": "error",
           "message": {
             "text": "Weak Crypto: hashlib.sha1 performs hashing with SHA-1. SHA-1 is collision-broken and deprecated by NIST."
@@ -1370,7 +2555,7 @@
             "confidence": 0.95,
             "tainted": false,
             "evidenceIds": [
-              "E177"
+              "E389"
             ],
             "recommendation": "Use SHA-256 or stronger for hashing (Argon2id/bcrypt/scrypt for passwords), and AES-256-GCM for symmetric encryption."
           },
@@ -1384,7 +2569,7 @@
                   "startLine": 123,
                   "endLine": 123,
                   "snippet": {
-                    "text": "self.node_id = hashlib.sha1(basis.encode()).hexdigest()[:16]"
+                    "text": "hashlib.sha1(basis.encode())"
                   }
                 }
               }
@@ -1393,7 +2578,7 @@
         },
         {
           "ruleId": "SEC-006",
-          "ruleIndex": 3,
+          "ruleIndex": 9,
           "level": "error",
           "message": {
             "text": "Broken Authentication: TLS certificate/hostname verification appears disabled at CryptoSignature."
@@ -1409,7 +2594,7 @@
             "confidence": 0.8,
             "tainted": false,
             "evidenceIds": [
-              "E178"
+              "E390"
             ],
             "recommendation": "Keep certificate and hostname verification enabled and require TLS 1.2+ (prefer TLS 1.3)."
           },
@@ -1432,7 +2617,7 @@
         },
         {
           "ruleId": "DEP-001",
-          "ruleIndex": 5,
+          "ruleIndex": 11,
           "level": "note",
           "message": {
             "text": "Unpinned Dependency: Pin dependency versions for reproducible, auditable builds."
@@ -1448,7 +2633,7 @@
             "confidence": 0.9,
             "tainted": false,
             "evidenceIds": [
-              "E262"
+              "E474"
             ],
             "recommendation": "Pin dependency versions for reproducible, auditable builds."
           },
@@ -1470,7 +2655,7 @@
         },
         {
           "ruleId": "SEC-006",
-          "ruleIndex": 3,
+          "ruleIndex": 9,
           "level": "error",
           "message": {
             "text": "Broken Authentication: TLS certificate/hostname verification appears disabled at ctx."
@@ -1486,7 +2671,7 @@
             "confidence": 0.8,
             "tainted": false,
             "evidenceIds": [
-              "E187"
+              "E399"
             ],
             "recommendation": "Keep certificate and hostname verification enabled and require TLS 1.2+ (prefer TLS 1.3)."
           },
@@ -1561,7 +2746,7 @@
             "confidence": 0.85,
             "tainted": false,
             "evidenceIds": [
-              "E189"
+              "E401"
             ],
             "recommendation": "Mitigate Hardcoded Secret using secure coding practices."
           },
@@ -1635,7 +2820,7 @@
             "confidence": 0.85,
             "tainted": false,
             "evidenceIds": [
-              "E193"
+              "E405"
             ],
             "recommendation": "Mitigate Hardcoded Secret using secure coding practices."
           },
@@ -1709,7 +2894,7 @@
             "confidence": 0.85,
             "tainted": false,
             "evidenceIds": [
-              "E194"
+              "E406"
             ],
             "recommendation": "Mitigate Hardcoded Secret using secure coding practices."
           },
@@ -1747,7 +2932,7 @@
             "confidence": 0.85,
             "tainted": false,
             "evidenceIds": [
-              "E195"
+              "E407"
             ],
             "recommendation": "Mitigate Hardcoded Secret using secure coding practices."
           },
@@ -1785,7 +2970,7 @@
             "confidence": 0.85,
             "tainted": false,
             "evidenceIds": [
-              "E196"
+              "E408"
             ],
             "recommendation": "Mitigate Hardcoded Secret using secure coding practices."
           },
@@ -1823,7 +3008,7 @@
             "confidence": 0.85,
             "tainted": false,
             "evidenceIds": [
-              "E197"
+              "E409"
             ],
             "recommendation": "Mitigate Hardcoded Secret using secure coding practices."
           },
@@ -1897,7 +3082,7 @@
             "confidence": 0.85,
             "tainted": false,
             "evidenceIds": [
-              "E211"
+              "E423"
             ],
             "recommendation": "Mitigate Hardcoded Secret using secure coding practices."
           },
@@ -1935,7 +3120,7 @@
             "confidence": 0.85,
             "tainted": false,
             "evidenceIds": [
-              "E226"
+              "E438"
             ],
             "recommendation": "Mitigate Hardcoded Secret using secure coding practices."
           },
@@ -1973,7 +3158,7 @@
             "confidence": 0.85,
             "tainted": false,
             "evidenceIds": [
-              "E229"
+              "E441"
             ],
             "recommendation": "Mitigate Hardcoded Secret using secure coding practices."
           },
@@ -1995,7 +3180,7 @@
         },
         {
           "ruleId": "SEC-006",
-          "ruleIndex": 3,
+          "ruleIndex": 9,
           "level": "error",
           "message": {
             "text": "Broken Authentication: TLS certificate/hostname verification appears disabled at src."
@@ -2011,7 +3196,7 @@
             "confidence": 0.8,
             "tainted": false,
             "evidenceIds": [
-              "E228"
+              "E440"
             ],
             "recommendation": "Keep certificate and hostname verification enabled and require TLS 1.2+ (prefer TLS 1.3)."
           },
@@ -2050,7 +3235,7 @@
             "confidence": 0.85,
             "tainted": false,
             "evidenceIds": [
-              "E230"
+              "E442"
             ],
             "recommendation": "Mitigate Hardcoded Secret using secure coding practices."
           },
@@ -2088,7 +3273,7 @@
             "confidence": 0.85,
             "tainted": false,
             "evidenceIds": [
-              "E231"
+              "E443"
             ],
             "recommendation": "Mitigate Hardcoded Secret using secure coding practices."
           },

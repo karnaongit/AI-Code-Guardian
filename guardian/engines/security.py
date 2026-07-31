@@ -173,6 +173,16 @@ class SecurityEngine(BaseEngine):
             findings.extend(file_findings)
 
         findings = _dedupe_findings(findings)
+
+        # Apply precision vs recall mode filtering
+        scan_mode = getattr(context.config, "scan_mode", "precision") if hasattr(context, "config") else "precision"
+        if scan_mode == "precision":
+            # Filter out low-confidence findings (< 0.70) without taint flow or severity
+            findings = [
+                f for f in findings
+                if f.tainted or f.is_exploitable or f.confidence >= 0.7 or f.severity in (Severity.CRITICAL.value, Severity.HIGH.value)
+            ]
+
         return EngineResult(evidence=evidence, findings=findings,
                             output={"files_analyzed": len(context.ust.files),
                                     "findings": len(findings)})
@@ -196,6 +206,14 @@ class SecurityEngine(BaseEngine):
                 evidence.extend(node_evidence)
                 if finding is not None:
                     finding.evidence_ids = [e.fingerprint for e in node_evidence]
+                    # Reachability / Taint Analysis scoring
+                    if finding.tainted:
+                        finding.is_exploitable = True
+                        finding.exploitability_score = round(min(1.0, finding.confidence * 1.1), 2)
+                        finding.exploit_scenario = (
+                            f"Untrusted input reaches dangerous sink '{node.symbol}' at line {node.line}. "
+                            f"An attacker can exploit this via HTTP/API inputs."
+                        )
                     findings.append(finding)
 
             evidence.extend(self._structural_evidence(node, ust_file))
