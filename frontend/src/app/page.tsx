@@ -8,6 +8,8 @@ import ChatDrawer from "../components/chat/ChatDrawer";
 import VulnerabilityViewer from "../components/editor/VulnerabilityViewer";
 import CodeMindMap from "../components/mindmap/CodeMindMap";
 import { buildMindMapFromScan } from "../components/mindmap/utils";
+import CyberDashboard from "../components/cyberlock/CyberDashboard";
+
 import {
   Shield,
   Play,
@@ -30,7 +32,7 @@ import {
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
 export default function Home() {
-  const [activeTab, setActiveTab] = useState("workspace");
+  const [activeTab, setActiveTab] = useState("cyber_dashboard");
   const [report, setReport] = useState<any>(null);
   const [selectedFinding, setSelectedFinding] = useState<FindingDetail | null>(null);
   const [isFindingDrawerOpen, setIsFindingDrawerOpen] = useState(false);
@@ -188,6 +190,7 @@ export default function Home() {
   });
 
   const tabs = [
+    { id: "cyber_dashboard", label: "Cyberlock Dashboard", icon: "🟧" },
     { id: "workspace", label: "IDE Workspace", icon: "💻" },
     { id: "mindmap", label: "Code Mind Map", icon: "🧠" },
     { id: "overview", label: "Overview", icon: "📊" },
@@ -195,6 +198,11 @@ export default function Home() {
     { id: "pr_review", label: "PR Review", icon: "🔄" },
     { id: "reports", label: "Reports", icon: "📄" },
   ];
+
+  if (activeTab === "cyber_dashboard") {
+    return <CyberDashboard onNavigatePlatform={() => setActiveTab("workspace")} />;
+  }
+
 
   return (
     <>
