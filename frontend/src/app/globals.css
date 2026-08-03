@@ -2,102 +2,203 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ============================================================
+   AI CODE GUARDIAN DESIGN SYSTEM — Global Token Layer
+   Primary BG:   #0B0F19 (Deep Secure Black)
+   Card BG:      #12131a / #0c0d11
+   Border:       rgba(255,255,255,0.08)
+   Accent:       #ff5400 (Electric Orange)
+   Text Primary: #f4f4f8
+   Text Muted:   #8e8e9a
+   ============================================================ */
+
 @layer base {
   body {
     margin: 0;
     min-height: 100vh;
-    background-color: #0b0f19;
-    color: #f8fafc;
+    background-color: #0B0F19;
+    color: #f4f4f8;
     overflow-x: hidden;
     position: relative;
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  }
+
+  ::selection {
+    background-color: rgba(255, 84, 0, 0.2);
+    color: #ff5400;
+  }
+
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 84, 0, 0.3) rgba(12, 13, 17, 0.8);
+  }
+
+  *::-webkit-scrollbar {
+    width: 5px;
+    height: 5px;
+  }
+
+  *::-webkit-scrollbar-track {
+    background: rgba(12, 13, 17, 0.8);
+  }
+
+  *::-webkit-scrollbar-thumb {
+    background: rgba(255, 84, 0, 0.3);
+    border-radius: 4px;
+  }
+
+  *::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 84, 0, 0.5);
   }
 }
 
-/* Subtle, Muted Background Lighting (Non-distracting) */
+/* ============================================================
+   Background system — ambient dot grid
+   ============================================================ */
 .bg-glass-orbs {
   position: fixed;
   inset: 0;
   pointer-events: none;
   z-index: 0;
   overflow: hidden;
-  background: 
-    radial-gradient(at 10% 10%, rgba(59, 130, 246, 0.07) 0px, transparent 60%),
-    radial-gradient(at 90% 90%, rgba(99, 102, 241, 0.05) 0px, transparent 60%);
+  background:
+    radial-gradient(at 15% 15%, rgba(255, 84, 0, 0.05) 0px, transparent 55%),
+    radial-gradient(at 85% 85%, rgba(255, 120, 0, 0.04) 0px, transparent 55%);
 }
 
 .orb {
-  display: none; /* Removed floating orbs for a clean, minimalist layout */
+  display: none;
 }
 
-/* -------------------------------------------------- */
-/* Minimalist Content-Focused Design System */
-/* -------------------------------------------------- */
+/* Dot-grid overlay helper */
+.cyber-dot-grid {
+  background-image: radial-gradient(rgba(255, 84, 0, 0.12) 1px, transparent 1px);
+  background-size: 28px 28px;
+}
 
-/* Clean Container / Sidebar Panel */
+/* ============================================================
+   Panel / Card Components
+   ============================================================ */
+
+/* Main sidebar & drawer panels */
 .glass-panel {
-  background: rgba(15, 23, 42, 0.75) !important;
+  background: rgba(12, 13, 17, 0.92) !important;
   backdrop-filter: blur(16px) !important;
   -webkit-backdrop-filter: blur(16px) !important;
-  border: 1px solid rgba(255, 255, 255, 0.08) !important;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35) !important;
+  border: 1px solid rgba(255, 255, 255, 0.07) !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4) !important;
 }
 
-/* Clean Card Component */
+/* Secondary card component */
 .glass-card {
-  background: rgba(30, 41, 59, 0.5) !important;
-  backdrop-filter: blur(12px) !important;
-  -webkit-backdrop-filter: blur(12px) !important;
+  background: rgba(18, 19, 26, 0.85) !important;
+  backdrop-filter: blur(10px) !important;
+  -webkit-backdrop-filter: blur(10px) !important;
   border: 1px solid rgba(255, 255, 255, 0.07) !important;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
   transition: all 0.2s ease-in-out !important;
 }
 
 .glass-card:hover {
-  background: rgba(30, 41, 59, 0.8) !important;
-  border-color: rgba(255, 255, 255, 0.15) !important;
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3) !important;
-  transform: translateY(-1px);
+  background: rgba(18, 19, 26, 0.95) !important;
+  border-color: rgba(255, 84, 0, 0.2) !important;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4) !important;
 }
 
-/* Input Fields - High Readability & Low Distraction */
+/* ============================================================
+   Input Fields
+   ============================================================ */
 .glass-input {
-  background: rgba(15, 23, 42, 0.9) !important;
+  background: rgba(9, 10, 13, 0.95) !important;
   backdrop-filter: blur(8px) !important;
   -webkit-backdrop-filter: blur(8px) !important;
-  border: 1px solid rgba(255, 255, 255, 0.12) !important;
-  color: #f8fafc !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  color: #f4f4f8 !important;
   transition: border-color 0.2s ease, box-shadow 0.2s ease !important;
 }
 
 .glass-input:focus {
-  background: rgba(15, 23, 42, 1) !important;
-  border-color: #3b82f6 !important;
-  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.25) !important;
+  background: #090a0d !important;
+  border-color: #ff5400 !important;
+  box-shadow: 0 0 0 2px rgba(255, 84, 0, 0.2) !important;
+  outline: none !important;
 }
 
-/* Primary Action Buttons - Professional Muted Blue Accent */
+/* ============================================================
+   Primary Action Button — Electric Orange
+   ============================================================ */
 .glass-button {
-  background: #2563eb !important;
-  border: 1px solid rgba(255, 255, 255, 0.15) !important;
-  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.3) !important;
+  background: #ff5400 !important;
+  border: 1px solid rgba(255, 100, 0, 0.4) !important;
+  box-shadow: 0 4px 14px rgba(255, 84, 0, 0.3) !important;
+  color: #000 !important;
+  font-weight: 700 !important;
   transition: all 0.2s ease-in-out !important;
 }
 
 .glass-button:hover {
-  background: #1d4ed8 !important;
-  border-color: rgba(255, 255, 255, 0.25) !important;
-  box-shadow: 0 6px 18px rgba(37, 99, 235, 0.4) !important;
+  background: #ff6a1a !important;
+  box-shadow: 0 6px 20px rgba(255, 84, 0, 0.45) !important;
   transform: translateY(-1px);
 }
 
-/* Banner Accent */
-.glass-banner {
-  background: rgba(30, 41, 59, 0.6) !important;
-  backdrop-filter: blur(16px) !important;
-  -webkit-backdrop-filter: blur(16px) !important;
-  border: 1px solid rgba(255, 255, 255, 0.1) !important;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25) !important;
+.glass-button:disabled {
+  background: rgba(255, 84, 0, 0.3) !important;
+  box-shadow: none !important;
+  transform: none !important;
+  cursor: not-allowed !important;
 }
 
+/* ============================================================
+   Banner / Hero Strip
+   ============================================================ */
+.glass-banner {
+  background: rgba(18, 19, 26, 0.8) !important;
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3) !important;
+}
 
+/* ============================================================
+   Utility: Animate marquee (client logo scroll)
+   ============================================================ */
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.animate-marquee {
+  animation: marquee 28s linear infinite;
+}
+
+/* ============================================================
+   Utility: slow spin for orbit ring
+   ============================================================ */
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.animate-spin-slow {
+  animation: spin-slow 18s linear infinite;
+}
+
+/* ============================================================
+   Utility: subtle pulse for status dots
+   ============================================================ */
+@keyframes pulse-subtle {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+.animate-pulse-subtle {
+  animation: pulse-subtle 2s ease-in-out infinite;
+}
+
+/* ============================================================
+   Syntax / code blocks
+   ============================================================ */
+pre, code {
+  font-family: 'Roboto Mono', 'JetBrains Mono', 'Fira Code', monospace !important;
+}

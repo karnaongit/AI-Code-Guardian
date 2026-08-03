@@ -264,50 +264,51 @@ export default function IDEWorkspace({ onScanComplete }: IDEWorkspaceProps) {
   };
 
   return (
-    <div className="flex flex-col h-[calc(100vh-140px)] gap-4">
+    <div className="flex flex-col h-[calc(100vh-160px)] gap-4">
       <div className="shrink-0">
         <RepoInput onScan={handleScan} isScanning={isScanning} />
       </div>
-      <div className="flex-1 flex overflow-hidden rounded-xl glass-panel">
-        {/* Sidebar */}
-        <div className="w-64 shrink-0 overflow-hidden">
+      <div className="flex-1 flex overflow-hidden rounded-xl bg-[#0c0d11] border border-white/8">
+        {/* File Tree Sidebar */}
+        <div className="w-60 shrink-0 overflow-hidden">
           {isScanning ? (
-            <div className="h-full flex items-center justify-center text-indigo-400 gap-2">
-              <Loader2 className="w-5 h-5 animate-spin" />
-              <span className="text-sm font-medium">Scanning...</span>
+            <div className="h-full flex flex-col items-center justify-center text-[#ff5400] gap-3 bg-[#0c0d11]">
+              <Loader2 className="w-6 h-6 animate-spin" />
+              <span className="text-xs font-mono font-semibold tracking-wider text-[#8e8e9a]">SCANNING...</span>
             </div>
           ) : (
-            <FileTreeSidebar 
-              tree={fileTree} 
-              onSelectFile={handleSelectFile} 
-              selectedPath={selectedFilePath} 
+            <FileTreeSidebar
+              tree={fileTree}
+              onSelectFile={handleSelectFile}
+              selectedPath={selectedFilePath}
             />
           )}
         </div>
-        
+
         {/* Code Viewer (Center) */}
-        <div className="flex-1 overflow-hidden border-l border-white/10 flex flex-col">
-          <div className="p-2 border-b border-white/10 glass-card flex items-center shrink-0">
-            <span className="text-sm font-mono text-slate-400">
-              {selectedFilePath || "No file selected"}
+        <div className="flex-1 overflow-hidden border-l border-white/8 flex flex-col">
+          <div className="px-4 py-2.5 border-b border-white/8 bg-[#12131a] flex items-center gap-2 shrink-0">
+            <span className="w-2 h-2 rounded-full bg-[#ff5400]/50" />
+            <span className="text-xs font-mono text-[#8e8e9a] truncate">
+              {selectedFilePath || "NO FILE SELECTED"}
             </span>
           </div>
           <div className="flex-1 overflow-hidden">
-            <CodeViewer 
-              content={fileContent} 
-              language={getLanguageFromPath(selectedFilePath)} 
-              findings={findings} 
+            <CodeViewer
+              content={fileContent}
+              language={getLanguageFromPath(selectedFilePath)}
+              findings={findings}
               onChange={setFileContent}
               readOnly={false}
             />
           </div>
         </div>
-        
+
         {/* Vulnerability Panel (Right) */}
         {selectedFilePath && (
-          <VulnerabilityPanel 
-            findings={findings} 
-            fileName={selectedFilePath.split("/").pop() || selectedFilePath} 
+          <VulnerabilityPanel
+            findings={findings}
+            fileName={selectedFilePath.split("/").pop() || selectedFilePath}
             onApplyFix={handleApplyFix}
           />
         )}
@@ -315,3 +316,4 @@ export default function IDEWorkspace({ onScanComplete }: IDEWorkspaceProps) {
     </div>
   );
 }
+

@@ -154,7 +154,7 @@ class GuardrailPipeline:
             verdict.redactions = redactions
             verdict.sanitised_text = sanitised
             verdict.add(f"{redactions} suspected secret(s) redacted before transmission")
-            log.warning("Redacted %d suspected secret(s) from outbound prompt", redactions)
+            log.warning("Redacted %d sensitive token(s) from outbound prompt", redactions)
         for name, pattern in _INJECTION_PATTERNS:
             if pattern.search(text):
                 verdict.add(f"possible prompt injection in analysed content ({name})")

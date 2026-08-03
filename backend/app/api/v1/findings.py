@@ -87,7 +87,7 @@ async def autofix_finding(req: AutoFixRequest):
         m = re.match(r'^([a-zA-Z0-9_]+)\s*=\s*["\'].*?["\']', snippet)
         if m:
             var_name = m.group(1)
-            fixed_line = f'{var_name} = os.getenv("{var_name.toUpperCase()}", "")'
+            fixed_line = f'{var_name} = os.getenv("{var_name.upper()}", "")'
         else:
             fixed_line = 'SECRET_KEY = os.getenv("SECRET_KEY", "")'
         explanation = "Replaced hardcoded secret credential with environment variable lookup."

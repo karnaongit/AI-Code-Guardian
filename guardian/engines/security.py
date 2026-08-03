@@ -322,6 +322,8 @@ class SecurityEngine(BaseEngine):
         return [ev], finding
 
     def _insecure_transport_finding(self, node: USTNode, ust_file: USTFile, penalty: float):
+        if node.symbol in ("re.compile", "re.search", "re.match", "re.sub", "re.subn", "re.finditer", "re.findall", "RegExp") or "replace" in (node.symbol or "").lower():
+            return None
         subject = f"{node.symbol} {' '.join(node.arguments)}"
         tls_version = _tag_value(node.crypto_tags, "algorithm")
         weak_version = tls_version in WEAK_TLS_VERSIONS
@@ -519,6 +521,8 @@ class SecurityEngine(BaseEngine):
             if not match or lineno in seen_lines:
                 continue
             name, value = match.group(1), match.group(2)
+            if name.lower() in ("foreign_key", "primary_key", "sort_key", "partition_key", "cache_key", "routing_key"):
+                continue
             if PLACEHOLDER_SECRET.match(value) or not entropy_gate(name, value):
                 continue
             if _is_env_lookup(line):

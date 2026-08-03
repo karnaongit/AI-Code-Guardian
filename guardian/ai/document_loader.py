@@ -105,7 +105,7 @@ def _doc_type_for(path: Path) -> DocumentType:
 
 def _make_doc_id(source_path: str, chunk_index: int) -> str:
     basis = f"{source_path}::{chunk_index}"
-    return hashlib.sha1(basis.encode()).hexdigest()[:16]
+    return hashlib.sha256(basis.encode()).hexdigest()[:16]
 
 
 # ---------------------------------------------------------------------------

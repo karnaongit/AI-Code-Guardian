@@ -120,7 +120,7 @@ class USTNode:
                 self.type = USTNodeType.UNKNOWN
         basis = (f"{self.file}:{self.span.start_line}:{self.span.start_column}:"
                  f"{self.type.value}:{self.symbol or self.name}")
-        self.node_id = hashlib.sha1(basis.encode()).hexdigest()[:16]
+        self.node_id = hashlib.sha256(basis.encode()).hexdigest()[:16]
 
     # -- convenience ---------------------------------------------------
     @property

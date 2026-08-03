@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { AlertTriangle, ShieldAlert, Zap, Flame } from "lucide-react";
+import { AlertTriangle, ShieldAlert, Zap, Flame, ArrowRight } from "lucide-react";
 
 export interface FunnelMetrics {
   total_alerts: number;
@@ -19,63 +19,71 @@ export const TriageFunnel: React.FC<TriageFunnelProps> = ({ metrics, onFilterCli
   const funnelSteps = [
     {
       id: "total",
-      label: "Total Scan Alerts",
+      label: "TOTAL SCAN ALERTS",
       count: metrics.total_alerts,
       icon: AlertTriangle,
-      color: "border-blue-500/30 bg-blue-500/10 text-blue-400",
+      accent: "border-white/10 text-[#f4f4f8]",
+      iconColor: "text-[#8e8e9a]",
       description: "Raw detections across static & UST engines",
     },
     {
       id: "exploitable",
-      label: "Reachable & Exploitable",
+      label: "REACHABLE & EXPLOITABLE",
       count: metrics.exploitable_count,
       icon: ShieldAlert,
-      color: "border-amber-500/30 bg-amber-500/10 text-amber-400",
+      accent: "border-[#ff5400]/20 text-[#f4f4f8]",
+      iconColor: "text-[#ff5400]",
       description: "Confirmed taint flows reaching sinks",
     },
     {
       id: "high_priority",
-      label: "High Priority",
+      label: "HIGH PRIORITY",
       count: metrics.high_priority_count,
       icon: Zap,
-      color: "border-orange-500/30 bg-orange-500/10 text-orange-400",
+      accent: "border-orange-500/20 text-[#f4f4f8]",
+      iconColor: "text-orange-400",
       description: "Critical & High severity findings",
     },
     {
       id: "immediate_risk",
-      label: "Immediate Risk",
+      label: "IMMEDIATE RISK",
       count: metrics.immediate_risk_count,
       icon: Flame,
-      color: "border-red-500/30 bg-red-500/10 text-red-400",
+      accent: "border-red-500/20 text-[#f4f4f8]",
+      iconColor: "text-red-400",
       description: "Reachable Critical/High vulnerabilities",
     },
   ];
 
   return (
     <div className="w-full my-4">
-      <div className="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-3">
-        Triage Funnel & Risk Prioritization
+      <div className="text-[10px] font-mono font-semibold uppercase tracking-[0.2em] text-[#8e8e9a] mb-3 flex items-center gap-2">
+        <span className="w-2 h-2 rounded-full bg-[#ff5400] animate-pulse" />
+        TRIAGE FUNNEL & RISK PRIORITIZATION
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
         {funnelSteps.map((step, index) => {
           const Icon = step.icon;
           return (
             <div
               key={step.id}
               onClick={() => onFilterClick && onFilterClick(step.id)}
-              className={`relative flex flex-col justify-between p-4 rounded-xl border ${step.color} backdrop-blur-md cursor-pointer transition-all duration-200 hover:scale-[1.02] hover:shadow-lg`}
+              className={`relative flex flex-col justify-between p-4 rounded-xl bg-[#12131a] border ${step.accent} cursor-pointer transition-all duration-200 hover:border-[#ff5400]/30 hover:bg-[#1a1b24] group`}
             >
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-medium text-slate-300">{step.label}</span>
-                <Icon className="w-5 h-5 opacity-80" />
+              <div className="flex items-center justify-between mb-3">
+                <span className="text-[10px] font-mono font-semibold tracking-wider text-[#8e8e9a] group-hover:text-[#f4f4f8] transition-colors">
+                  {step.label}
+                </span>
+                <Icon className={`w-4 h-4 ${step.iconColor} opacity-70`} />
               </div>
-              <div className="my-2">
-                <span className="text-3xl font-extrabold tracking-tight">{step.count}</span>
+              <div className="my-1">
+                <span className="text-3xl font-bold tracking-tight font-mono">{step.count}</span>
               </div>
-              <p className="text-[11px] text-slate-400 truncate">{step.description}</p>
+              <p className="text-[10px] font-mono text-[#8e8e9a] truncate mt-1">{step.description}</p>
+
               {index < funnelSteps.length - 1 && (
-                <div className="hidden md:block absolute -right-3 top-1/2 -translate-y-1/2 z-10 text-slate-600 text-sm">
-                  ➔
+                <div className="hidden md:block absolute -right-3.5 top-1/2 -translate-y-1/2 z-10 text-[#8e8e9a]">
+                  <ArrowRight className="w-3.5 h-3.5" />
                 </div>
               )}
             </div>

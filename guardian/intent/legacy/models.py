@@ -58,7 +58,7 @@ class BusinessRule:
 
     def __post_init__(self):
         basis = f"{self.requirement_id}:{self.actor}:{self.action}:{self.condition}"
-        self.rule_id = hashlib.sha1(basis.encode()).hexdigest()[:12]
+        self.rule_id = hashlib.sha256(basis.encode()).hexdigest()[:12]
         if not self.plain_english:
             self.plain_english = self._build_plain_english()
 

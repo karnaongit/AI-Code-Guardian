@@ -45,7 +45,7 @@ def findings_to_documents(report: dict) -> list[Document]:
     for f in report.get("scan", {}).get("findings", []):
         text = finding_text(f)
         docs.append(Document(
-            doc_id=hashlib.sha1(text.encode()).hexdigest()[:16],
+            doc_id=hashlib.sha256(text.encode()).hexdigest()[:16],
             content=text,
             source_path=str(f.get("file", "scan_report")),
             doc_type=DocumentType.SCAN_REPORT,
@@ -66,7 +66,7 @@ def findings_to_documents(report: dict) -> list[Document]:
                  + f" | overall_risk {risk.get('overall_risk_score')}"
                  + f" | merge_decision {risk.get('merge_decision')}")
     docs.append(Document(
-        doc_id=hashlib.sha1(summary_content.encode()).hexdigest()[:16],
+        doc_id=hashlib.sha256(summary_content.encode()).hexdigest()[:16],
         content=summary_content,
         source_path="scan:summary",
         doc_type=DocumentType.RISK_REPORT,

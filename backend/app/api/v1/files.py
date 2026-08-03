@@ -102,7 +102,12 @@ async def get_file_content(
     if not target_dir or not os.path.exists(target_dir):
         raise HTTPException(status_code=404, detail="Repository root not found.")
         
-    file_path = Path(target_dir) / path
+    repo_root = Path(target_dir).resolve()
+    file_path = (repo_root / path).resolve()
+
+    if not str(file_path).startswith(str(repo_root)):
+        raise HTTPException(status_code=403, detail="Access denied: Path outside repository boundary.")
+
     if not file_path.exists() or not file_path.is_file():
         raise HTTPException(status_code=404, detail=f"File '{path}' not found.")
         

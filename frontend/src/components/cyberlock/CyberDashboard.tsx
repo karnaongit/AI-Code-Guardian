@@ -26,19 +26,20 @@ export default function CyberDashboard({ onNavigatePlatform }: CyberDashboardPro
   const [activeTab, setActiveTab] = useState<"HOME" | "SERVICES" | "ABOUT" | "STORIES" | "CONTACT">("HOME");
 
   return (
-    /* Vibrant Electric Orange Outer Canvas Frame matching image_12.png */
-    <div className="min-h-screen bg-[#ff5400] p-3 sm:p-6 md:p-10 flex items-center justify-center font-sans">
+    /* Full-Screen Webpage Layout in Deep Cyber Black/Blue (#0B0F19) */
+    <div className="min-h-screen bg-[#0B0F19] text-[#f4f4f8] font-sans selection:bg-[#ff5400]/20 selection:text-[#ff5400]">
       
-      {/* Main Near-Black Dashboard Container with Soft Rounded Corners */}
-      <div className="w-full max-w-7xl bg-[#0c0d11] text-[#f4f4f8] rounded-3xl p-6 sm:p-10 shadow-[0_25px_60px_rgba(0,0,0,0.6)] relative overflow-hidden border border-black/40">
+      {/* Container Wrapper */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10 relative overflow-hidden">
         
-        {/* Subtle Background Mesh & Cross-Hair Target Grid */}
-        <div className="absolute inset-0 pointer-events-none opacity-20 bg-[radial-gradient(#ff5400_1px,transparent_1px)] [background-size:32px_32px]" />
+        {/* Subtle Ambient Background Mesh & Dot Grid */}
+        <div className="absolute inset-0 pointer-events-none opacity-25 bg-[radial-gradient(rgba(255,84,0,0.15)_1px,transparent_1px)] [background-size:32px_32px]" />
 
         {/* ------------------------------------------------------------- */}
         {/* TOP HEADER - Identical to image_12.png */}
         {/* ------------------------------------------------------------- */}
         <header className="relative z-10 flex flex-wrap items-center justify-between pb-8 border-b border-white/10 gap-4">
+
           
           {/* Brand Logo & Monospace Navigation Menu */}
           <div className="flex items-center gap-8">
@@ -47,7 +48,7 @@ export default function CyberDashboard({ onNavigatePlatform }: CyberDashboardPro
                 <Lock className="w-3.5 h-3.5 text-[#ff5400]" />
               </div>
               <span className="font-heading font-bold text-sm tracking-widest text-[#f4f4f8]">
-                CYBER<span className="text-[#ff5400]">LOCK</span>
+                AI CODE <span className="text-[#ff5400]">GUARDIAN</span>
               </span>
             </div>
 
@@ -102,7 +103,7 @@ export default function CyberDashboard({ onNavigatePlatform }: CyberDashboardPro
             {/* Sub-Header Text from image_12.png */}
             <div className="space-y-4 relative z-10">
               <div className="font-mono text-[10px] sm:text-[11px] tracking-[0.2em] text-[#8e8e9a] uppercase font-semibold">
-                WE ARE A CYBERSECURITY COMPANY MAKING ONLINE PROTECTION SIMPLE. SINCE 2021
+                WE ARE AN AI CODE SECURITY PLATFORM. MAKING CODE PROTECTION SIMPLE. SINCE 2021
               </div>
 
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#181922] border border-white/10 text-xs font-mono text-[#ff5400]">
@@ -116,7 +117,7 @@ export default function CyberDashboard({ onNavigatePlatform }: CyberDashboardPro
               </h1>
 
               <p className="text-sm text-[#8e8e9a] max-w-lg leading-relaxed font-normal">
-                Cybersecurity solutions that protect your systems, data, and business operations with zero friction.
+                AI-powered code analysis that finds vulnerabilities, explains exploitability, and auto-fixes issues — with zero friction.
               </p>
             </div>
 
@@ -331,10 +332,10 @@ export default function CyberDashboard({ onNavigatePlatform }: CyberDashboardPro
         <footer className="mt-12 pt-6 border-t border-white/10 flex flex-wrap items-center justify-between text-[11px] font-mono text-[#8e8e9a] gap-4">
           <div className="flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-[#ff5400]" />
-            <span>CYBERLOCK DEFENSE ENGINE • ZERO HARD LINE BOUNDARIES</span>
+            <span>AI CODE GUARDIAN • UST + NEMOTRON ANALYSIS ENGINE</span>
           </div>
           <div>
-            © 2026 CYBERLOCK INC. ALL RIGHTS RESERVED.
+            © 2026 AI CODE GUARDIAN. ALL RIGHTS RESERVED.
           </div>
         </footer>
 

@@ -51,7 +51,7 @@ class CryptoUsage:
 
     def __post_init__(self):
         basis = f"{self.file}:{self.line}:{self.algorithm}"
-        self.usage_id = hashlib.sha1(basis.encode()).hexdigest()[:12]
+        self.usage_id = hashlib.sha256(basis.encode()).hexdigest()[:12]
 
     def to_dict(self) -> dict:
         d = asdict(self)

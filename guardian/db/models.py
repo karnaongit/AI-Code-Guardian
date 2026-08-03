@@ -21,6 +21,7 @@ except ImportError:
 
 class ScanTable(SQLModel, table=True):
     """Represents a code repository scan execution."""
+    __tablename__ = "scan_records"
 
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
     repo_path: str
@@ -33,9 +34,10 @@ class ScanTable(SQLModel, table=True):
 
 class FindingTable(SQLModel, table=True):
     """Represents a security finding or vulnerability detected during a scan."""
+    __tablename__ = "finding_records"
 
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
-    scan_id: Optional[uuid.UUID] = Field(default=None, foreign_key="scantable.id")
+    scan_id: Optional[uuid.UUID] = Field(default=None, foreign_key="scan_records.id")
     cwe_id: Optional[str] = None
     title: str
     severity: str
@@ -46,9 +48,10 @@ class FindingTable(SQLModel, table=True):
 
 class EvidenceItemTable(SQLModel, table=True):
     """Represents deterministic evidence grounded in source code."""
+    __tablename__ = "evidence_item_records"
 
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
-    finding_id: Optional[uuid.UUID] = Field(default=None, foreign_key="findingtable.id")
+    finding_id: Optional[uuid.UUID] = Field(default=None, foreign_key="finding_records.id")
     file_path: str
     line_start: int = 0
     line_end: int = 0

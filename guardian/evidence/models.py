@@ -101,7 +101,7 @@ class Evidence:
                 self.type = EvidenceType.OTHER
         basis = (f"{self.type.value}|{self.source}|{self.file}|{self.line}|"
                  f"{self.symbol}|{self.operation}")
-        self.fingerprint = hashlib.sha1(basis.encode()).hexdigest()[:16]
+        self.fingerprint = hashlib.sha256(basis.encode()).hexdigest()[:16]
 
     # -- serialisation --------------------------------------------------
     def to_dict(self) -> dict:

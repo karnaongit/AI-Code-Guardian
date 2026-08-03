@@ -79,9 +79,9 @@ class Finding:
     finding_id: str = field(default="", init=False)
 
     def __post_init__(self):
-        # Stable SHA-1 id for dedup across incremental scans (Day 4 design).
+        # Stable SHA-256 id for dedup across incremental scans (Day 4 design).
         basis = f"{self.file}:{self.line}:{self.category}:{self.rule_id}"
-        self.finding_id = hashlib.sha1(basis.encode()).hexdigest()[:16]
+        self.finding_id = hashlib.sha256(basis.encode()).hexdigest()[:16]
 
     @property
     def is_ai(self) -> bool:

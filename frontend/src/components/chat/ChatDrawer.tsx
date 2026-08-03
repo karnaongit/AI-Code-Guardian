@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { X, Send, Bot, User, Sparkles, Shield, Terminal, Briefcase } from "lucide-react";
+import { X, Send, Bot, User, Sparkles, Shield, Terminal, Briefcase, Lock } from "lucide-react";
 
 export type PersonaType = "Executive" | "Developer" | "Red Teamer";
 
@@ -95,47 +95,47 @@ export const ChatDrawer: React.FC<ChatDrawerProps> = ({
   };
 
   const getPersonaIcon = (p: PersonaType) => {
-    if (p === "Executive") return <Briefcase className="w-4 h-4 text-blue-400" />;
-    if (p === "Developer") return <Terminal className="w-4 h-4 text-emerald-400" />;
-    return <Shield className="w-4 h-4 text-red-400" />;
+    if (p === "Executive") return <Briefcase className="w-4 h-4 text-[#ff5400]" />;
+    if (p === "Developer") return <Terminal className="w-4 h-4 text-[#ff5400]" />;
+    return <Shield className="w-4 h-4 text-[#ff5400]" />;
   };
 
   return (
-    <div className="fixed inset-0 z-50 overflow-hidden bg-black/40 backdrop-blur-md flex justify-end">
-      <div className="w-full max-w-xl glass-panel border-l border-white/10 text-slate-100 h-full flex flex-col shadow-[[-20px_0_40px_rgba(0,0,0,0.3)]] animate-in slide-in-from-right duration-300">
-        
+    <div className="fixed inset-0 z-50 overflow-hidden bg-black/60 backdrop-blur-md flex justify-end">
+      <div className="w-full max-w-xl bg-[#0c0d11] border-l border-white/8 text-[#f4f4f8] h-full flex flex-col shadow-[-20px_0_60px_rgba(0,0,0,0.6)] animate-in slide-in-from-right duration-300">
+
         {/* Header */}
-        <div className="p-4 border-b border-white/10 flex items-center justify-between">
+        <div className="p-4 border-b border-white/8 flex items-center justify-between bg-[#12131a]">
           <div className="flex items-center gap-3">
-            <div className="p-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600">
-              <Bot className="w-5 h-5 text-white" />
+            <div className="w-9 h-9 rounded-lg bg-[#0c0d11] border border-[#ff5400]/30 flex items-center justify-center">
+              <Bot className="w-5 h-5 text-[#ff5400]" />
             </div>
             <div>
-              <h2 className="text-sm font-bold text-slate-100 flex items-center gap-1.5">
-                AI Guardian Chat <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+              <h2 className="text-sm font-bold text-[#f4f4f8] font-mono tracking-wide flex items-center gap-1.5">
+                AI GUARDIAN CHAT
               </h2>
-              <p className="text-[11px] text-slate-400">Contextual Reasoning & Persona Guidance</p>
+              <p className="text-[11px] font-mono text-[#8e8e9a]">Contextual Reasoning & Persona Guidance</p>
             </div>
           </div>
-          
+
           <div className="flex items-center gap-3">
-            {/* Persona Dropdown Selector */}
-            <div className="flex items-center gap-1.5 bg-slate-800 border border-slate-700 rounded-lg px-2 py-1">
+            {/* Persona Selector */}
+            <div className="flex items-center gap-1.5 bg-[#0c0d11] border border-white/10 rounded-lg px-2.5 py-1.5 hover:border-[#ff5400]/30 transition-colors">
               {getPersonaIcon(persona)}
               <select
                 value={persona}
                 onChange={(e) => setPersona(e.target.value as PersonaType)}
-                className="bg-transparent text-xs font-semibold text-slate-200 focus:outline-none cursor-pointer"
+                className="bg-transparent text-xs font-mono font-semibold text-[#f4f4f8] focus:outline-none cursor-pointer"
               >
-                <option value="Executive" className="bg-slate-900 text-slate-200">Executive</option>
-                <option value="Developer" className="bg-slate-900 text-slate-200">Developer</option>
-                <option value="Red Teamer" className="bg-slate-900 text-slate-200">Red Teamer</option>
+                <option value="Executive" className="bg-[#0c0d11]">Executive</option>
+                <option value="Developer" className="bg-[#0c0d11]">Developer</option>
+                <option value="Red Teamer" className="bg-[#0c0d11]">Red Teamer</option>
               </select>
             </div>
 
             <button
               onClick={onClose}
-              className="p-1.5 rounded-lg text-slate-400 hover:text-slate-100 hover:bg-slate-800 transition"
+              className="p-1.5 rounded-lg text-[#8e8e9a] hover:text-[#f4f4f8] hover:bg-white/8 transition"
             >
               <X className="w-5 h-5" />
             </button>
@@ -143,32 +143,32 @@ export const ChatDrawer: React.FC<ChatDrawerProps> = ({
         </div>
 
         {/* Message Thread */}
-        <div className="p-4 flex-1 overflow-y-auto space-y-4">
+        <div className="p-4 flex-1 overflow-y-auto space-y-4 bg-[#0B0F19]">
           {messages.map((msg) => (
             <div
               key={msg.id}
               className={`flex gap-3 ${msg.role === "user" ? "justify-end" : "justify-start"}`}
             >
               {msg.role === "assistant" && (
-                <div className="w-8 h-8 rounded-full glass-card flex items-center justify-center shrink-0">
-                  <Bot className="w-4 h-4 text-blue-400" />
+                <div className="w-8 h-8 rounded-full bg-[#12131a] border border-[#ff5400]/20 flex items-center justify-center shrink-0">
+                  <Bot className="w-4 h-4 text-[#ff5400]" />
                 </div>
               )}
               <div
-                className={`max-w-[85%] rounded-2xl p-4 text-xs leading-relaxed space-y-2 ${
+                className={`max-w-[85%] rounded-xl p-3.5 text-xs leading-relaxed space-y-2 ${
                   msg.role === "user"
-                    ? "bg-gradient-to-br from-blue-600/90 to-blue-500/90 text-white rounded-tr-none shadow-lg backdrop-blur-md"
-                    : "glass-card text-slate-200 rounded-tl-none"
+                    ? "bg-[#ff5400] text-black font-semibold rounded-tr-none"
+                    : "bg-[#12131a] border border-white/8 text-[#f4f4f8] rounded-tl-none"
                 }`}
               >
                 {msg.persona && msg.role === "assistant" && (
-                  <div className="flex items-center justify-between gap-2 border-b border-white/10 pb-1.5 mb-1 text-[10px] text-slate-400">
-                    <span className="font-semibold text-slate-300 flex items-center gap-1">
-                      {getPersonaIcon(msg.persona)} {msg.persona} Mode
+                  <div className="flex items-center justify-between gap-2 border-b border-white/8 pb-1.5 mb-1 text-[10px] text-[#8e8e9a] font-mono">
+                    <span className="text-[#ff5400] font-semibold flex items-center gap-1">
+                      {getPersonaIcon(msg.persona)} {msg.persona} MODE
                     </span>
                     {msg.toolsUsed && msg.toolsUsed.length > 0 && (
-                      <span className="text-amber-400/90 font-mono text-[9px]">
-                        Tools: {msg.toolsUsed.join(", ")}
+                      <span className="text-[#8e8e9a] font-mono text-[9px]">
+                        TOOLS: {msg.toolsUsed.join(", ")}
                       </span>
                     )}
                   </div>
@@ -176,33 +176,36 @@ export const ChatDrawer: React.FC<ChatDrawerProps> = ({
                 <div className="whitespace-pre-wrap">{msg.content}</div>
               </div>
               {msg.role === "user" && (
-                <div className="w-8 h-8 rounded-full bg-blue-600/20 border border-blue-500/40 flex items-center justify-center shrink-0">
-                  <User className="w-4 h-4 text-blue-400" />
+                <div className="w-8 h-8 rounded-full bg-[#ff5400]/10 border border-[#ff5400]/30 flex items-center justify-center shrink-0">
+                  <User className="w-4 h-4 text-[#ff5400]" />
                 </div>
               )}
             </div>
           ))}
           {loading && (
-            <div className="flex gap-3 justify-start items-center text-xs text-slate-400 font-mono animate-pulse">
-              <Bot className="w-4 h-4 text-blue-400" />
-              <span>Nemotron reasoning in progress...</span>
+            <div className="flex gap-3 justify-start items-center text-xs font-mono text-[#8e8e9a] animate-pulse">
+              <Bot className="w-4 h-4 text-[#ff5400]" />
+              <span>NEMOTRON REASONING IN PROGRESS...</span>
             </div>
           )}
         </div>
 
         {/* Input Footer */}
-        <form onSubmit={handleSendMessage} className="p-4 border-t border-white/10 glass-panel flex gap-2">
+        <form
+          onSubmit={handleSendMessage}
+          className="p-4 border-t border-white/8 bg-[#12131a] flex gap-2"
+        >
           <input
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
             placeholder={`Ask in ${persona} persona...`}
-            className="flex-1 glass-input rounded-xl px-4 py-2.5 text-xs text-slate-100 focus:outline-none focus:border-blue-500/50 transition"
+            className="flex-1 glass-input rounded-lg px-4 py-2.5 text-xs font-mono focus:outline-none transition"
           />
           <button
             type="submit"
             disabled={loading || !input.trim()}
-            className="p-2.5 rounded-xl glass-button text-white disabled:opacity-50 transition"
+            className="px-4 py-2.5 rounded-lg glass-button disabled:opacity-40 transition flex items-center gap-1.5 text-xs font-mono font-bold"
           >
             <Send className="w-4 h-4" />
           </button>

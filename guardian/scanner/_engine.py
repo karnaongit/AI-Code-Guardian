@@ -239,6 +239,8 @@ def _scan_python_secrets(text: str, file_label: str, rules: dict) -> list[Findin
             continue
         value = m.group(2)
         var_name = m.group(1)
+        if var_name.lower() in ("foreign_key", "primary_key", "sort_key", "partition_key", "cache_key", "routing_key"):
+            continue
         if re.sub(r'[_\W]', '', value).lower() == re.sub(r'[_\W]', '', var_name).lower():
             continue
         if shannon_entropy(value) < ENTROPY_THRESHOLD and not re.search(r'\d', value):

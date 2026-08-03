@@ -22,12 +22,16 @@ ust = [
     "tree_sitter_typescript>=0.21",
     "tree_sitter_rust>=0.21",
 ]
-dashboard = ["streamlit>=1.30", "pandas", "plotly", "openpyxl"]
-ai = ["openai>=1.30", "sentence-transformers>=2.7", "faiss-cpu>=1.8",
-      "requests>=2.31", "numpy>=1.24"]
+ai = [
+    "openai>=1.30",
+    "sentence-transformers>=2.7",
+    "faiss-cpu>=1.8",
+    "requests>=2.31",
+    "numpy>=1.24",
+]
 docs = ["pypdf>=4.0", "python-docx>=1.1"]
-dev = ["pytest>=7.0", "pandas", "openpyxl"]
-all = ["ai-code-guardian[ust,dashboard,ai,docs]"]
+dev  = ["pytest>=7.0"]
+all  = ["ai-code-guardian[ust,ai,docs]"]
 
 [project.scripts]
 guardian = "guardian.cli:main"

@@ -113,7 +113,7 @@ class BusinessPolicy:
                 self.priority = PolicyPriority.HIGH
         basis = (f"{self.action}|{self.required_control.value}|"
                  f"{self.condition.describe()}|{self.control_detail}|{self.requirement_id}")
-        self.policy_id = "P" + hashlib.sha1(basis.encode()).hexdigest()[:10]
+        self.policy_id = "P" + hashlib.sha256(basis.encode()).hexdigest()[:10]
 
     # ------------------------------------------------------------------
     @property

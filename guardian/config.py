@@ -20,6 +20,7 @@ DEFAULT_IGNORE_DIRS = {
     ".git", ".hg", ".svn", "node_modules", "dist", "build", "target",
     "venv", ".venv", ".venv-app", "env", ".idea", ".vscode", "coverage", "__pycache__",
     ".mypy_cache", ".pytest_cache", ".tox", "vendor", "bower_components",
+    ".next", ".nuxt", ".turbo", ".output", ".acg_index", "tests",
 }
 
 DEFAULT_CONFIG_PATH = Path(__file__).resolve().parent.parent / "config" / "default.yaml"
