@@ -69,8 +69,18 @@ def get_finding_detail(finding_id: str) -> Dict[str, Any]:
 def query_security_knowledge(query: str) -> List[Dict[str, Any]]:
     """Query OWASP/CWE/NIST security knowledge rules for relevant guidance."""
     _ensure_knowledge_loaded()
-    query_lower = query.lower()
-    query_terms = [t for t in query_lower.split() if len(t) > 2]
+    query_lower = query.strip().lower()
+    
+    # Casual/conversational terms that should never match security standards
+    stopwords = {
+        "hi", "hello", "hey", "help", "who", "what", "thanks", "thank", "bye", 
+        "test", "ok", "yes", "no", "is", "it", "this", "can", "you", "me", "how",
+        "good", "morning", "afternoon", "evening", "greetings", "cya"
+    }
+    
+    query_terms = [t for t in query_lower.split() if len(t) >= 2 and t not in stopwords]
+    if not query_terms:
+        return []
     
     results = []
     for item in _SECURITY_KNOWLEDGE:
@@ -88,12 +98,12 @@ def query_security_knowledge(query: str) -> List[Dict[str, Any]]:
             elif term in haystack:
                 score += 1
                 
-        if score > 0 or not query_terms:
+        if score > 0:
             results.append((score, item))
             
     results.sort(key=lambda x: -x[0])
     matched = [r[1] for r in results[:5]]
-    return matched if matched else _SECURITY_KNOWLEDGE[:2]
+    return matched
 
 
 def get_active_findings_context(limit: int = 5) -> str:

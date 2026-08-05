@@ -291,12 +291,13 @@ class NemotronLLM(BaseLLM):
         no SDK type escapes this module."""
         name = type(exc).__name__.lower()
         text = str(exc).lower()
+        msg = str(exc).strip() or type(exc).__name__
         if "timeout" in name or "timeout" in text or "timed out" in text:
-            return LLMTimeoutError(f"Nemotron request timed out: {exc}")
+            return LLMTimeoutError(f"Nemotron request timed out: {msg}")
         if "ratelimit" in name or "429" in text or "rate limit" in text:
-            return LLMRateLimitError(f"Nemotron rate limit: {exc}")
+            return LLMRateLimitError(f"Nemotron rate limit: {msg}")
         if "authentication" in name or "401" in text or "unauthorized" in text or "api key" in text:
-            return LLMAuthError(f"Nemotron authentication failed: {exc}")
+            return LLMAuthError(f"Nemotron authentication failed: {msg}")
         if "connection" in name or "connection" in text or "network" in text:
-            return LLMError(f"Nemotron network failure: {exc}")
-        return LLMError(f"Nemotron request failed: {exc}")
+            return LLMError(f"Nemotron network failure: {msg}")
+        return LLMError(f"Nemotron request failed: {msg}")
