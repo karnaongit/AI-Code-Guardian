@@ -40,62 +40,78 @@ class ChatCompletionResponse(BaseModel):
     tools_used: List[str] = Field(default_factory=list)
 
 
+GREETINGS = {"hi", "hello", "hey", "greetings", "good morning", "good afternoon", "good evening", "howdy", "sup"}
+
+
 @router.post("/completions", response_model=ChatCompletionResponse)
 async def chat_completion(request: ChatCompletionRequest):
     system_prompt = get_persona_prompt(request.persona)
-    user_query = request.messages[-1].content if request.messages else ""
+    user_query = (request.messages[-1].content if request.messages else "").strip()
+    query_lower = user_query.lower()
 
     tools_used = []
     tool_insights = []
 
-    # 1. Always-on RAG Knowledge Retrieval (OWASP / CWE / NIST standards)
-    knowledge_entries = query_security_knowledge(user_query)
-    if knowledge_entries:
-        tools_used.append("query_security_knowledge")
-        snippets = []
-        for k in knowledge_entries:
-            title = k.get("title", "Security Standard")
-            std = k.get("standard", "OWASP/CWE")
-            content = k.get("content", "")
-            snippets.append(f"### [{std}] {title}\n{content}")
-        tool_insights.append("### Trusted Security Knowledge (RAG Context):\n" + "\n\n".join(snippets))
+    is_greeting = query_lower in GREETINGS or len(query_lower) <= 3
 
-    # 2. Active Repository Scan Evidence Context
+    if is_greeting:
+        reply = (
+            f"Hello! I am your AI Code Guardian Assistant ({request.persona} Persona).\n\n"
+            f"I can help you analyze vulnerabilities, generate security fixes, explain CWE/OWASP risks, "
+            f"or review active scan findings across your repository. How can I assist you today?"
+        )
+        return ChatCompletionResponse(persona=request.persona, reply=reply, tools_used=[])
+
+    # 1. RAG Knowledge Retrieval — only when security terms are queried
+    sec_keywords = ["cwe", "owasp", "fix", "vulnerability", "tls", "ssl", "sql", "secret", "crypto", "finding", "problem", "issue", "risk", "attack", "exploit", "code"]
+    if any(kw in query_lower for kw in sec_keywords):
+        knowledge_entries = query_security_knowledge(user_query)
+        if knowledge_entries:
+            tools_used.append("query_security_knowledge")
+            snippets = []
+            for k in knowledge_entries[:2]:
+                title = k.get("title", "Security Standard")
+                std = k.get("standard", "OWASP/CWE")
+                content = k.get("content", "")
+                snippets.append(f"### [{std}] {title}\n{content}")
+            tool_insights.append("### Trusted Security Guidance:\n" + "\n\n".join(snippets))
+
+    # 2. Active Scan Evidence Context
     findings_context = get_active_findings_context(limit=6)
-    if findings_context:
+    if findings_context and "No active" not in findings_context:
         tools_used.append("get_active_findings_context")
         tool_insights.append(f"### Active Repository Scan Evidence:\n{findings_context}")
 
-    # 3. Funnel Summary Context (if requested or relevant)
-    if any(kw in user_query.lower() for kw in ["summary", "metric", "funnel", "report", "overall", "score", "risk"]):
+    # 3. Funnel Summary Context (if requested)
+    if any(kw in query_lower for kw in ["summary", "metric", "funnel", "report", "overall", "score"]):
         summary = get_scan_funnel_summary()
         tools_used.append("get_scan_funnel_summary")
         tool_insights.append(f"### Scan Triage Summary Metrics:\n{summary}")
 
-    insight_str = "\n\n".join(tool_insights) if tool_insights else "No active tool context triggered."
+    insight_str = "\n\n".join(tool_insights) if tool_insights else "No specific scan evidence attached."
 
-    # Construct Grounded LLM User Context
+    # Construct Grounded Context
     context_msg = (
-        f"--- GROUNDED EVIDENCE & RAG CONTEXT ---\n"
+        f"--- GROUNDED EVIDENCE CONTEXT ---\n"
         f"{insight_str}\n"
-        f"---------------------------------------\n\n"
+        f"---------------------------------\n\n"
         f"USER QUERY:\n{user_query}\n\n"
-        f"Remember: Base your response ONLY on the grounded evidence and standards above."
+        f"DIRECTIVE:\n"
+        f"1. Base your answer strictly on the provided evidence context above.\n"
+        f"2. NEVER invent fake hardcoded secrets for standard UI keys (like key='sidebar_file_search').\n"
+        f"3. Be concise, concrete, and directly answer the user's question without dumping raw system prompts."
     )
 
-    llm_messages = [
-        {"role": "system", "content": system_prompt},
-    ]
+    llm_messages = [{"role": "system", "content": system_prompt}]
     for m in request.messages[:-1]:
         llm_messages.append({"role": m.role, "content": m.content})
     llm_messages.append({"role": "user", "content": context_msg})
 
     if not settings.NVIDIA_API_KEY:
         reply = (
-            f"[{request.persona} Persona Response]\n\n"
             f"Based on your query: '{user_query}'\n\n"
             f"{insight_str}\n\n"
-            f"Recommendation:\nFor full model-guided reasoning, ensure `NVIDIA_API_KEY` is configured in `.env`."
+            f"Note: Configure `NVIDIA_API_KEY` in `.env` to enable full live LLM reasoning."
         )
     else:
         try:
@@ -116,15 +132,7 @@ async def chat_completion(request: ChatCompletionRequest):
                 res.raise_for_status()
                 data = res.json()
                 reply = data["choices"][0]["message"]["content"]
-        except httpx.HTTPStatusError as e:
-            import logging
-            logger = logging.getLogger("guardian.api")
-            logger.error(f"HTTP error calling AI service: {e.response.text}", exc_info=True)
-            reply = f"Error communicating with AI service (HTTP {e.response.status_code}): {e.response.text}"
         except Exception as e:
-            import logging
-            logger = logging.getLogger("guardian.api")
-            logger.error("Error communicating with AI service", exc_info=True)
             reply = f"Error communicating with AI service: {str(e)}"
 
     return ChatCompletionResponse(

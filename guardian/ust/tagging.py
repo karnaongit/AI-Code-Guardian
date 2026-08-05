@@ -7,20 +7,12 @@ recognising well-known API shapes across languages:
     crypto_tags     RSA / ECC / AES / hashing / TLS / KEM / signatures
     security_tags   taint sources, dangerous sinks, sanitisers, secrets
     business_tags   authorization checks, API endpoints, DB operations,
-                    money/PII vocabulary
+                    entry points, money/PII vocabulary
 
 Matching happens on the *symbol* (a normalised dotted callee such as
 `Cipher.getInstance` or `hashlib.md5`), on import statements, and on
 string literal arguments (`Cipher.getInstance("AES/ECB/PKCS5Padding")`).
-That is deliberately stronger than keyword matching over raw lines: a
-comment mentioning RSA does not produce a call node, and an argument
-literal tells us the concrete algorithm rather than just the API family.
-
-When the symbol is known but the algorithm only appears in an argument,
-both are used — `Cipher.getInstance(algo)` with a non-literal argument is
-tagged `crypto` + `algorithm:unknown`, which is honest: we know crypto
-happens here, we do not know which algorithm, and no downstream layer
-may pretend otherwise.
+That is deliberately stronger than keyword matching over raw lines.
 """
 from __future__ import annotations
 
@@ -368,6 +360,10 @@ ENDPOINT_PATTERNS = re.compile(
     r"RestController|Controller|route|api_route|add_route|HttpGet|HttpPost|"
     r"web::(get|post|resource|scope)|actix_web|axum::routing)")
 
+ENTRYPOINT_PATTERNS_TAG = re.compile(
+    r"(?i)\b(main|run_app|start_server|bootstrap)\b|SpringBootApplication|main\s*\("
+)
+
 DB_PATTERNS = re.compile(
     r"(?i)(\.save|\.insert|\.update|\.delete|\.find|\.findBy|\.findOne|\.persist|"
     r"\.merge|\.commit|\.rollback|\.execute|\.query|Repository|EntityManager|"
@@ -401,6 +397,8 @@ def business_tags_for(node: USTNode) -> list[str]:
         tags.append("authorization_check")
     if ENDPOINT_PATTERNS.search(subject):
         tags.append("api_endpoint")
+    if ENTRYPOINT_PATTERNS_TAG.search(node.name or subject):
+        tags.append("entry_point")
     if DB_PATTERNS.search(node.symbol or "") or DB_PATTERNS.search(node.name or ""):
         tags.append("database_operation")
     for domain, pattern in BUSINESS_VOCABULARY.items():

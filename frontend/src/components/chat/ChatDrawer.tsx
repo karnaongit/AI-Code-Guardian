@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { X, Send, Bot, User, Sparkles, Shield, Terminal, Briefcase, Lock } from "lucide-react";
 
 export type PersonaType = "Executive" | "Developer" | "Red Teamer";
@@ -38,7 +38,11 @@ export const ChatDrawer: React.FC<ChatDrawerProps> = ({
   const [input, setInput] = useState(initialContext ? `Tell me more about finding: ${initialContext}` : "");
   const [loading, setLoading] = useState(false);
 
-  if (!isOpen) return null;
+  useEffect(() => {
+    if (initialContext) {
+      setInput(`Tell me more about finding: ${initialContext}`);
+    }
+  }, [initialContext, isOpen]);
 
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -95,14 +99,24 @@ export const ChatDrawer: React.FC<ChatDrawerProps> = ({
   };
 
   const getPersonaIcon = (p: PersonaType) => {
-    if (p === "Executive") return <Briefcase className="w-4 h-4 text-[#ff5400]" />;
-    if (p === "Developer") return <Terminal className="w-4 h-4 text-[#ff5400]" />;
-    return <Shield className="w-4 h-4 text-[#ff5400]" />;
+    if (p === "Executive") return <Briefcase className="w-3.5 h-3.5 text-[#ff5400]" />;
+    if (p === "Developer") return <Terminal className="w-3.5 h-3.5 text-[#ff5400]" />;
+    return <Shield className="w-3.5 h-3.5 text-[#ff5400]" />;
   };
 
   return (
-    <div className="fixed inset-0 z-50 overflow-hidden bg-black/60 backdrop-blur-md flex justify-end">
-      <div className="w-full max-w-xl bg-[#0c0d11] border-l border-white/8 text-[#f4f4f8] h-full flex flex-col shadow-[-20px_0_60px_rgba(0,0,0,0.6)] animate-in slide-in-from-right duration-300">
+    <div
+      onClick={onClose}
+      className={`fixed inset-0 z-50 overflow-hidden bg-black/60 backdrop-blur-md flex justify-end transition-opacity duration-300 ease-in-out ${
+        isOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+      }`}
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        className={`w-full max-w-xl bg-[#0c0d11] border-l border-white/8 text-[#f4f4f8] h-full flex flex-col shadow-[-20px_0_60px_rgba(0,0,0,0.7)] transform transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+          isOpen ? "translate-x-0" : "translate-x-full"
+        }`}
+      >
 
         {/* Header */}
         <div className="p-4 border-b border-white/8 flex items-center justify-between bg-[#12131a]">
@@ -161,18 +175,6 @@ export const ChatDrawer: React.FC<ChatDrawerProps> = ({
                     : "bg-[#12131a] border border-white/8 text-[#f4f4f8] rounded-tl-none"
                 }`}
               >
-                {msg.persona && msg.role === "assistant" && (
-                  <div className="flex items-center justify-between gap-2 border-b border-white/8 pb-1.5 mb-1 text-[10px] text-[#8e8e9a] font-mono">
-                    <span className="text-[#ff5400] font-semibold flex items-center gap-1">
-                      {getPersonaIcon(msg.persona)} {msg.persona} MODE
-                    </span>
-                    {msg.toolsUsed && msg.toolsUsed.length > 0 && (
-                      <span className="text-[#8e8e9a] font-mono text-[9px]">
-                        TOOLS: {msg.toolsUsed.join(", ")}
-                      </span>
-                    )}
-                  </div>
-                )}
                 <div className="whitespace-pre-wrap">{msg.content}</div>
               </div>
               {msg.role === "user" && (
