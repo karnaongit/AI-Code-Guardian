@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import type { Finding } from '../api/client';
 import { apiClient } from '../api/client';
-import { FileText, AlertTriangle, Play, ShieldAlert, ChevronRight, X } from 'lucide-react';
+import { FileText, AlertTriangle, Play, ShieldAlert, ChevronRight, X, Folder, GitBranch, Sparkles, CheckCircle2 } from 'lucide-react';
 import Editor from '@monaco-editor/react';
 
 export default function FindingsExplorer() {
@@ -9,6 +9,18 @@ export default function FindingsExplorer() {
   const [loading, setLoading] = useState(true);
   const [selectedFindingId, setSelectedFindingId] = useState<string | null>(null);
   const [detail, setDetail] = useState<any>(null);
+
+  // Scan modal state
+  const [showScanModal, setShowScanModal] = useState(false);
+  const [scanType, setScanType] = useState<'local' | 'github'>('local');
+  const [targetPath, setTargetPath] = useState('./');
+  const [repoUrl, setRepoUrl] = useState('');
+  const [scanMode, setScanMode] = useState('precision');
+  const [enableAi, setEnableAi] = useState(false);
+  const [requirementsPath, setRequirementsPath] = useState('');
+  const [scanning, setScanning] = useState(false);
+  const [scanError, setScanError] = useState<string | null>(null);
+  const [scanSuccessMsg, setScanSuccessMsg] = useState<string | null>(null);
 
   useEffect(() => {
     loadFindings();
@@ -36,15 +48,28 @@ export default function FindingsExplorer() {
     }
   };
 
-  const triggerNewScan = async () => {
+  const handleStartScan = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setScanError(null);
+    setScanSuccessMsg(null);
+    setScanning(true);
+
     try {
-      setLoading(true);
-      // Hardcoded for demo parity, wait, better use a prompt or default to current dir
-      await apiClient.triggerScan("./", false);
+      const res = await apiClient.triggerScan({
+        target_path: scanType === 'local' ? targetPath.trim() : undefined,
+        repo_url: scanType === 'github' ? repoUrl.trim() : undefined,
+        scan_mode: scanMode,
+        enable_ai: enableAi,
+        requirements: requirementsPath.trim() ? [requirementsPath.trim()] : undefined,
+      });
+
+      setScanSuccessMsg(`Scan completed successfully! ${res.total_findings ?? 0} findings discovered.`);
+      setShowScanModal(false);
       await loadFindings();
-    } catch (e) {
-      console.error(e);
-      setLoading(false);
+    } catch (err: any) {
+      setScanError(err.message || 'Scan failed. Check target path or server logs.');
+    } finally {
+      setScanning(false);
     }
   };
 
@@ -58,19 +83,34 @@ export default function FindingsExplorer() {
   };
 
   return (
-    <div className="flex h-full bg-slate-900 text-slate-200">
-      <div className="flex-1 flex flex-col p-6">
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-2xl font-bold flex items-center gap-2">
-            <ShieldAlert className="text-blue-500" /> Repository Findings
-          </h2>
+    <div className="flex h-full bg-slate-900 text-slate-200 relative">
+      <div className="flex-1 flex flex-col p-6 overflow-hidden">
+        {scanSuccessMsg && (
+          <div className="mb-4 p-3 bg-emerald-900/30 border border-emerald-500/50 rounded-lg text-emerald-300 text-sm flex items-center justify-between">
+            <span className="flex items-center gap-2">
+              <CheckCircle2 size={16} /> {scanSuccessMsg}
+            </span>
+            <button onClick={() => setScanSuccessMsg(null)} className="text-emerald-400 hover:text-white">
+              <X size={16} />
+            </button>
+          </div>
+        )}
+
+        <div className="flex justify-between items-center mb-6 shrink-0">
+          <div>
+            <h2 className="text-2xl font-bold flex items-center gap-2">
+              <ShieldAlert className="text-blue-500" /> Repository Findings
+            </h2>
+            <p className="text-xs text-slate-400 mt-1">Scan local codebases, GitHub repositories, or custom projects</p>
+          </div>
+          
           <button 
-            onClick={triggerNewScan}
-            disabled={loading}
-            className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg transition-colors font-medium text-white disabled:opacity-50"
+            onClick={() => setShowScanModal(true)}
+            disabled={loading || scanning}
+            className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 px-4 py-2.5 rounded-lg transition-colors font-semibold text-white shadow-lg shadow-blue-900/30 disabled:opacity-50"
           >
             <Play size={18} />
-            Run New Scan
+            Scan New Repository
           </button>
         </div>
 
@@ -186,6 +226,189 @@ export default function FindingsExplorer() {
           </div>
         </div>
       )}
+
+      {/* Scan Repository Modal */}
+      {showScanModal && (
+        <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-slate-800 border border-slate-700 rounded-2xl w-full max-w-xl overflow-hidden shadow-2xl animate-in fade-in zoom-in-95 duration-150">
+            <div className="p-5 border-b border-slate-700 flex justify-between items-center bg-slate-800/90">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-blue-600/20 text-blue-400 rounded-lg">
+                  <Play size={20} />
+                </div>
+                <div>
+                  <h3 className="font-bold text-lg text-slate-100">Scan Repository</h3>
+                  <p className="text-xs text-slate-400">Provide a local directory or GitHub repository to trigger security scanning</p>
+                </div>
+              </div>
+              <button 
+                onClick={() => !scanning && setShowScanModal(false)}
+                disabled={scanning}
+                className="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-700 transition-colors disabled:opacity-50"
+              >
+                <X size={20} />
+              </button>
+            </div>
+
+            <form onSubmit={handleStartScan} className="p-6 space-y-5">
+              {/* Type Switcher */}
+              <div>
+                <label className="text-xs font-semibold text-slate-400 uppercase tracking-wider block mb-2">Repository Source Format</label>
+                <div className="grid grid-cols-2 gap-3 p-1 bg-slate-900/60 rounded-xl border border-slate-700/60">
+                  <button
+                    type="button"
+                    onClick={() => setScanType('local')}
+                    className={`flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg font-medium text-sm transition-all ${
+                      scanType === 'local' 
+                        ? 'bg-blue-600 text-white shadow-md' 
+                        : 'text-slate-400 hover:text-slate-200'
+                    }`}
+                  >
+                    <Folder size={18} />
+                    Local Directory Path
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setScanType('github')}
+                    className={`flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg font-medium text-sm transition-all ${
+                      scanType === 'github' 
+                        ? 'bg-blue-600 text-white shadow-md' 
+                        : 'text-slate-400 hover:text-slate-200'
+                    }`}
+                  >
+                    <GitBranch size={18} />
+                    GitHub Repo URL
+                  </button>
+                </div>
+              </div>
+
+              {/* Input field based on selection */}
+              {scanType === 'local' ? (
+                <div>
+                  <label className="text-xs font-semibold text-slate-400 uppercase tracking-wider block mb-1">Local Directory Path</label>
+                  <div className="relative">
+                    <input
+                      type="text"
+                      value={targetPath}
+                      onChange={(e) => setTargetPath(e.target.value)}
+                      placeholder="e.g. ./ or /Users/username/my-project"
+                      required
+                      className="w-full bg-slate-900 text-slate-100 rounded-xl px-4 py-3 border border-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-sm"
+                    />
+                  </div>
+                  <div className="flex gap-2 mt-2">
+                    <span className="text-xs text-slate-500">Quick presets:</span>
+                    <button type="button" onClick={() => setTargetPath('./')} className="text-xs text-blue-400 hover:underline font-mono">./ (Current Root)</button>
+                    <button type="button" onClick={() => setTargetPath('./backend')} className="text-xs text-blue-400 hover:underline font-mono">./backend</button>
+                    <button type="button" onClick={() => setTargetPath('./frontend')} className="text-xs text-blue-400 hover:underline font-mono">./frontend</button>
+                  </div>
+                </div>
+              ) : (
+                <div>
+                  <label className="text-xs font-semibold text-slate-400 uppercase tracking-wider block mb-1">GitHub Repository URL / Slug</label>
+                  <input
+                    type="text"
+                    value={repoUrl}
+                    onChange={(e) => setRepoUrl(e.target.value)}
+                    placeholder="e.g. https://github.com/appsecco/dvpwa or owner/repository"
+                    required
+                    className="w-full bg-slate-900 text-slate-100 rounded-xl px-4 py-3 border border-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-sm"
+                  />
+                  <div className="flex gap-2 mt-2">
+                    <span className="text-xs text-slate-500">Samples:</span>
+                    <button type="button" onClick={() => setRepoUrl('https://github.com/appsecco/dvpwa')} className="text-xs text-blue-400 hover:underline font-mono">appsecco/dvpwa</button>
+                  </div>
+                </div>
+              )}
+
+              {/* Advanced Controls: Mode, AI Toggle, Requirements */}
+              <div className="grid grid-cols-2 gap-4 pt-2 border-t border-slate-700/50">
+                <div>
+                  <label className="text-xs font-semibold text-slate-400 uppercase tracking-wider block mb-1">Scan Mode</label>
+                  <select
+                    value={scanMode}
+                    onChange={(e) => setScanMode(e.target.value)}
+                    className="w-full bg-slate-900 text-slate-100 rounded-xl px-3 py-2.5 border border-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                  >
+                    <option value="precision">Precision (Focused & Fast)</option>
+                    <option value="recall">Recall (Deep Comprehensive)</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="text-xs font-semibold text-slate-400 uppercase tracking-wider block mb-1">AI Reasoning (Nemotron)</label>
+                  <label className="flex items-center gap-2 p-2.5 bg-slate-900 rounded-xl border border-slate-700 cursor-pointer text-sm">
+                    <input
+                      type="checkbox"
+                      checked={enableAi}
+                      onChange={(e) => setEnableAi(e.target.checked)}
+                      className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500 bg-slate-800 border-slate-600"
+                    />
+                    <Sparkles size={16} className="text-amber-400" />
+                    <span>Enable AI Reasoning</span>
+                  </label>
+                </div>
+              </div>
+
+              {/* Requirements doc optional */}
+              <div>
+                <label className="text-xs font-semibold text-slate-400 uppercase tracking-wider block mb-1">
+                  Business Requirements Document <span className="text-slate-500 font-normal">(Optional)</span>
+                </label>
+                <div className="relative">
+                  <input
+                    type="text"
+                    value={requirementsPath}
+                    onChange={(e) => setRequirementsPath(e.target.value)}
+                    placeholder="e.g. docs/requirements.md or PRD spec path"
+                    className="w-full bg-slate-900 text-slate-100 rounded-xl px-4 py-2.5 border border-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm font-mono"
+                  />
+                </div>
+              </div>
+
+              {/* Error Alert */}
+              {scanError && (
+                <div className="p-3 bg-red-950/50 border border-red-800/80 rounded-xl text-red-300 text-xs flex items-start gap-2">
+                  <AlertTriangle size={16} className="text-red-400 shrink-0 mt-0.5" />
+                  <div>{scanError}</div>
+                </div>
+              )}
+
+              {/* Modal Action Buttons */}
+              <div className="flex justify-end gap-3 pt-4 border-t border-slate-700">
+                <button
+                  type="button"
+                  onClick={() => setShowScanModal(false)}
+                  disabled={scanning}
+                  className="px-4 py-2.5 rounded-xl border border-slate-700 text-slate-300 hover:bg-slate-700 transition-colors text-sm font-medium disabled:opacity-50"
+                >
+                  Cancel
+                </button>
+
+                <button
+                  type="submit"
+                  disabled={scanning}
+                  className="px-6 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm transition-all flex items-center gap-2 shadow-lg shadow-blue-900/30 disabled:opacity-50"
+                >
+                  {scanning ? (
+                    <>
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                      <span>Scanning Repository...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Play size={16} />
+                      <span>Start Security Scan</span>
+                    </>
+                  )}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
+

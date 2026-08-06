@@ -68,16 +68,33 @@ export interface RequirementCoverage {
   documents: string[];
 }
 
+export interface ScanOptions {
+  target_path?: string;
+  repo_url?: string;
+  enable_ai?: boolean;
+  scan_mode?: string;
+  requirements?: string[];
+}
+
 export const apiClient = {
-  async triggerScan(targetPath: string, enableAi = false): Promise<ScanResponse> {
+  async triggerScan(options: ScanOptions): Promise<ScanResponse> {
     const res = await fetch(`${API_BASE}/scans`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ target_path: targetPath, enable_ai: enableAi }),
+      body: JSON.stringify({
+        target_path: options.target_path || undefined,
+        repo_url: options.repo_url || undefined,
+        enable_ai: options.enable_ai ?? false,
+        scan_mode: options.scan_mode || "precision",
+        requirements: options.requirements?.length ? options.requirements : undefined,
+      }),
     });
-    if (!res.ok) throw new Error("Failed to trigger scan");
+    if (!res.ok) {
+      const errData = await res.json().catch(() => ({}));
+      throw new Error(errData.detail || "Failed to trigger scan");
+    }
     const data = await res.json();
-    return data.result;
+    return data.result || data;
   },
 
   async listScans(): Promise<ScanResponse[]> {
