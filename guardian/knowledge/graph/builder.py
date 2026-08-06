@@ -93,7 +93,7 @@ class RepositoryGraphBuilder:
             for ust_file in ust_files:
                 rel_cand = getattr(ust_file, "rel_path", None) or getattr(ust_file, "filepath", None) or getattr(ust_file, "path", "")
                 try:
-                    p = Path(rel_cand)
+                    p = Path(rel_cand).resolve()
                     if p.is_absolute():
                         file_rel = str(p.relative_to(repo_path))
                     else:

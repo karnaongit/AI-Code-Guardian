@@ -1,0 +1,50 @@
+{
+  "repo-2d10ef04cb3c": {
+    "repository_id": "repo-2d10ef04cb3c",
+    "repo_name": "acg2",
+    "repo_path": "/Users/prajwalkajale/Documents/acg2",
+    "source_type": "LOCAL",
+    "size_bytes": 418598575,
+    "size_mb": 399.21,
+    "business_domain": "general",
+    "criticality": "NORMAL",
+    "registered_at": 1785997495.64418,
+    "last_scan_time": null
+  },
+  "repo-406b28de3025": {
+    "repository_id": "repo-406b28de3025",
+    "repo_name": "repo-git-65d243a94a",
+    "repo_path": "/Users/prajwalkajale/Documents/acg2/.acg_workspaces/repo-git-65d243a94a",
+    "source_type": "LOCAL",
+    "size_bytes": 0,
+    "size_mb": 0.0,
+    "business_domain": "general",
+    "criticality": "NORMAL",
+    "registered_at": 1785999376.9265418,
+    "last_scan_time": null
+  },
+  "repo-f011eea3bb3e": {
+    "repository_id": "repo-f011eea3bb3e",
+    "repo_name": "repo-git-a87136f9d7",
+    "repo_path": "/Users/prajwalkajale/Documents/acg2/.acg_workspaces/repo-git-a87136f9d7",
+    "source_type": "LOCAL",
+    "size_bytes": 0,
+    "size_mb": 0.0,
+    "business_domain": "general",
+    "criticality": "NORMAL",
+    "registered_at": 1786015321.8167217,
+    "last_scan_time": null
+  },
+  "repo-e7d1ff7d4c96": {
+    "repository_id": "repo-e7d1ff7d4c96",
+    "repo_name": "repo-git-7b4cdfa17c",
+    "repo_path": "/Users/prajwalkajale/Documents/acg2/.acg_workspaces/repo-git-7b4cdfa17c",
+    "source_type": "LOCAL",
+    "size_bytes": 0,
+    "size_mb": 0.0,
+    "business_domain": "general",
+    "criticality": "NORMAL",
+    "registered_at": 1786005874.302471,
+    "last_scan_time": null
+  }
+}

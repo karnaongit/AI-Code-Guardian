@@ -29,7 +29,9 @@ partial results rather than raising.
 from __future__ import annotations
 
 import logging
+import tempfile
 import time
+from dataclasses import replace
 from pathlib import Path
 from typing import Any, Optional
 
@@ -71,6 +73,13 @@ class ScanPipeline:
         cfg = self.config
 
         repo_root = self._resolve_target(repo_root)
+        if cfg.enable_sandbox:
+            return self._scan_in_sandbox(
+                repo_root,
+                alignment_score=alignment_score,
+                business_requirements=business_requirements,
+                started_at=t0,
+            )
 
         # 1. Discovery ---------------------------------------------------
         walker = FileWalker(cfg)
@@ -104,6 +113,14 @@ class ScanPipeline:
         except Exception as exc:  # noqa: BLE001 — never let parsing kill a scan
             log.error("UST construction failed: %s", exc)
             context.record_error("ust", exc)
+
+        knowledge_output = self._build_knowledge_context(
+            repo_root=repo_root,
+            profile=profile,
+            discovered=discovered,
+            ust_files=list(context.ust),
+            context=context,
+        )
 
         # 4. Deterministic engines -----------------------------------------
         engine_stats: dict[str, Any] = {}
@@ -181,6 +198,7 @@ class ScanPipeline:
             "quantum_summary": _quantum_summary(cbom),
             "business_intent": business_output or None,
             "business_domain": verdict.to_dict() if verdict else None,
+            "knowledge": knowledge_output,
             "ai": self._ai_status(),
             "discovery": {
                 "source_files": len(discovered.source),
@@ -191,8 +209,98 @@ class ScanPipeline:
                 "parsers": parsers.availability(),
             },
             "errors": context.errors,
+            "sandbox": {"enabled": False},
             "duration_seconds": round(time.time() - t0, 3),
         }
+
+    def _scan_in_sandbox(
+        self,
+        repo_root: Path,
+        *,
+        alignment_score: Optional[float],
+        business_requirements: Optional[list[str | Path]],
+        started_at: float,
+    ) -> dict:
+        """Run the normal pipeline against an isolated repository copy."""
+        from guardian.sandbox import DockerSandboxRunner
+
+        runner = DockerSandboxRunner()
+        original_root = Path(repo_root).resolve()
+
+        with tempfile.TemporaryDirectory(prefix="acg_scan_workspace_") as tmpdir:
+            isolated_root = runner.prepare_isolated_workspace(original_root, base_dir=Path(tmpdir))
+            isolated_requirements = _remap_paths_for_sandbox(
+                business_requirements or [], original_root, isolated_root
+            )
+
+            sandboxed_config = replace(self.config, enable_sandbox=False)
+            sandboxed_pipeline = ScanPipeline(
+                sandboxed_config,
+                self.registry,
+                reasoning_service=self._reasoning_service,
+                knowledge_retriever=self._knowledge_retriever,
+            )
+            report = sandboxed_pipeline.scan(
+                isolated_root,
+                alignment_score=alignment_score,
+                business_requirements=isolated_requirements,
+            )
+
+        _rewrite_sandbox_paths(report, isolated_root, original_root)
+        report["sandbox"] = {
+            "enabled": True,
+            "mode": "isolated_workspace",
+            "original_root": str(original_root),
+            "read_only_source": True,
+            "network_disabled": runner.config.network_disabled,
+            "workspace_retained": False,
+        }
+        report["repository"]["root"] = str(original_root)
+        report["scan"]["target"] = str(original_root)
+        report["duration_seconds"] = round(time.time() - started_at, 3)
+        return report
+
+    def _build_knowledge_context(
+        self,
+        *,
+        repo_root: Path,
+        profile: RepositoryProfile,
+        discovered: DiscoveredFiles,
+        ust_files: list,
+        context: AnalysisContext,
+    ) -> dict:
+        """Optionally build Phase 2 graph/vector knowledge for scan output."""
+        if not self.config.enable_knowledge:
+            return {"enabled": False}
+
+        try:
+            from guardian.knowledge.services.knowledge_service import KnowledgeService
+
+            service = KnowledgeService()
+            repo_id = Path(repo_root).resolve().name
+            graph_counts = service.build_repository_graph(repo_root, profile, ust_files)
+            documents = _documents_for_knowledge_index(context, discovered, repo_root)
+            doc_ids = service.index_documents(documents, category="repository_docs", repo_id=repo_id) if documents else []
+            endpoints = service.get_endpoints()
+            architecture = service.get_architecture_context(repo_id)
+            service.close()
+
+            return {
+                "enabled": True,
+                "graph": graph_counts,
+                "documents_indexed": len(doc_ids),
+                "document_ids": doc_ids[:25],
+                "endpoints": endpoints[:25],
+                "architecture": architecture,
+                "backend": {
+                    "vector_store": "qdrant_or_memory",
+                    "graph_store": "neo4j_or_memory",
+                },
+            }
+        except Exception as exc:  # noqa: BLE001
+            log.error("knowledge layer failed: %s", exc)
+            context.record_error("knowledge", exc)
+            return {"enabled": True, "error": str(exc)}
 
     # ------------------------------------------------------------------
     # Stages
@@ -429,6 +537,98 @@ def _effective_alignment(explicit: Optional[float], business_output: dict,
     if isinstance(measured, (int, float)):
         return float(measured)
     return default
+
+
+def _remap_paths_for_sandbox(
+    paths: list[str | Path],
+    original_root: Path,
+    isolated_root: Path,
+) -> list[Path]:
+    """Map requirement files inside the source repo to their isolated copies."""
+    remapped: list[Path] = []
+    for raw_path in paths:
+        path = Path(raw_path)
+        candidate = path if path.is_absolute() else original_root / path
+        try:
+            relative = candidate.resolve().relative_to(original_root)
+        except (OSError, ValueError):
+            remapped.append(path)
+            continue
+        remapped.append(isolated_root / relative)
+    return remapped
+
+
+def _rewrite_sandbox_paths(value: Any, isolated_root: Path, original_root: Path) -> Any:
+    """Replace temporary sandbox root strings in a report with the source root."""
+    isolated_candidates = sorted(
+        {str(isolated_root), str(isolated_root.resolve())},
+        key=len,
+        reverse=True,
+    )
+    original = str(original_root.resolve())
+
+    if isinstance(value, dict):
+        for key, child in list(value.items()):
+            value[key] = _rewrite_sandbox_paths(child, isolated_root, original_root)
+        return value
+    if isinstance(value, list):
+        for idx, child in enumerate(value):
+            value[idx] = _rewrite_sandbox_paths(child, isolated_root, original_root)
+        return value
+    if isinstance(value, str):
+        for isolated in isolated_candidates:
+            if value == isolated:
+                return original
+            if value.startswith(isolated + "/"):
+                return original + value[len(isolated):]
+    return value
+
+
+def _documents_for_knowledge_index(
+    context: AnalysisContext,
+    discovered: DiscoveredFiles,
+    repo_root: Path,
+    *,
+    max_docs: int = 50,
+    max_chars: int = 12_000,
+) -> list[dict[str, Any]]:
+    """Collect bounded text documents for Phase 2 semantic indexing."""
+    docs: list[dict[str, Any]] = []
+    seen: set[Path] = set()
+    candidates = list(discovered.docs) + list(context.business_requirements)
+
+    for path in candidates:
+        p = Path(path)
+        try:
+            resolved = p.resolve()
+        except OSError:
+            resolved = p
+        if resolved in seen:
+            continue
+        seen.add(resolved)
+
+        suffix = p.suffix.lower()
+        if suffix not in {".md", ".txt", ".rst", ".json", ".yaml", ".yml"}:
+            continue
+
+        text = context.repository.read(p).strip()
+        if not text:
+            continue
+
+        rel = context.repository.relative(p)
+        docs.append({
+            "id": f"doc:{rel}",
+            "content": text[:max_chars],
+            "metadata": {
+                "path": rel,
+                "source": "repository_document",
+                "root": str(repo_root),
+            },
+        })
+        if len(docs) >= max_docs:
+            break
+
+    return docs
 
 
 def _quantum_summary(cbom) -> Optional[dict]:

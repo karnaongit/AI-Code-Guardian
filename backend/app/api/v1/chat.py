@@ -11,11 +11,11 @@ from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
 
 from backend.app.core.config import settings
+from guardian.copilot import synthesize_security_answer
 from guardian.llm.personas import SystemPersona, get_persona_prompt
 from guardian.reasoning.tools import (
-    NEMOTRON_TOOL_DEFINITIONS,
+    _ACTIVE_FINDINGS,
     query_security_knowledge,
-    get_finding_detail,
     get_scan_funnel_summary,
     get_active_findings_context,
 )
@@ -62,19 +62,17 @@ async def chat_completion(request: ChatCompletionRequest):
         )
         return ChatCompletionResponse(persona=request.persona, reply=reply, tools_used=[])
 
-    # 1. RAG Knowledge Retrieval — only when security terms are queried
-    sec_keywords = ["cwe", "owasp", "fix", "vulnerability", "tls", "ssl", "sql", "secret", "crypto", "finding", "problem", "issue", "risk", "attack", "exploit", "code"]
-    if any(kw in query_lower for kw in sec_keywords):
-        knowledge_entries = query_security_knowledge(user_query)
-        if knowledge_entries:
-            tools_used.append("query_security_knowledge")
-            snippets = []
-            for k in knowledge_entries[:2]:
-                title = k.get("title", "Security Standard")
-                std = k.get("standard", "OWASP/CWE")
-                content = k.get("content", "")
-                snippets.append(f"### [{std}] {title}\n{content}")
-            tool_insights.append("### Trusted Security Guidance:\n" + "\n\n".join(snippets))
+    # 1. RAG Knowledge Retrieval — query-aware, not a fixed answer.
+    knowledge_entries = query_security_knowledge(user_query)
+    if knowledge_entries:
+        tools_used.append("query_security_knowledge")
+        snippets = []
+        for k in knowledge_entries[:2]:
+            title = k.get("title", "Security Standard")
+            std = k.get("standard", "OWASP/CWE")
+            content = k.get("content", "")
+            snippets.append(f"### [{std}] {title}\n{content}")
+        tool_insights.append("### Trusted Security Guidance:\n" + "\n\n".join(snippets))
 
     # 2. Active Scan Evidence Context
     findings_context = get_active_findings_context(limit=6)
@@ -107,13 +105,35 @@ async def chat_completion(request: ChatCompletionRequest):
         llm_messages.append({"role": m.role, "content": m.content})
     llm_messages.append({"role": "user", "content": context_msg})
 
-    if not settings.NVIDIA_API_KEY:
-        reply = (
-            f"Based on your query: '{user_query}'\n\n"
-            f"{insight_str}\n\n"
-            f"Note: Configure `NVIDIA_API_KEY` in `.env` to enable full live LLM reasoning."
-        )
+    deterministic_reply, _ = synthesize_security_answer(
+        user_query,
+        list(_ACTIVE_FINDINGS.values()),
+        persona=request.persona,
+        conversation=[m.model_dump() for m in request.messages],
+        knowledge=knowledge_entries,
+    )
+
+    if _ACTIVE_FINDINGS:
+        reply = deterministic_reply
+        tools_used.append("synthesize_security_answer")
+    elif not settings.NVIDIA_API_KEY:
+        if knowledge_entries:
+            top = knowledge_entries[0]
+            reply = (
+                f"I do not see active repository scan findings loaded yet, but this guidance is relevant:\n\n"
+                f"**Context:** {top.get('title', 'Security guidance')} ({top.get('standard', 'reference')}).\n\n"
+                f"**The Risk:** {top.get('content', '')[:500]}\n\n"
+                f"**Remediation:** Run a repository scan so I can connect this guidance to exact files, lines, and fixes."
+            )
+        else:
+            reply = deterministic_reply
+        tools_used.append("synthesize_security_answer")
     else:
+        context_msg = (
+            context_msg
+            + "\n\nFALLBACK SYNTHESIS TO FOLLOW IF MODEL CONTEXT IS AMBIGUOUS:\n"
+            + deterministic_reply
+        )
         try:
             async with httpx.AsyncClient(timeout=30.0) as client:
                 res = await client.post(
@@ -133,7 +153,8 @@ async def chat_completion(request: ChatCompletionRequest):
                 data = res.json()
                 reply = data["choices"][0]["message"]["content"]
         except Exception as e:
-            reply = f"Error communicating with AI service: {str(e)}"
+            reply = deterministic_reply
+            tools_used.append("synthesize_security_answer")
 
     return ChatCompletionResponse(
         persona=request.persona,

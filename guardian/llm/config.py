@@ -12,9 +12,9 @@ Environment variables
 ---------------------
     NVIDIA_API_KEY      (required)  provider credential
     NVIDIA_BASE_URL     (optional)  default https://integrate.api.nvidia.com/v1
-    NVIDIA_MODEL        (optional)  default nvidia/llama-3.3-nemotron-super-49b-v1
-    LLM_TEMPERATURE     (optional)  default 0.1  — factual, not creative
-    LLM_MAX_TOKENS      (optional)  default 2048
+    NVIDIA_MODEL        (optional)  default nvidia/nemotron-3-ultra-550b-a55b
+    LLM_TEMPERATURE     (optional)  default 1.0  — recommended for Nemotron Ultra
+    LLM_MAX_TOKENS      (optional)  default 16384
     LLM_TIMEOUT         (optional)  default 120  seconds
     LLM_MAX_RETRIES     (optional)  default 3
     LLM_RETRY_BACKOFF   (optional)  default 2.0  exponential base
@@ -47,7 +47,7 @@ def load_dotenv(path: str | Path = ".env", override: bool = False) -> int:
 
 
 DEFAULT_BASE_URL = "https://integrate.api.nvidia.com/v1"
-DEFAULT_MODEL = "nvidia/llama-3.3-nemotron-super-49b-v1"
+DEFAULT_MODEL = "nvidia/nemotron-3-ultra-550b-a55b"
 
 
 @dataclass
@@ -59,9 +59,13 @@ class LLMConfig:
     model: str = DEFAULT_MODEL
 
     # generation
-    temperature: float = 0.1
-    max_tokens: int = 2048
+    temperature: float = 1.0
+    max_tokens: int = 16384
     top_p: float = 0.95
+
+    # Nemotron Ultra reasoning (chain-of-thought)
+    enable_thinking: bool = True
+    reasoning_budget: int = 16384
 
     # transport
     timeout: int = 120
@@ -96,13 +100,15 @@ class LLMConfig:
             api_key=os.getenv("NVIDIA_API_KEY", ""),
             base_url=os.getenv("NVIDIA_BASE_URL", DEFAULT_BASE_URL).rstrip("/"),
             model=os.getenv("NVIDIA_MODEL", DEFAULT_MODEL),
-            temperature=_f("LLM_TEMPERATURE", 0.1),
-            max_tokens=_i("LLM_MAX_TOKENS", 2048),
+            temperature=_f("LLM_TEMPERATURE", 1.0),
+            max_tokens=_i("LLM_MAX_TOKENS", 16384),
             top_p=_f("LLM_TOP_P", 0.95),
             timeout=_i("LLM_TIMEOUT", 120),
             max_retries=_i("LLM_MAX_RETRIES", 3),
             retry_backoff=_f("LLM_RETRY_BACKOFF", 2.0),
             log_prompts=os.getenv("LLM_LOG_PROMPTS", "false").lower() == "true",
+            enable_thinking=os.getenv("LLM_ENABLE_THINKING", "true").lower() == "true",
+            reasoning_budget=_i("LLM_REASONING_BUDGET", 16384),
         )
 
     # ------------------------------------------------------------------

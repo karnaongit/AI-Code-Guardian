@@ -9,6 +9,8 @@ from pathlib import Path
 
 import pytest
 from guardian.discovery.repo_detector import RepositoryDetector, RepositoryProfile
+from guardian.config import GuardianConfig
+from guardian.core.pipeline import ScanPipeline
 from guardian.knowledge import (
     EmbeddingService,
     KnowledgeConfig,
@@ -138,3 +140,24 @@ def test_knowledge_service_facade():
         assert topology["total_files"] >= 0
 
         service.close()
+
+
+def test_pipeline_scan_can_build_knowledge_context():
+    with tempfile.TemporaryDirectory() as tmpdir:
+        repo_path = Path(tmpdir)
+        (repo_path / "README.md").write_text("# API Service\nDocuments JWT policy and public endpoints.")
+        (repo_path / "requirements.txt").write_text("fastapi\n")
+        (repo_path / "app.py").write_text(
+            "from fastapi import FastAPI\n"
+            "app = FastAPI()\n\n"
+            "@app.get('/health')\n"
+            "def health():\n"
+            "    return {'ok': True}\n"
+        )
+
+        report = ScanPipeline(GuardianConfig(enable_knowledge=True)).scan(repo_path)
+
+        assert report["knowledge"]["enabled"] is True
+        assert report["knowledge"]["graph"]["nodes"] >= 1
+        assert report["knowledge"]["documents_indexed"] >= 1
+        assert any(ep.get("url") == "/health" for ep in report["knowledge"]["endpoints"])

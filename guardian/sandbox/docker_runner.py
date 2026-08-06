@@ -139,10 +139,10 @@ class DockerSandboxRunner:
             except Exception as e:
                 raise SandboxExecutionError(f"Process sandbox failure: {e}")
 
-    def prepare_isolated_workspace(self, repo_path: Path) -> Path:
+    def prepare_isolated_workspace(self, repo_path: Path, base_dir: Optional[Path] = None) -> Path:
         """Creates a temporary isolated copy of the repository for safe analysis."""
         repo_path = Path(repo_path).resolve()
-        temp_dir = Path(tempfile.mkdtemp(prefix="acg_workspace_"))
+        temp_dir = Path(base_dir) if base_dir is not None else Path(tempfile.mkdtemp(prefix="acg_workspace_"))
         workspace_path = temp_dir / repo_path.name
 
         shutil.copytree(

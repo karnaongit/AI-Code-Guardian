@@ -19,6 +19,7 @@ class EmbeddingConfig:
     batch_size: int = 32
     normalize_embeddings: bool = True
     cache_embeddings: bool = True
+    load_local_model: bool = False       # opt in to sentence-transformers; fallback is offline
 
 
 @dataclass

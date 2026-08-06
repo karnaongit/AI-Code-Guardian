@@ -27,6 +27,11 @@ class EmbeddingService(BaseEmbedder):
         if self._model is not None:
             return
 
+        if not self.config.load_local_model:
+            self._model = "fallback"
+            self._dimension = 384
+            return
+
         try:
             from sentence_transformers import SentenceTransformer
             self._model = SentenceTransformer(self.config.model_name, device=self.config.device)
@@ -74,7 +79,7 @@ class EmbeddingService(BaseEmbedder):
                 uncached_texts.append(text)
 
         if uncached_texts:
-            if hasattr(self._model, "encode"):
+            if self._model != "fallback" and hasattr(self._model, "encode"):
                 embeddings = self._model.encode(
                     uncached_texts,
                     batch_size=self.config.batch_size,

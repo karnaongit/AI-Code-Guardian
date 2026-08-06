@@ -88,6 +88,41 @@ class KnowledgeService:
         imports = self.neo4j.get_outgoing_relationships(file_node_id, Neo4jManager.REL_IMPORTS)
         return [imp.target_id.replace("module:", "") for imp in imports]
 
+    def get_policy_context(self, repo_id: str = "default") -> List[Dict[str, Any]]:
+        """Retrieves semantic policy documents for a given repository."""
+        return self.semantic_search("compliance security policy rules", category="policy", repo_id=repo_id)
+
+    def get_business_context(self, repo_id: str = "default") -> List[Dict[str, Any]]:
+        """Retrieves business intent documentation for a given repository."""
+        return self.semantic_search("business domain criticality requirements", category="requirements", repo_id=repo_id)
+
+    def get_threat_context(self, repo_id: str = "default") -> List[Dict[str, Any]]:
+        """Retrieves threat modeling vectors and attack surface context."""
+        return self.semantic_search("threat model attack vector vulnerability", category="threat", repo_id=repo_id)
+
+    def lookup_evidence(self, evidence_id: str) -> Optional[Dict[str, Any]]:
+        """Retrieves evidence object details from vector store or graph."""
+        res = self.qdrant.search(query=evidence_id, limit=1)
+        return res[0] if res else None
+
+    def traverse_graph(self, start_node_id: str, depth: int = 2) -> Dict[str, Any]:
+        """Traverses knowledge graph topology outwards from a starting node."""
+        node = self.neo4j.get_node(start_node_id)
+        rels = self.neo4j.get_outgoing_relationships(start_node_id)
+        return {
+            "node": node.__dict__ if node else None,
+            "connected_relationships": [r.__dict__ for r in rels[:10]],
+            "depth": depth
+        }
+
+    def search_architecture(self, query: str) -> List[Dict[str, Any]]:
+        """Performs architecture semantic search."""
+        return self.semantic_search(query, category="architecture")
+
+    def get_patch_context(self, finding_id: str) -> Dict[str, Any]:
+        """Retrieves symbol and AST context needed for downstream patch generation."""
+        return self.get_symbol_graph(finding_id)
+
     def close(self):
         """Cleanly releases database resources."""
         self.neo4j.close()

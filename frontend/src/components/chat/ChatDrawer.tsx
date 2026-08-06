@@ -65,7 +65,10 @@ export const ChatDrawer: React.FC<ChatDrawerProps> = ({
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          messages: [{ role: "user", content: currentInput }],
+          messages: [...messages, userMsg].map((msg) => ({
+            role: msg.role,
+            content: msg.content,
+          })),
           persona: persona,
           temperature: 0.2,
         }),
