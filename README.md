@@ -75,7 +75,6 @@ Exit code 1 when findings at or above the threshold exist; upload the
 | Extra | Adds |
 |---|---|
 | `[ust]` | Tree-sitter grammars — **recommended**, materially better precision |
-| `[dashboard]` | Streamlit UI |
 | `[ai]` | Nemotron client + local embeddings + FAISS |
 | `[docs]` | PDF/DOCX requirement ingestion |
 | `[all]` | everything |
@@ -189,19 +188,34 @@ unavailable.
 
 ---
 
-## Dashboard
+## React Dashboard & Web UI
+
+The interactive dashboard is a **React (Vite + TypeScript) single-page app** 
+that talks to the FastAPI backend over a REST/SSE API.
+
+**Start both services with a single script:**
 
 ```bash
-pip install -e ".[dashboard]"
-streamlit run dashboard/app.py
+./scripts/start_local.sh          # macOS / Linux
+.\scripts\start_local.bat         # Windows
 ```
 
-Upload a repository (ZIP, individual files, or a GitHub URL) plus optional
-requirement and policy documents, then work through
+Or start them individually:
+
+```bash
+# Backend
+uvicorn backend.app.main:app --reload --port 8000
+
+# Frontend (in a second terminal)
+cd frontend && npm run dev
+```
+
+Open **http://localhost:5173** — work through
 **Overview → Security → Business Intent → Quantum → Dependencies → IaC →
-Risk → Recommendations → Reports**. Static, AI-validated and AI-suggested
-findings are visually distinguished and filterable, and the UST structure
-and evidence behind each finding are exposed for explainability.
+Risk → Recommendations → Requirement Coverage → Reports**.
+Static, AI-validated and AI-suggested findings are visually distinguished
+and filterable, and the UST structure and evidence behind each finding are
+exposed for explainability.
 
 ---
 

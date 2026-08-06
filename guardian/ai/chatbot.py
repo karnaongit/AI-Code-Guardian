@@ -79,11 +79,29 @@ class AISecurityCopilot:
         _configure_logging(cfg)
 
         # Core services
-        # LLM: built through the factory — the chatbot never imports a
-        # provider class directly (spec §1, §14). Construction is lazy-safe:
-        # a missing API key surfaces here with an actionable message rather
-        # than at first question.
-        llm = create_llm(cfg.llm_provider)
+        # LLM: built through the factory and wrapped in the gateway semaphore
+        from guardian.reasoning.gateway import _nim_semaphore
+        
+        class GatewayLLMWrapper(BaseLLM):
+            def __init__(self, inner: BaseLLM):
+                self.inner = inner
+            def chat(self, messages, *, temperature=None, max_tokens=None):
+                with _nim_semaphore:
+                    return self.inner.chat(messages, temperature=temperature, max_tokens=max_tokens)
+            def chat_stream(self, messages, *, temperature=None, max_tokens=None):
+                with _nim_semaphore:
+                    yield from self.inner.chat_stream(messages, temperature=temperature, max_tokens=max_tokens)
+            def review_code(self, *args, **kwargs):
+                with _nim_semaphore:
+                    return self.inner.review_code(*args, **kwargs)
+            def is_healthy(self): return self.inner.is_healthy()
+            def available_models(self): return self.inner.available_models()
+            @property
+            def model_name(self): return self.inner.model_name
+            @property
+            def config(self): return self.inner.config
+
+        llm = GatewayLLMWrapper(create_llm(cfg.llm_provider))
         # Embeddings stay LOCAL (see guardian/ai/local_embedder.py).
         embedder_backend = LocalEmbedder(
             model_name=cfg.embed_model, device=cfg.embed_device,

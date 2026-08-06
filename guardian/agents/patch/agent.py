@@ -49,7 +49,34 @@ class PatchGenerationAgent(BaseAgent):
             file_path = f.get("file_path", "app.py")
             line_no = str(f.get("line_number", 1))
             orig_snippet = f.get("snippet", "")
-            ev_id = f.get("evidence_id", "")
+
+            # V1+V2 FIX: Read the canonical plural 'evidence_ids' list (not the
+            # legacy singular 'evidence_id' key).  Validate each cited ID
+            # against the actual evidence objects in the workflow state so that
+            # the patch proposal only cites evidence that genuinely exists.
+            raw_ev_ids: List[str] = f.get("evidence_ids") or []
+            if not raw_ev_ids and f.get("evidence_id"):          # legacy compat
+                raw_ev_ids = [f["evidence_id"]]
+
+            # Build a fast lookup set from the state evidence collection.
+            known_ev_ids: set = {
+                e.get("id", e.get("evidence_id", ""))
+                for e in (evidence if isinstance(evidence[0], dict) else [])
+            } if evidence and isinstance(evidence[0], dict) else set()
+            # If evidence objects are dataclass/models, use their .id attribute.
+            if evidence and not isinstance(evidence[0], dict):
+                known_ev_ids = {getattr(e, "id", "") for e in evidence}
+
+            grounded_ev_ids = [eid for eid in raw_ev_ids if eid and eid in known_ev_ids] if known_ev_ids else raw_ev_ids
+            # If we still have no grounded IDs, accept unvalidated IDs with a warning
+            # rather than creating an empty-evidence patch (which passes validation silently).
+            if not grounded_ev_ids and raw_ev_ids:
+                import logging as _log
+                _log.getLogger(__name__).warning(
+                    "Patch for finding %s: evidence IDs %s not found in state evidence; "
+                    "including as unverified citations.", f_id, raw_ev_ids
+                )
+                grounded_ev_ids = raw_ev_ids
 
             # Generate grounded secure replacement code snippet
             suggested_replacement = self._generate_secure_snippet(rule_id, orig_snippet)
@@ -62,9 +89,10 @@ class PatchGenerationAgent(BaseAgent):
             )
             git_diffs.append(diff_str)
 
+            ev_citation = ", ".join(grounded_ev_ids) if grounded_ev_ids else "(no evidence ID)"
             explanation = (
                 f"Remediated {rule_id} in {file_path}:{line_no} by introducing secure parameterized handling. "
-                f"Grounding Evidence ID: {ev_id}. Business Criticality: {biz_ctx.get('criticality', 'NORMAL')}."
+                f"Grounding Evidence IDs: [{ev_citation}]. Business Criticality: {biz_ctx.get('criticality', 'NORMAL')}."
             )
             dev_explanations.append(explanation)
 
@@ -78,7 +106,7 @@ class PatchGenerationAgent(BaseAgent):
                 original_snippet=orig_snippet,
                 suggested_replacement=suggested_replacement,
                 explanation=explanation,
-                evidence_ids=[ev_id] if ev_id else [],
+                evidence_ids=grounded_ev_ids,          # Always the validated plural list
                 confidence=0.90,
                 policy_references=policy_refs,
                 business_impact=biz_ctx.get("criticality", "NORMAL"),

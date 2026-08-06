@@ -1,13 +1,18 @@
 # Phase 7 Migration Document — Enterprise Dashboard, Explainability & Observability Layer
 
 > **Phase Status**: Completed  
-> **Verification Result**: 434 passed, 1 skipped in 41.50s (`pytest tests/ -q`)
+> **Verification Result**: 445 passed, 1 skipped in ~365s (`pytest tests/ -q` — Phase 4 baseline)  
+> ⚠️ **Frontend Migration Note**: The Streamlit dashboard described in this phase was subsequently
+> replaced by a **React (Vite + TypeScript) SPA** (`frontend/`) during Phase 1 of the v3 frontend
+> migration. The backend `guardian/dashboard/` Python module (charts, models, views) remains as
+> a server-side state/model layer; the Streamlit rendering is no longer the primary UI path.
+> See [LOCAL_SETUP.md](../LOCAL_SETUP.md) and `./scripts/start_local.sh` for current startup instructions.
 
 ---
 
 ## 1. Overview of Phase 7 Additions
 
-Phase 7 introduces the **Enterprise Visualization Layer** (`guardian/dashboard/`). It provides a read-only Streamlit-compatible visualization dashboard explaining what happened, why it happened, agent execution timelines, evidence links, graph relationships, risk profiles, patch proposals, and metrics without altering any underlying business logic or calling databases directly.
+Phase 7 introduces the **Enterprise Visualization Layer** (`guardian/dashboard/`). It provides a visualization dashboard explaining what happened, why it happened, agent execution timelines, evidence links, graph relationships, risk profiles, patch proposals, and metrics without altering any underlying business logic or calling databases directly.
 
 It establishes:
 1. **Dashboard Application Engine (`guardian/dashboard/app.py`)**: `GuardianDashboardApp` master entry point orchestrating 10 dashboard pages.

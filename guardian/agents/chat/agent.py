@@ -138,4 +138,36 @@ class InteractiveChatAgent:
             messages = [SystemMessage(content=sys_prompt)] + messages
             
         response = await self._safe_ainvoke(messages, config)
+
+        # V3 FIX: Validate any [Evidence Exx] markers the LLM cited exist in the
+        # actual evidence store.  Flag fabricated IDs inline so they are visible
+        # to users and auditable — not silently accepted as grounded claims.
+        import re as _re
+        response_text = getattr(response, "content", "") or ""
+        cited_ids = _re.findall(r"\[Evidence\s+(E\d+)\]", response_text)
+        if cited_ids:
+            evidence_in_state = state.get("evidence", [])
+            if isinstance(evidence_in_state, list) and evidence_in_state:
+                if isinstance(evidence_in_state[0], dict):
+                    known_ids = {e.get("id", e.get("evidence_id", "")) for e in evidence_in_state}
+                else:
+                    known_ids = {getattr(e, "id", "") for e in evidence_in_state}
+            else:
+                known_ids = set()
+
+            unverified = [eid for eid in cited_ids if eid not in known_ids]
+            if unverified and known_ids:
+                # Append a grounding caveat to the response content
+                caveat = (
+                    f"\n\n> ⚠️ **Grounding Note**: Evidence ID(s) {unverified} cited above "
+                    "could not be verified against the current scan evidence store. "
+                    "Treat these claims as unverified suggestions."
+                )
+                from langchain_core.messages import AIMessage
+                if hasattr(response, "content"):
+                    response = AIMessage(
+                        content=response_text + caveat,
+                        tool_calls=getattr(response, "tool_calls", []),
+                    )
+
         return {"messages": [response]}

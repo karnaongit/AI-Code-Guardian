@@ -11,6 +11,11 @@ from typing import Any, Dict
 from guardian.agents.base.agent import BaseAgent
 from guardian.agents.shared.context import BusinessContextObject
 from guardian.orchestrator.state import AgentWorkflowState
+from guardian.engines.business_intent import BusinessIntentEngine
+from guardian.core.context import AnalysisContext, RepositoryContext
+from guardian.ust import USTBuilder
+from guardian.config import GuardianConfig
+from pathlib import Path
 
 
 class BusinessAgent(BaseAgent):
@@ -44,4 +49,38 @@ class BusinessAgent(BaseAgent):
 
         new_state = dict(state)
         new_state["business_context"] = dict(context_obj)
+
+        # V4 FIX: Actually invoke BusinessIntentEngine when requirements are
+        # present in the workflow state. Previously this was a pass/stub.
+        scan_id = state.get("scan_id", "")
+        repo_root = state.get("repository_profile", {}).get("repo_path") or state.get("repository_profile", {}).get("root")
+        req_paths = state.get("business_requirements", [])  # List of requirement file paths
+        requirements_text = state.get("requirements_text", [])  # Inline requirement strings
+
+        if repo_root and (req_paths or requirements_text):
+            try:
+                config = GuardianConfig()
+                engine = BusinessIntentEngine(config=config)
+
+                # Build analysis context from available state
+                ctx = AnalysisContext(repo_root=Path(repo_root))
+
+                # If requirements are file paths, pass them to the engine
+                if req_paths:
+                    engine_result = engine.analyze(
+                        context=ctx,
+                        requirements=req_paths,
+                    )
+                    new_state["business_intent_results"] = {
+                        "verdicts": [v.to_dict() if hasattr(v, "to_dict") else str(v) for v in engine_result.verdicts],
+                        "alignment_score": getattr(engine_result, "alignment_score", 0.0),
+                        "source": "BusinessIntentEngine",
+                    }
+            except Exception as exc:
+                import logging as _log
+                _log.getLogger(__name__).warning(
+                    "BusinessIntentEngine invocation failed in BusinessAgent: %s", exc
+                )
+                # Non-fatal: the agent continues with domain/criticality classification only.
+
         return new_state

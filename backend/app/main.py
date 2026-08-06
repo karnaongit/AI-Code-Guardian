@@ -12,7 +12,9 @@ from backend.app.api.v1.chat import router as chat_router
 from backend.app.api.v1.files import router as files_router
 from backend.app.api.v1.findings import router as findings_router
 from backend.app.api.v1.reports import router as reports_router
+from backend.app.api.v1.requirements import router as requirements_router
 from backend.app.api.v1.scans import router as scans_router
+from backend.app.api.v1.analytics import router as analytics_router
 from backend.app.core.config import settings
 
 from contextlib import asynccontextmanager
@@ -73,6 +75,8 @@ app.include_router(files_router, prefix=settings.API_V1_STR)
 app.include_router(findings_router, prefix=settings.API_V1_STR)
 app.include_router(chat_router, prefix=settings.API_V1_STR)
 app.include_router(reports_router, prefix=settings.API_V1_STR)
+app.include_router(analytics_router, prefix=settings.API_V1_STR)
+app.include_router(requirements_router, prefix=settings.API_V1_STR)
 
 
 @app.get("/", tags=["health"])

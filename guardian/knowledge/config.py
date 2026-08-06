@@ -6,6 +6,7 @@ and Neo4j Knowledge Graph.
 """
 from __future__ import annotations
 
+import os
 from dataclasses import dataclass, field
 from typing import Dict, List, Optional
 
@@ -29,7 +30,7 @@ class QdrantConfig:
     port: int = 6333
     grpc_port: int = 6334
     api_key: Optional[str] = None
-    location: str = ":memory:"            # Use ":memory:" for in-memory or host URL for server
+    location: str = field(default_factory=lambda: os.getenv("QDRANT_LOCATION", ":memory:"))  # Use ":memory:" for in-memory or host URL for server
     default_collection: str = "acg_semantic_docs"
     vector_size: int = 384                 # Dimension for all-MiniLM-L6-v2
     distance_metric: str = "Cosine"
@@ -39,10 +40,10 @@ class QdrantConfig:
 @dataclass
 class Neo4jConfig:
     """Configures Neo4j Knowledge Graph connection."""
-    uri: str = "bolt://localhost:7687"
-    user: str = "neo4j"
-    password: str = "password"
-    database: str = "neo4j"
+    uri: str = field(default_factory=lambda: os.getenv("NEO4J_URI", "bolt://localhost:7687"))
+    user: str = field(default_factory=lambda: os.getenv("NEO4J_USER", "neo4j"))
+    password: str = field(default_factory=lambda: os.getenv("NEO4J_PASSWORD", "password"))
+    database: str = field(default_factory=lambda: os.getenv("NEO4J_DATABASE", "neo4j"))
     fallback_to_inmemory: bool = True     # Gracefully fall back to NetworkX/In-Memory graph if server offline
 
 

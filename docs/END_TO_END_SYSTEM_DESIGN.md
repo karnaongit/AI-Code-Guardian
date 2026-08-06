@@ -75,7 +75,7 @@ flowchart TD
     subgraph OutputDashboard ["7. Observability & Reporting"]
         RiskScore["Unified Risk Engine Scorer"]
         Reporters["Reporters (SARIF, JSON, HTML, PDF, CSV)"]
-        DashboardUI["Enterprise Dashboard (Streamlit UI)"]
+        DashboardUI["Enterprise Dashboard (React SPA — http://localhost:5173)"]
     end
 
     Repo --> DockerRunner
@@ -176,7 +176,7 @@ flowchart TD
 ### Subsystem 8: Enterprise Observability & Dashboard Layer (Phase 7)
 * **Core Modules**: [`guardian/dashboard/`](file:///Users/prajwalkajale/Documents/acg2/guardian/dashboard/)
 * **Functionality**:
-  - Read-only Streamlit-compatible visualization UI (`GuardianDashboardApp`) parsing `DashboardStateView`.
+  - **React (Vite + TypeScript) SPA** (`frontend/`) consuming the FastAPI backend REST/SSE API.
   - **10 Interactive View Pages**:
     1. *Repository Overview*: Project stack, entry points, API route summary.
     2. *Knowledge Graph Page*: Visualizes Neo4j structural topology via `KnowledgeService`.
@@ -197,7 +197,7 @@ An end-to-end scan follows an 11-step execution sequence:
 
 ```
 Step 01: CLI / API Request ──► User invokes scan command or REST API endpoint.
-Step 02: Sandbox Prep     ──► Docker container initialized or isolated temp workspace created.
+Step 02: Sandbox Prep     ──► Isolated temporary workspace created (native process, no containers).
 Step 03: Profile & Detect ──► RepoDetector identifies framework, entry points, public routes.
 Step 04: UST Parsing      ──► Tree-sitter normalizes source files into unified UST AST nodes.
 Step 05: Engine Detection ──► Deterministic SAST, PQC, Policy & Dependency engines run.
@@ -213,11 +213,11 @@ Step 11: Export & View    ──► Reports generated (SARIF, HTML, PDF); Dashbo
 
 ## 5. Verification & Quality Assurance Summary
 
-The entire platform is backed by a comprehensive automated test suite consisting of **434 passed unit and integration tests**:
+The entire platform is backed by a comprehensive automated test suite consisting of **445 passed unit and integration tests (Phase 4 baseline)**:
 
 ```bash
 python -m pytest tests/ -q
-# Output: 434 passed, 1 skipped in ~41s
+# Output: 445 passed, 1 skipped in ~365s
 ```
 
 * **Test Coverage Highlights**:
@@ -240,7 +240,7 @@ AI-Code-Guardian/
 ├── README.md                           <-- Overview and Quick Start Guide
 ├── pyproject.toml / requirements.txt   <-- Build configuration & dependencies
 ├── backend/                            <-- FastAPI REST API Backend
-├── frontend/                           <-- Next.js Web Frontend UI
+├── frontend/                           <-- React (Vite + TypeScript) SPA Dashboard
 ├── guardian/                           <-- Core Python Platform Engine
 │   ├── agents/                         <-- Specialist Multi-Agent Array (Phases 4 & 5)
 │   │   ├── base/                       <-- BaseAgent & AgentResult models
@@ -256,7 +256,7 @@ AI-Code-Guardian/
 │   │   ├── patch/                      <-- PatchGenerationAgent (Phase 6)
 │   │   └── validation/                 <-- ValidationAgent (Phase 6)
 │   ├── dashboard/                      <-- Enterprise Observability UI (Phase 7)
-│   │   ├── app.py                      <-- Master Streamlit Application
+│   │   ├── app.py                      <-- Legacy Streamlit app (superseded by React frontend)
 │   │   ├── components/                 <-- Navigation & Code Diff viewers
 │   │   ├── charts/                     <-- Risk & Timeline Chart Generators
 │   │   ├── models/                     <-- DashboardStateView model
@@ -271,7 +271,7 @@ AI-Code-Guardian/
 │   ├── quantum/                        <-- CBOM generator & NIST PQC classifier
 │   ├── reasoning/                      <-- Context budget manager & Grounding Engine
 │   ├── reporting/                      <-- SARIF, JSON, HTML, PDF, CSV reporters
-│   ├── sandbox/                        <-- Docker & Process isolation sandbox
+│   ├── sandbox/                        <-- Process isolation sandbox (Docker opt-in via --sandbox flag)
 │   └── ust/                            <-- Unified Syntax Tree & Tree-sitter parsers
 ├── docs/                               <-- System & Phase Documentation
 │   └── phases/                         <-- Phase 1 through Phase 7 Migration Specs

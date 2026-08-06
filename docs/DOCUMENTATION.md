@@ -46,7 +46,8 @@ SAST Engine   SCA Engine     IaC Engine     Quantum Engine  Intent Domain  Threa
             (JSON / SARIF / HTML / CSV / PDF)
                                 │
                                 ▼
-                   Streamlit Dashboard & AI Chat
+                   React Frontend & AI Chat
+                   (http://localhost:5173)
 ```
 
 ---
@@ -61,7 +62,7 @@ SAST Engine   SCA Engine     IaC Engine     Quantum Engine  Intent Domain  Threa
 * **Purpose**: Serves as the single source of configuration truth for the entire application.
 * **Key Additions & Changes**:
   * Added `.venv-app` to `DEFAULT_IGNORE_DIRS` alongside `.venv`, `.git`, `node_modules`, `dist`, `build`.
-  * **Why**: Prevents `FileWalker` from scanning thousands of third-party python dependency ASTs inside Streamlit's virtualenv, eliminating deep recursion errors and slow scans.
+  * **Why**: Prevents `FileWalker` from scanning thousands of third-party python dependency ASTs inside the virtualenv, eliminating deep recursion errors and slow scans.
 * **Functions & Dataclasses**:
   * `GuardianConfig`: Dataclass containing filesystem limits (`max_files=200,000`, `max_file_bytes=2MB`), analysis toggles (`enable_dependencies`, `enable_infrastructure`, `enable_quantum`, `enable_intent`, `enable_ai`), and risk thresholds.
   * `load(path, **overrides)`: Class method loading YAML config files with CLI override precedence.
@@ -233,16 +234,18 @@ SAST Engine   SCA Engine     IaC Engine     Quantum Engine  Intent Domain  Threa
 
 ---
 
-### 10. CLI & Streamlit Dashboard (`guardian/cli.py`, `dashboard/`)
+### 10. CLI & React Frontend (`guardian/cli.py`, `frontend/`, `backend/`)
 
 #### 📄 [guardian/cli.py](file:///Users/prajwalkajale/Documents/acg2/guardian/cli.py)
 * Unified CLI supporting `python -m guardian scan <target> --format json sarif html csv pdf`, `detect`, and `intent` over both local directories and GitHub URLs.
 
-#### 📄 [dashboard/app.py](file:///Users/prajwalkajale/Documents/acg2/dashboard/app.py)
-* **Updates**: Added `from __future__ import annotations`, replaced `Path | None` with `Optional[Path]`, added **GitHub Repository URL** input field, and integrated GitHub fetching into scan trigger.
+#### 📄 [frontend/src/](file:///Users/prajwalkajale/Documents/acg2/frontend/src/)
+* **React (Vite + TypeScript) SPA** replacing the former Streamlit dashboard.
+* Consumes the FastAPI backend over REST/SSE, providing real-time scan results, findings, evidence explorer, requirement coverage, and chat interface.
+* Start with: `cd frontend && npm run dev` (or use `./scripts/start_local.sh` to boot the full stack).
 
-#### 📄 [dashboard/chat_page.py](file:///Users/prajwalkajale/Documents/acg2/dashboard/chat_page.py)
-* Interactive Streamlit RAG Copilot interface.
+#### 📄 [backend/app/main.py](file:///Users/prajwalkajale/Documents/acg2/backend/app/main.py)
+* FastAPI application providing REST endpoints for scans, findings, chat, requirements, reports, and analytics.
 
 ---
 
@@ -254,11 +257,11 @@ The complete test suite was executed:
 pytest tests/ -v
 ```
 
-### Test Results Summary:
-* **Total Tests**: 115
-* **Passed**: 114
+### Test Results Summary (Phase 4 — Current Baseline):
+* **Total Tests**: 446 (25 test files)
+* **Passed**: 445
 * **Skipped**: 1 (Optional live Excel/Jira integration test requiring openpyxl)
-* **Execution Time**: 3.25 seconds
+* **Execution Time**: ~365 seconds (full suite including orchestration and reasoning tests)
 
 ---
 
