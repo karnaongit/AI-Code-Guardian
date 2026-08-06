@@ -54,11 +54,15 @@ class OrchestratorWorkflow:
         self.agent_registry.register("patch", PatchGenerationAgent(tool_registry=self.tools, event_bus=self.event_bus))
         self.agent_registry.register("validation", ValidationAgent(tool_registry=self.tools, event_bus=self.event_bus))
 
+        from guardian.orchestrator.checkpointer import get_checkpointer
+        self.checkpointer = get_checkpointer()
+
         self.compiled_graph = build_workflow_graph(
             planner_agent=self.planner,
             tool_registry=self.tools,
             event_bus=self.event_bus,
-            agent_registry=self.agent_registry
+            agent_registry=self.agent_registry,
+            checkpointer=self.checkpointer
         )
 
     def execute(
@@ -66,9 +70,14 @@ class OrchestratorWorkflow:
         scan_id: str,
         repository_profile: Optional[Dict[str, Any]] = None,
         business_context: Optional[Dict[str, Any]] = None,
-        policy_context: Optional[Dict[str, Any]] = None
+        policy_context: Optional[Dict[str, Any]] = None,
+        thread_id: Optional[str] = None
     ) -> AgentWorkflowState:
         """Executes the complete multi-agent workflow for a target repository scan."""
+        import uuid
+        thread_id = thread_id or str(uuid.uuid4())
+        config = {"configurable": {"thread_id": thread_id}}
+        
         t_start = time.perf_counter()
 
         initial_state = create_initial_state(
@@ -81,7 +90,7 @@ class OrchestratorWorkflow:
         self.event_bus.publish(WorkflowStarted(scan_id=scan_id))
 
         # Invoke LangGraph StateGraph
-        final_state: AgentWorkflowState = self.compiled_graph.invoke(initial_state)
+        final_state: AgentWorkflowState = self.compiled_graph.invoke(initial_state, config=config)
 
         total_duration = time.perf_counter() - t_start
 
@@ -101,3 +110,15 @@ class OrchestratorWorkflow:
         )
 
         return final_state
+
+    def chat(self, message: str, thread_id: str) -> AgentWorkflowState:
+        """Processes an interactive chat message via the RAG agent."""
+        import asyncio
+        from langchain_core.messages import HumanMessage
+        config = {"configurable": {"thread_id": thread_id}}
+        
+        return asyncio.run(self.compiled_graph.ainvoke(
+            {"scan_mode": "chat", "messages": [HumanMessage(content=message)]},
+            config=config
+        ))
+

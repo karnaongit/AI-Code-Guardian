@@ -19,7 +19,7 @@ from guardian.dashboard.utils.session import DashboardSessionManager
 from guardian.dashboard.views import (
     AgentStudioPage,
     AgentTraceExplorerPage,
-    CopilotViewPage,
+    InteractiveAssistantPage,
     EvidenceExplorerPage,
     ExportCenterPage,
     KnowledgeGraphPage,
@@ -73,7 +73,7 @@ class GuardianDashboardApp:
             "Policy Center": PolicyCenterViewPage(),
             "Metrics Dashboard": MetricsDashboardPage(),
             "Export Center": ExportCenterPage(),
-            "AI Security Copilot": CopilotViewPage(),
+            "Interactive Assistant": InteractiveAssistantPage(),
         }
 
     def render_page(self, state: AgentWorkflowState, page_name: str = "Overview", **kwargs: Any) -> Dict[str, Any]:
@@ -396,23 +396,9 @@ def main():
             st.download_button("🧩 Download Patch Bundle", data=str(page_data.get("patch_bundle", {})), file_name="patch_bundle.json", mime="application/json")
             st.download_button("🔍 Download Execution Trace", data=str(page_data.get("trace_bundle", {})), file_name="execution_trace.json", mime="application/json")
 
-    # 15. AI SECURITY COPILOT PAGE
-    elif selected_page == "AI Security Copilot":
-        st.subheader("💬 AI Security Copilot (Grounded RAG Q&A)")
-        for msg in DashboardSessionManager.get_chat_history(st):
-            with st.chat_message(msg["role"]):
-                st.write(msg["content"])
-                if msg.get("citations"):
-                    st.caption(f"Evidence Citations: {msg['citations']}")
-
-        user_input = st.chat_input("Ask a question about repository architecture, findings, or remediation...")
-        if user_input:
-            DashboardSessionManager.add_chat_message(st, "user", user_input)
-            res = app.render_page(state, page_name=selected_page, user_query=user_input)
-            c_data = res["page_data"]
-            DashboardSessionManager.add_chat_message(st, "assistant", c_data.get("answer", ""), citations=c_data.get("citations"))
-            st.rerun()
-
+    # 15. INTERACTIVE ASSISTANT PAGE (STREAMING RAG)
+    elif selected_page == "Interactive Assistant":
+        app.pages["Interactive Assistant"].render_ui()
 
 if __name__ in ("__main__", "streamlit.runtime.scriptrunner.script_runner"):
     main()

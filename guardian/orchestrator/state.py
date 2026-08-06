@@ -7,7 +7,9 @@ Every future agent communicates exclusively through this shared state.
 from __future__ import annotations
 
 import time
-from typing import Any, Dict, List, Optional, TypedDict
+from typing import Annotated, Any, Dict, List, Optional, TypedDict
+
+from langgraph.graph.message import add_messages
 
 
 class AgentTrace(TypedDict, total=False):
@@ -40,6 +42,8 @@ class AgentWorkflowState(TypedDict, total=False):
     Master state schema passed between LangGraph nodes.
     Single source of truth across all AI agents in AI Code Guardian v3.
     """
+    messages: Annotated[list[Any], add_messages]
+    scan_mode: str
     scan_id: str
     repository_profile: Dict[str, Any]
     repository_graph: Dict[str, Any]
@@ -88,9 +92,12 @@ def create_initial_state(
     evidence: Optional[List[Dict[str, Any]]] = None,
     threat_context: Optional[Dict[str, Any]] = None,
     policy_results: Optional[Dict[str, Any]] = None,
+    scan_mode: str = "full_scan",
 ) -> AgentWorkflowState:
     """Creates a pristine, fully-initialized AgentWorkflowState dictionary."""
     return {
+        "messages": [],
+        "scan_mode": scan_mode,
         "scan_id": scan_id,
         "repository_profile": repository_profile or {},
         "repository_graph": {},

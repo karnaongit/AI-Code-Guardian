@@ -69,7 +69,7 @@ class LLMConfig:
 
     # transport
     timeout: int = 120
-    max_retries: int = 3
+    max_retries: int = 10
     retry_backoff: float = 2.0
     retry_on_status: tuple[int, ...] = (408, 429, 500, 502, 503, 504)
 
@@ -104,7 +104,7 @@ class LLMConfig:
             max_tokens=_i("LLM_MAX_TOKENS", 16384),
             top_p=_f("LLM_TOP_P", 0.95),
             timeout=_i("LLM_TIMEOUT", 120),
-            max_retries=_i("LLM_MAX_RETRIES", 3),
+            max_retries=_i("LLM_MAX_RETRIES", 10),
             retry_backoff=_f("LLM_RETRY_BACKOFF", 2.0),
             log_prompts=os.getenv("LLM_LOG_PROMPTS", "false").lower() == "true",
             enable_thinking=os.getenv("LLM_ENABLE_THINKING", "true").lower() == "true",

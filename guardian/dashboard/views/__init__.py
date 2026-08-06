@@ -4,7 +4,7 @@ AI Code Guardian v3 — Dashboard Views Exports
 """
 from guardian.dashboard.views.agent_studio import AgentStudioPage
 from guardian.dashboard.views.agent_trace import AgentTraceExplorerPage
-from guardian.dashboard.views.copilot import CopilotViewPage
+from guardian.dashboard.views.interactive_assistant import InteractiveAssistantPage
 from guardian.dashboard.views.evidence_explorer import EvidenceExplorerPage
 from guardian.dashboard.views.export_center import ExportCenterPage
 from guardian.dashboard.views.knowledge_graph import KnowledgeGraphPage
@@ -27,13 +27,13 @@ __all__ = [
     "WorkflowTimelinePage",
     "AgentStudioPage",
     "AgentTraceExplorerPage",
+    "InteractiveAssistantPage",
     "EvidenceExplorerPage",
+    "ExportCenterPage",
     "ThreatIntelViewPage",
     "RiskDashboardPage",
     "PatchExplorerPage",
     "ValidationDashboardPage",
     "PolicyCenterViewPage",
     "MetricsDashboardPage",
-    "ExportCenterPage",
-    "CopilotViewPage",
 ]

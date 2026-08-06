@@ -8,7 +8,9 @@ from __future__ import annotations
 from typing import Any, Dict, List, Optional
 import httpx
 from fastapi import APIRouter, HTTPException
+from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, Field
+import json
 
 from backend.app.core.config import settings
 from guardian.copilot import synthesize_security_answer
@@ -38,6 +40,11 @@ class ChatCompletionResponse(BaseModel):
     persona: str
     reply: str
     tools_used: List[str] = Field(default_factory=list)
+
+
+class ChatStreamRequest(BaseModel):
+    message: str
+    thread_id: str
 
 
 GREETINGS = {"hi", "hello", "hey", "greetings", "good morning", "good afternoon", "good evening", "howdy", "sup"}
@@ -161,3 +168,33 @@ async def chat_completion(request: ChatCompletionRequest):
         reply=reply,
         tools_used=tools_used
     )
+
+
+@router.post("/stream")
+async def chat_stream(request: ChatStreamRequest):
+    """Streams RAG Agent response using LangGraph Server-Sent Events."""
+    from guardian.orchestrator.workflow import OrchestratorWorkflow
+    
+    workflow = OrchestratorWorkflow()
+    
+    async def event_generator():
+        from langchain_core.messages import HumanMessage
+        config = {"configurable": {"thread_id": request.thread_id}}
+        inputs = {"scan_mode": "chat", "messages": [HumanMessage(content=request.message)]}
+        
+        try:
+            # astream_events yields events dynamically
+            async for event in workflow.compiled_graph.astream_events(inputs, config=config, version="v1"):
+                kind = event["event"]
+                if kind == "on_chat_model_stream":
+                    chunk = event["data"]["chunk"]
+                    if chunk.content:
+                        yield f"data: {json.dumps({'content': chunk.content})}\n\n"
+                        
+            yield "data: [DONE]\n\n"
+        except Exception as e:
+            yield f"data: {json.dumps({'error': str(e)})}\n\n"
+            yield "data: [DONE]\n\n"
+        
+    return StreamingResponse(event_generator(), media_type="text/event-stream")
+

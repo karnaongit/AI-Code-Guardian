@@ -12,7 +12,6 @@ from guardian.dashboard.app import GuardianDashboardApp
 from guardian.dashboard.utils.session import DashboardSessionManager
 from guardian.dashboard.views import (
     AgentStudioPage,
-    CopilotViewPage,
     MindMapViewPage,
     PolicyCenterViewPage,
     ThreatIntelViewPage,
@@ -45,55 +44,7 @@ def test_repository_manager():
         assert len(history) >= 2
 
 
-def test_copilot_view_page():
-    page = CopilotViewPage()
-    state = create_initial_state(scan_id="test-copilot")
-    state["findings"] = [{
-        "finding_id": "f-1",
-        "rule_id": "SEC-001",
-        "file_path": "auth.py",
-        "line_number": 10,
-        "snippet": "query = 'SELECT * FROM users'",
-        "evidence_id": "EV-100",
-        "description": "SQL Injection vulnerability",
-    }]
-    state["evidence"] = [{"evidence_id": "EV-100", "finding_id": "f-1"}]
 
-    from guardian.dashboard.models.dashboard_state import DashboardStateView
-    sv = DashboardStateView(state)
-    res = page.render(sv, user_query="SQL Injection")
-    assert "SEC-001" in res["answer"]
-    assert res["citations"][0]["evidence_id"] == "EV-100"
-
-
-def test_copilot_remediation_and_small_talk():
-    page = CopilotViewPage()
-    state = create_initial_state(scan_id="test-copilot-remediation")
-    state["findings"] = [{
-        "finding_id": "f-2",
-        "rule_id": "SEC-004",
-        "category": "Hardcoded Secret",
-        "severity": "High",
-        "file_path": "settings.py",
-        "line_number": 7,
-        "snippet": 'SNOWPARK_CONNECTION_TOKEN_FILE = "/snowflake/session/token"',
-        "evidence_id": "EV-200",
-        "description": "Hardcoded Snowpark connection token path.",
-    }]
-    state["evidence"] = [{"evidence_id": "EV-200", "finding_id": "f-2"}]
-
-    from guardian.dashboard.models.dashboard_state import DashboardStateView
-    sv = DashboardStateView(state)
-
-    remediation = page.render(sv, user_query="so what should be done then")
-    assert "Context:" in remediation["answer"]
-    assert "SEC-004" in remediation["answer"]
-    assert "environment" in remediation["answer"].lower()
-    assert remediation["citations"][0]["evidence_id"] == "EV-200"
-
-    greeting = page.render(sv, user_query="ok")
-    assert "SNOWPARK_CONNECTION_TOKEN_FILE" not in greeting["answer"]
-    assert greeting["citations"] == []
 
 
 def test_mind_map_agent_studio_threat_intel():

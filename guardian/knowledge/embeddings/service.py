@@ -21,6 +21,8 @@ class EmbeddingService(BaseEmbedder):
         self._model = None
         self._cache: Dict[str, List[float]] = {}
         self._dimension: int = 384
+        from guardian.cache.redis_manager import RedisManager
+        self._redis = RedisManager()
 
     def _init_model(self):
         """Lazy initialization of embedding model."""
@@ -54,8 +56,12 @@ class EmbeddingService(BaseEmbedder):
             return [0.0] * self.dimension
 
         text_hash = self._hash_text(text)
-        if self.config.cache_embeddings and text_hash in self._cache:
-            return self._cache[text_hash]
+        if self.config.cache_embeddings:
+            cached_vec = self._redis.get_json(f"embed:cache:{text_hash}")
+            if cached_vec:
+                return cached_vec
+            if text_hash in self._cache:
+                return self._cache[text_hash]
 
         vecs = self.embed_batch([text])
         return vecs[0]
@@ -72,11 +78,17 @@ class EmbeddingService(BaseEmbedder):
 
         for idx, text in enumerate(texts):
             text_hash = self._hash_text(text)
-            if self.config.cache_embeddings and text_hash in self._cache:
-                results[idx] = self._cache[text_hash]
-            else:
-                uncached_indices.append(idx)
-                uncached_texts.append(text)
+            if self.config.cache_embeddings:
+                cached_vec = self._redis.get_json(f"embed:cache:{text_hash}")
+                if cached_vec:
+                    results[idx] = cached_vec
+                    continue
+                if text_hash in self._cache:
+                    results[idx] = self._cache[text_hash]
+                    continue
+            
+            uncached_indices.append(idx)
+            uncached_texts.append(text)
 
         if uncached_texts:
             if self._model != "fallback" and hasattr(self._model, "encode"):
@@ -96,7 +108,10 @@ class EmbeddingService(BaseEmbedder):
                 vec_list = list(vec)
                 results[orig_idx] = vec_list
                 if self.config.cache_embeddings:
-                    self._cache[self._hash_text(text)] = vec_list
+                    text_hash = self._hash_text(text)
+                    self._cache[text_hash] = vec_list
+                    if self._redis.enabled:
+                        self._redis.set_json(f"embed:cache:{text_hash}", vec_list, ttl=86400 * 7)
 
         return [r if r is not None else [0.0] * self.dimension for r in results]
 

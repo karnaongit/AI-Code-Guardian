@@ -43,7 +43,8 @@ def build_workflow_graph(
     planner_agent: Optional[PlannerAgent] = None,
     tool_registry: Optional[ToolRegistry] = None,
     event_bus: Optional[EventBus] = None,
-    agent_registry: Optional[Any] = None
+    agent_registry: Optional[Any] = None,
+    checkpointer: Optional[Any] = None
 ) -> Any:
     """
     Constructs and compiles the LangGraph StateGraph.
@@ -67,6 +68,18 @@ def build_workflow_graph(
     def planner_node(state: AgentWorkflowState) -> AgentWorkflowState:
         return planner.run(state)
 
+    def trim_messages_node(state: AgentWorkflowState) -> AgentWorkflowState:
+        try:
+            from langchain_core.messages import RemoveMessage
+            messages = state.get("messages", [])
+            if len(messages) > 10:
+                # Remove oldest messages exceeding the limit of 10
+                to_remove = messages[:-10]
+                return {"messages": [RemoveMessage(id=m.id) for m in to_remove if hasattr(m, "id")]}
+        except ImportError:
+            pass
+        return {}
+
     repo_node = get_agent_node(NODE_REPOSITORY)
     biz_node = get_agent_node(NODE_BUSINESS)
     sec_node = get_agent_node(NODE_SECURITY)
@@ -80,10 +93,27 @@ def build_workflow_graph(
 
     try:
         from langgraph.graph import END, START, StateGraph
+        from langgraph.prebuilt import ToolNode, tools_condition
+        
+        try:
+            from guardian.agents.chat.agent import InteractiveChatAgent
+            chat_agent = InteractiveChatAgent(tool_registry=tool_registry, event_bus=event_bus)
+            tool_node = ToolNode(chat_agent.tools)
+        except ImportError:
+            chat_agent = None
+            tool_node = None
+            
+        def route_workflow_start(state: AgentWorkflowState) -> str:
+            return "chat_agent" if state.get("scan_mode") == "chat" else NODE_PLANNER
 
         builder = StateGraph(AgentWorkflowState)
 
         # 1. Register Nodes
+        builder.add_node("trim_messages", trim_messages_node)
+        if chat_agent:
+            builder.add_node("chat_agent", chat_agent.run)
+            builder.add_node("tools", tool_node)
+            
         builder.add_node(NODE_PLANNER, planner_node)
         builder.add_node(NODE_REPOSITORY, repo_node)
         builder.add_node(NODE_BUSINESS, biz_node)
@@ -96,8 +126,16 @@ def build_workflow_graph(
         builder.add_node(NODE_PATCH, patch_node)
         builder.add_node(NODE_VALIDATION, val_node)
 
-        # 2. Register Edges for Phase 6 (START -> Planner -> Repository -> Business -> Security -> Architecture -> Dependency -> Threat -> Policy -> Risk -> Patch -> Validation -> END)
-        builder.add_edge(START, NODE_PLANNER)
+        # 2. Register Edges
+        builder.add_edge(START, "trim_messages")
+        
+        if chat_agent:
+            builder.add_conditional_edges("trim_messages", route_workflow_start, {NODE_PLANNER: NODE_PLANNER, "chat_agent": "chat_agent"})
+            builder.add_conditional_edges("chat_agent", tools_condition, {"tools": "tools", "__end__": END})
+            builder.add_edge("tools", "chat_agent")
+        else:
+            builder.add_edge("trim_messages", NODE_PLANNER)
+            
         builder.add_edge(NODE_PLANNER, NODE_REPOSITORY)
         builder.add_edge(NODE_REPOSITORY, NODE_BUSINESS)
         builder.add_edge(NODE_BUSINESS, NODE_SECURITY)
@@ -110,7 +148,7 @@ def build_workflow_graph(
         builder.add_edge(NODE_PATCH, NODE_VALIDATION)
         builder.add_edge(NODE_VALIDATION, END)
 
-        return builder.compile()
+        return builder.compile(checkpointer=checkpointer)
 
     except Exception as exc:
         logger.warning(f"Using fallback StateGraph runner due to: {exc}")

@@ -36,6 +36,14 @@ import time
 from dataclasses import dataclass, field
 from typing import Callable, Optional
 
+from tenacity import retry, wait_exponential, stop_after_attempt, retry_if_exception
+
+_nim_semaphore = threading.Semaphore(2)
+
+def _is_retryable_error(exception: Exception) -> bool:
+    err_str = str(exception).lower()
+    return "resourceexhausted" in err_str or "limit reached" in err_str or "connection" in err_str or "timeout" in err_str or "500" in err_str or "502" in err_str or "503" in err_str or "504" in err_str or "429" in err_str
+
 from guardian.llm.base import BaseLLM, LLMAuthError, LLMError
 from guardian.llm.config import LLMConfig
 from guardian.llm.guardrails import GuardrailPipeline
@@ -217,10 +225,19 @@ class NemotronReasoningService:
 
         started = time.time()
         self.calls += 1
+        
+        @retry(
+            wait=wait_exponential(multiplier=1, min=2, max=10),
+            stop=stop_after_attempt(15),
+            retry=retry_if_exception(_is_retryable_error),
+            reraise=True
+        )
+        def _safe_chat():
+            with _nim_semaphore:
+                return client.chat(messages, temperature=request.temperature, max_tokens=request.max_tokens)
+                
         try:
-            completion = client.chat(messages,
-                                     temperature=request.temperature,
-                                     max_tokens=request.max_tokens)
+            completion = _safe_chat()
         except LLMAuthError as exc:
             self.failures += 1
             self._llm_error = f"Nemotron authentication failed: {exc}"
