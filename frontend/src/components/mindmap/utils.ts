@@ -1,15 +1,6 @@
 import { MindMapData, RawMindMapNode, RawMindMapEdge } from "./types";
 import { FileNode } from "../workspace/FileTreeSidebar";
 
-/* Helper to normalize path slashes and strip leading ./ or / */
-function normalizePath(p: string): string {
-  if (!p) return "";
-  return p
-    .replace(/\\/g, "/")
-    .replace(/^\.\//, "")
-    .replace(/^\/+|\/+$/g, "");
-}
-
 export function buildMindMapFromScan(report: any, fileTree: FileNode | null): MindMapData {
   const nodes: RawMindMapNode[] = [];
   const edges: RawMindMapEdge[] = [];
@@ -34,14 +25,14 @@ export function buildMindMapFromScan(report: any, fileTree: FileNode | null): Mi
   });
 
   // Maps to track created nodes to avoid duplicate folders/files and ensure clean hierarchy
-  const createdFolders = new Map<string, string>(); // normPath -> nodeId
+  const createdFolders = new Map<string, string>(); // path -> nodeId
   createdFolders.set("", rootId);
 
-  const createdFiles = new Map<string, string>(); // normPath -> nodeId
+  const createdFiles = new Map<string, string>(); // path -> nodeId
 
   // Helper to ensure all parent folders exist sequentially for a given path
   function ensureFolderHierarchy(folderPath: string): string {
-    const norm = normalizePath(folderPath);
+    const norm = folderPath.replace(/\\/g, "/").replace(/^\/+|\/+$/g, "");
     if (!norm) return rootId;
 
     if (createdFolders.has(norm)) {
@@ -63,7 +54,7 @@ export function buildMindMapFromScan(report: any, fileTree: FileNode | null): Mi
 
         // Calculate vulnerability score for folder subtree
         const folderFindings = findings.filter((f: any) => {
-          const fPath = normalizePath(f.file || "");
+          const fPath = (f.file || "").replace(/\\/g, "/");
           return fPath.startsWith(currentPath + "/") || fPath === currentPath;
         });
 
@@ -94,9 +85,8 @@ export function buildMindMapFromScan(report: any, fileTree: FileNode | null): Mi
 
   // Helper to add a file node under its exact parent folder node
   function addFileNode(filePath: string) {
-    const normPath = normalizePath(filePath);
-    if (!normPath) return null;
-    if (createdFiles.has(normPath)) return createdFiles.get(normPath);
+    const normPath = filePath.replace(/\\/g, "/").replace(/^\/+/g, "");
+    if (!normPath || createdFiles.has(normPath)) return createdFiles.get(normPath);
 
     const parts = normPath.split("/");
     const fileName = parts.pop() || normPath;
@@ -105,14 +95,9 @@ export function buildMindMapFromScan(report: any, fileTree: FileNode | null): Mi
     const parentFolderId = ensureFolderHierarchy(folderPath);
     const fileNodeId = `file-${normPath.replace(/[^a-zA-Z0-9-_]/g, "_")}`;
 
-    // STRICT PATH MATCHING: Files with same name in different folders must NOT share findings!
     const fileFindings = findings.filter((f: any) => {
-      const fPath = normalizePath(f.file || "");
-      if (!fPath) return false;
-      if (fPath === normPath) return true;
-      // Fallback only if finding path has no folder information (bare filename)
-      if (!fPath.includes("/") && fileName === fPath) return true;
-      return false;
+      const fPath = (f.file || "").replace(/\\/g, "/");
+      return fPath === normPath || fPath.endsWith("/" + fileName);
     });
 
     nodes.push({
@@ -136,7 +121,7 @@ export function buildMindMapFromScan(report: any, fileTree: FileNode | null): Mi
 
     createdFiles.set(normPath, fileNodeId);
 
-    // Attach finding nodes to this specific file node
+    // Attach finding nodes to this file node
     fileFindings.forEach((f: any, idx: number) => {
       const findingId = `finding-${fileNodeId}-${idx}`;
       nodes.push({
@@ -164,7 +149,7 @@ export function buildMindMapFromScan(report: any, fileTree: FileNode | null): Mi
 
   // 1. Process File Tree if available
   function processFileTreeNode(node: FileNode) {
-    const normPath = normalizePath(node.path || "");
+    const normPath = (node.path || "").replace(/\\/g, "/");
     if (node.type === "directory") {
       ensureFolderHierarchy(normPath);
       if (node.children) {
@@ -188,3 +173,4 @@ export function buildMindMapFromScan(report: any, fileTree: FileNode | null): Mi
 
   return { nodes, edges };
 }
+

@@ -54,10 +54,14 @@ async def trigger_scan(request: ScanRequest):
             raise HTTPException(status_code=400, detail="Must provide either target_path or repo_url.")
 
         scan_dir = ""
-        if request.repo_url:
-            scan_dir = tempfile.mkdtemp(prefix="acg_repo_")
+        target_input = (request.repo_url or request.target_path or "").strip()
+        from guardian.discovery.github_service import is_github_url, GitHubService
+
+        if request.repo_url or is_github_url(target_input):
             try:
-                git.Repo.clone_from(request.repo_url, scan_dir)
+                gh = GitHubService()
+                fetched_path = gh.fetch_repository(target_input)
+                scan_dir = str(fetched_path)
             except Exception as e:
                 raise HTTPException(status_code=500, detail=f"Failed to clone repository: {str(e)}")
         else:

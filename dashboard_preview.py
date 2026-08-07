@@ -380,6 +380,10 @@ code{font-family:var(--mono);font-size:10px;background:rgba(255,255,255,0.06);pa
 </body>
 </html>"""
 
-with open("D:/CDAC/AI-Code-Guardian/dashboard_preview.html", "w", encoding="utf-8") as f:
+import os
+
+out_path = os.path.join(os.path.dirname(__file__), "dashboard_preview.html")
+with open(out_path, "w", encoding="utf-8") as f:
     f.write(html)
-print("Written successfully.")
+print(f"Written successfully to {out_path}.")
+

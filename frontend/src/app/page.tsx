@@ -135,7 +135,7 @@ function AppInner() {
     };
     setReport(updated);
     try { sessionStorage.setItem("guardian_report", JSON.stringify(updated)); } catch {}
-    const sf = (updated.scan?.findings || updated.findings || [])[0];
+    const sf = (updated.scan?.findings || (updated as any).findings || [])[0];
     if (sf) setSelectedFinding(sf);
   };
 

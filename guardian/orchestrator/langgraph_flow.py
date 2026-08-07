@@ -99,7 +99,8 @@ def build_workflow_graph(
             from guardian.agents.chat.agent import InteractiveChatAgent
             chat_agent = InteractiveChatAgent(tool_registry=tool_registry, event_bus=event_bus)
             tool_node = ToolNode(chat_agent.tools)
-        except ImportError:
+        except Exception as e:
+            logger.info("InteractiveChatAgent not loaded: %s", e)
             chat_agent = None
             tool_node = None
             
@@ -158,10 +159,13 @@ def build_workflow_graph(
             def __init__(self, nodes: List[Callable[[AgentWorkflowState], AgentWorkflowState]]) -> None:
                 self.nodes = nodes
 
-            def invoke(self, state: AgentWorkflowState) -> AgentWorkflowState:
+            def invoke(self, state: AgentWorkflowState, config: Optional[Dict[str, Any]] = None, **kwargs: Any) -> AgentWorkflowState:
                 current_state = state
                 for n_fn in self.nodes:
                     current_state = n_fn(current_state)
                 return current_state
+
+            async def ainvoke(self, state: AgentWorkflowState, config: Optional[Dict[str, Any]] = None, **kwargs: Any) -> AgentWorkflowState:
+                return self.invoke(state, config=config, **kwargs)
 
         return FallbackCompiledGraph([planner_node, repo_node, biz_node, sec_node, arch_node, dep_node, threat_node, pol_node, risk_node, patch_node, val_node])

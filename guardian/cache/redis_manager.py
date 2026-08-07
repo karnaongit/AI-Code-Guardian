@@ -26,20 +26,22 @@ class RedisManager:
 
     def __init__(self, url: Optional[str] = None):
         self.url = url or os.getenv("REDIS_URL", "redis://localhost:6379/0")
-        if RedisManager._pool is None:
-            RedisManager._pool = redis.ConnectionPool.from_url(
-                self.url,
-                socket_connect_timeout=2,
-                socket_timeout=5,
-                socket_keepalive=True,
-                decode_responses=True
-            )
-        self.client = redis.Redis(connection_pool=RedisManager._pool)
-        self.enabled = True
+        self.enabled = False
+        self.client = None
         try:
+            if RedisManager._pool is None:
+                RedisManager._pool = redis.ConnectionPool.from_url(
+                    self.url,
+                    socket_connect_timeout=0.5,
+                    socket_timeout=1.0,
+                    socket_keepalive=True,
+                    decode_responses=True
+                )
+            self.client = redis.Redis(connection_pool=RedisManager._pool)
             self.client.ping()
-        except redis.ConnectionError:
-            log.warning("Redis is not available at %s. Caching disabled.", self.url)
+            self.enabled = True
+        except Exception as e:
+            log.warning("Redis is not available at %s (%s). Caching disabled.", self.url, e)
             self.enabled = False
 
     def get_json(self, key: str) -> Optional[Any]:

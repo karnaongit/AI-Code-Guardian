@@ -46,5 +46,17 @@
     "criticality": "NORMAL",
     "registered_at": 1786005874.302471,
     "last_scan_time": null
+  },
+  "repo-94f4c01d4a72": {
+    "repository_id": "repo-94f4c01d4a72",
+    "repo_name": "repo-git-568ecaf522",
+    "repo_path": "D:\\CDAC\\New folder\\AI_feature\\.acg_workspaces\\repo-git-568ecaf522",
+    "source_type": "LOCAL",
+    "size_bytes": 0,
+    "size_mb": 0.0,
+    "business_domain": "general",
+    "criticality": "NORMAL",
+    "registered_at": 1786092769.0843801,
+    "last_scan_time": null
   }
 }
