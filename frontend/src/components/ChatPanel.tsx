@@ -71,11 +71,20 @@ export default function ChatPanel() {
             }
             try {
               const data = JSON.parse(dataStr);
-              if (data.content) {
+              if (data.error) {
                 setMessages(prev => {
                   const newMsgs = [...prev];
-                  const last = newMsgs[newMsgs.length - 1];
+                  const last = { ...newMsgs[newMsgs.length - 1] };
+                  last.content += `\n\n*(Error: ${data.error})*`;
+                  newMsgs[newMsgs.length - 1] = last;
+                  return newMsgs;
+                });
+              } else if (data.content) {
+                setMessages(prev => {
+                  const newMsgs = [...prev];
+                  const last = { ...newMsgs[newMsgs.length - 1] };
                   last.content += data.content;
+                  newMsgs[newMsgs.length - 1] = last;
                   return newMsgs;
                 });
               }

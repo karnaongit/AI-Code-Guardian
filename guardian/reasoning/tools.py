@@ -40,7 +40,7 @@ def register_scan_context(findings: List[Any], knowledge: Optional[List[Dict[str
     """Register active scan context for tool queries."""
     global _ACTIVE_FINDINGS, _SECURITY_KNOWLEDGE
     
-    _ACTIVE_FINDINGS = {}
+    _ACTIVE_FINDINGS.clear()
     for f in findings:
         fid = getattr(f, "finding_id", None) if not isinstance(f, dict) else f.get("finding_id")
         if not fid:

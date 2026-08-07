@@ -63,7 +63,8 @@ export default function FindingsExplorer() {
         requirements: requirementsPath.trim() ? [requirementsPath.trim()] : undefined,
       });
 
-      setScanSuccessMsg(`Scan completed successfully! ${res.total_findings ?? 0} findings discovered.`);
+      const totalFound = (res as any).scan?.total_findings ?? res.total_findings ?? 0;
+      setScanSuccessMsg(`Scan completed successfully! ${totalFound} findings discovered.`);
       setShowScanModal(false);
       await loadFindings();
     } catch (err: any) {

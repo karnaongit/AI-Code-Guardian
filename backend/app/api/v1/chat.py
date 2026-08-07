@@ -184,7 +184,7 @@ async def chat_stream(request: ChatStreamRequest):
         
         try:
             # astream_events yields events dynamically
-            async for event in workflow.compiled_graph.astream_events(inputs, config=config, version="v1"):
+            async for event in workflow.compiled_graph.astream_events(inputs, config=config, version="v2"):
                 kind = event["event"]
                 if kind == "on_chat_model_stream":
                     chunk = event["data"]["chunk"]
