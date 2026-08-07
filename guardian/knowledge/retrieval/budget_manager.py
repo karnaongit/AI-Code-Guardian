@@ -37,13 +37,11 @@ class ContextBudgetManager:
 
     def _extract_evidence_ids(self, item: Dict[str, Any]) -> List[str]:
         ids: Set[str] = set()
-        # Direct evidence_id field
         if item.get("evidence_id"):
             ids.add(str(item["evidence_id"]))
         if item.get("evidence_ids"):
             for eid in item["evidence_ids"]:
                 ids.add(str(eid))
-        # Regex search in content/metadata/text
         text_to_search = f"{item.get('content', '')} {item.get('text', '')} {item.get('title', '')} {item.get('metadata', '')}"
         found = self.EVIDENCE_ID_PATTERN.findall(text_to_search)
         for f in found:

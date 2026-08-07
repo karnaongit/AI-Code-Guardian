@@ -51,14 +51,27 @@ class InteractiveChatAgent:
         
         self.system_prompt = (
             "You are the universal AI Code Guardian assistant. Your objective is to help the user with any code or security queries.\n"
-            "1. Determine if the user's question is about a specific security finding, patches, or general coding.\n"
-            "2. If security-related, strictly use your tools (`get_scan_findings`, `get_scan_patches`, `semantic_search`, `repository_graph_query`) to query the codebase state and cite `[Evidence E1]` markers.\n"
-            "3. If general coding, provide standard, helpful code assistant behaviors.\n"
-            "You MUST NOT hallucinate answers about the repository architecture; always query the tools when you need information."
+            "1. Determine if the user's question is about a specific security finding, patches, requirements, or general coding.\n"
+            "2. If security or topology related, strictly use `hybrid_search` (Parallel Dual-Path RRF) or dedicated tools (`get_scan_findings`, `get_scan_patches`, `semantic_search`, `repository_graph_query`, `fetch_evidence`) to query codebase state and cite `[Evidence E1]` markers.\n"
+            "3. If evidence is insufficient to answer or verify whether a requirement or vulnerability is satisfied, explicitly state 'unresolved' rather than hallucinating.\n"
+            "4. If general coding, provide standard, helpful code assistant behaviors.\n"
+            "You MUST NOT hallucinate answers about repository architecture; always query the tools when you need information."
         )
 
     def _create_tools(self) -> List[Callable]:
         """Creates LangChain-compatible @tool functions, bound to this agent instance for state access."""
+        @tool
+        def hybrid_search(query: str, top_k: int = 10) -> Dict[str, Any]:
+            """Performs parallel dual-path vector (semantic) and Neo4j graph (structural) retrieval with Reciprocal Rank Fusion (RRF, k=60)."""
+            try:
+                from guardian.knowledge.retrieval.hybrid_engine import ParallelHybridEngine
+                engine = ParallelHybridEngine()
+                active_ev = getattr(self, "_current_state", {}).get("evidence_ids", [])
+                return asyncio.run(engine.hybrid_search(query=query, top_k=top_k, active_evidence_ids=active_ev))
+            except Exception as e:
+                # Fallback to ToolRegistry if execution fails
+                return self.tool_registry.execute("semantic_search_tool", query=query, limit=top_k)
+
         @tool
         def semantic_search(query: str, limit: int = 5) -> Dict[str, Any]:
             """Performs vector-based semantic search across codebase documentation and standard frameworks."""
@@ -114,7 +127,7 @@ class InteractiveChatAgent:
             import json
             return json.dumps(res, indent=2)
 
-        return [semantic_search, repository_graph_query, fetch_evidence, get_scan_findings, get_scan_patches]
+        return [hybrid_search, semantic_search, repository_graph_query, fetch_evidence, get_scan_findings, get_scan_patches]
 
     @retry(
         wait=wait_exponential(multiplier=1, min=2, max=10),
