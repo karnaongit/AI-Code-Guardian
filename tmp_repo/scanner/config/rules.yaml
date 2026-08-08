@@ -1,0 +1,55 @@
+- id: SEC-CMD-001
+  capability: COMMAND_EXECUTION
+  severity: High
+  category: Command Injection
+  description: "Dynamic command execution can lead to Remote Code Execution."
+  recommendation: "Use secure execution methods, do not use shell=True, and validate arguments."
+  
+- id: SEC-CRYPTO-001
+  capability: WEAK_CRYPTOGRAPHY
+  severity: Medium
+  category: Weak Cryptography
+  description: "Use of a weak or deprecated cryptographic algorithm."
+  recommendation: "Use SHA-256, Argon2, or similar strong alternatives."
+  
+- id: SEC-DESER-001
+  capability: UNSAFE_DESERIALIZATION
+  severity: High
+  category: Unsafe Deserialization
+  description: "Deserialization of untrusted data can lead to arbitrary code execution."
+  recommendation: "Use safer alternatives like JSON, or safe_load functions."
+
+- id: SEC-PROTO-001
+  capability: INSECURE_PROTOCOL
+  severity: Medium
+  category: Insecure Protocol
+  description: "Use of unencrypted protocols allows packet sniffing."
+  recommendation: "Use TLS, HTTPS, or SSH instead of FTP or Telnet."
+
+- id: SEC-SQL-001
+  capability: SQL_INJECTION
+  severity: Critical
+  category: SQL Injection
+  description: "Execution of unparameterized SQL queries allows SQL injection attacks."
+  recommendation: "Always use parameterized queries or ORMs. Never concatenate strings into SQL."
+
+- id: SEC-PT-001
+  capability: PATH_TRAVERSAL
+  severity: High
+  category: Path Traversal
+  description: "Direct access to files using user input can allow path traversal."
+  recommendation: "Validate and sanitize paths, use secure APIs, or avoid direct filesystem access with input."
+
+- id: SEC-SSRF-001
+  capability: SSRF
+  severity: High
+  category: Server-Side Request Forgery
+  description: "Making HTTP requests to untrusted URLs can lead to SSRF."
+  recommendation: "Validate URLs against an allowlist and restrict network access."
+
+- id: SEC-XXE-001
+  capability: XXE
+  severity: High
+  category: XML External Entity
+  description: "Parsing XML with external entities enabled can lead to XXE attacks."
+  recommendation: "Disable external entity resolution (e.g. use defusedxml)."

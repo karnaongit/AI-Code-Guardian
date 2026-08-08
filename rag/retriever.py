@@ -19,17 +19,20 @@ class Retriever:
     4. Returning metadata.
     """
 
-    def __init__(self):
+    def __init__(self, default_index="security"):
 
         self.vector_store = VectorStore()
 
-        if not self.vector_store.exists():
-            raise FileNotFoundError(
-                "Vector store not found. "
-                "Run test_vector_store.py first."
-            )
+        if not self.vector_store.exists(default_index):
+            logging.warning(f"Vector store '{default_index}' not found. Run test_vector_store.py first if needed.")
+        else:
+            self.vector_store.load(default_index)
 
-        self.vector_store.load()
+    def load_index(self, index_name: str):
+        if self.vector_store.exists(index_name):
+            self.vector_store.load(index_name)
+        else:
+            logging.warning(f"Vector store '{index_name}' not found.")
 
     # ---------------------------------------------------------
 

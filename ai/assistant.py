@@ -34,12 +34,21 @@ class AIAssistant:
             scan_report=scan_report,
             repo_root=repo_root,
         )
+        if repo_root:
+            safe_repo_name = repo_root.replace("/", "_")
+            self.pipeline.set_retriever_index(safe_repo_name)
 
-    def ask(self, question: str):
+    def ask(self, question: str, investigation_context: str | None = None):
         """
         Ask the assistant a question.
         """
-        return self.pipeline.ask(question)
+        return self.pipeline.ask(question, investigation_context=investigation_context)
+
+    def take_action(self, session, action, question=None, workspace_id=None):
+        """
+        Execute a structured prompt strategy.
+        """
+        return self.pipeline.take_action(session, action, question, workspace_id)
 
     def clear_history(self):
         """

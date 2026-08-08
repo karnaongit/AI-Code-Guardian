@@ -1,0 +1,16 @@
+COMMAND_EXECUTION:
+- system
+- exec
+- spawn
+- popen
+HARDCODED_SECRET:
+- password
+- api_key
+INSECURE_PROTOCOL:
+- Net::FTP.new
+UNSAFE_DESERIALIZATION:
+- Marshal.load
+- YAML.load
+WEAK_CRYPTOGRAPHY:
+- Digest::MD5.hexdigest
+- Digest::SHA1.hexdigest

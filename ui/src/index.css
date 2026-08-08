@@ -1,0 +1,37 @@
+@import "tailwindcss";
+
+@import "tailwindcss";
+
+body {
+  background-color: #030712;
+  color: #f3f4f6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Custom React Flow Node Styles */
+.react-flow__node {
+  border-radius: 0.5rem;
+  border: 1px solid #374151;
+  background-color: #111827;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: white;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+}
+
+.react-flow__node.selected {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
+}
+
+.react-flow__handle {
+  background-color: #6b7280;
+  width: 8px;
+  height: 8px;
+}
+
+.react-flow__edge-path {
+  stroke: #4b5563;
+  stroke-width: 2px;
+}

@@ -140,22 +140,29 @@ and mitigating Python application security vulnerabilities.
             f"FAISS index created with {self.index.ntotal} vectors."
         )
 
-    # --------------------------------------------------
+    def _get_paths(self, index_name: str):
+        safe_name = index_name.replace("/", "_")
+        from rag.config import VECTOR_STORE_DIR
+        idx_path = VECTOR_STORE_DIR / f"{safe_name}.index"
+        meta_path = VECTOR_STORE_DIR / f"{safe_name}_metadata.pkl"
+        return idx_path, meta_path
 
-    def save(self):
+    def save(self, index_name="security"):
 
         if self.index is None:
             raise ValueError(
                 "No FAISS index to save."
             )
+            
+        idx_path, meta_path = self._get_paths(index_name)
 
         faiss.write_index(
             self.index,
-            str(INDEX_PATH),
+            str(idx_path),
         )
 
         with open(
-            METADATA_PATH,
+            meta_path,
             "wb",
         ) as file:
 
@@ -165,40 +172,77 @@ and mitigating Python application security vulnerabilities.
             )
 
         logging.info(
-            "Vector store saved successfully."
+            f"Vector store '{index_name}' saved successfully."
         )
 
     # --------------------------------------------------
 
-    def load(self):
+    def load(self, index_name="security"):
 
+        idx_path, meta_path = self._get_paths(index_name)
         self.index = faiss.read_index(
-            str(INDEX_PATH)
+            str(idx_path)
         )
 
         with open(
-            METADATA_PATH,
+            meta_path,
             "rb",
         ) as file:
 
             self.metadata = pickle.load(file)
 
         logging.info(
-            f"{self.index.ntotal} vectors loaded."
+            f"{self.index.ntotal} vectors loaded for '{index_name}'."
         )
 
     # --------------------------------------------------
 
-    def exists(self):
-
+    def exists(self, index_name="security"):
+        idx_path, meta_path = self._get_paths(index_name)
         return (
-            INDEX_PATH.exists()
+            idx_path.exists()
             and
-            METADATA_PATH.exists()
+            meta_path.exists()
         )
         
         
-        
+    
+    def build_repository_documents(self, repo_name, source_files):
+
+        documents = []
+        metadata = []
+
+        for file in source_files:
+
+            document = f"""
+    Repository:
+    {repo_name}
+
+    File:
+    {file['path']}
+
+    Language:
+    {file['extension']}
+
+    Source Code:
+    {file['content']}
+    """
+
+            documents.append(document)
+
+            metadata.append(
+                {
+                    "repo": repo_name,
+                    "file": file["path"],
+                    "language": file["extension"],
+                    "document_type": "repository",
+                    "content": file["content"],
+                }
+            )
+
+        return documents, metadata
 #         # {
 #   "repo_name": "pallets/flask"
 # }
+
+    

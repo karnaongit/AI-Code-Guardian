@@ -1,0 +1,73 @@
+COMMAND_EXECUTION:
+  - os.system
+  - os.popen
+  - subprocess.Popen
+  - subprocess.call
+  - subprocess.check_output
+  - subprocess.run
+  - exec
+
+WEAK_CRYPTOGRAPHY:
+  - hashlib.md5
+  - hashlib.sha1
+
+UNSAFE_DESERIALIZATION:
+  - pickle.loads
+  - pickle.load
+  - marshal.loads
+  - marshal.load
+  - yaml.unsafe_load
+  - yaml.load
+
+INSECURE_PROTOCOL:
+  - telnetlib.Telnet
+  - ftplib.FTP
+
+HARDCODED_SECRET:
+  - secret
+  - apikey
+  - api_key
+  - access_key
+  - private_key
+  - client_secret
+  - password
+  - passwd
+  - pwd
+  - token
+
+SQL_INJECTION:
+  - sqlite3.Cursor.execute
+  - sqlite3.execute
+  - django.db.models.query.raw
+  - django.db.connection.cursor.execute
+  - flask_sqlalchemy.SQLAlchemy.engine.execute
+  - psycopg2.cursor.execute
+  - mysql.connector.cursor.execute
+  - sqlalchemy.text
+  - cursor.execute
+  - db.execute
+  - execute
+  - executescript
+  - execute_many
+
+SSRF:
+  - requests.get
+  - requests.post
+  - requests.request
+  - urllib.request.urlopen
+  - urllib2.urlopen
+  - httplib.HTTPConnection
+  - get
+
+PATH_TRAVERSAL:
+  - open
+  - os.open
+  - io.open
+  - codecs.open
+  - file
+
+XXE:
+  - xml.etree.ElementTree.parse
+  - xml.etree.ElementTree.fromstring
+  - lxml.etree.parse
+  - lxml.etree.fromstring

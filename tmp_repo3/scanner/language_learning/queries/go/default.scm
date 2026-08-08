@@ -1,0 +1,6 @@
+(function_declaration name: (identifier) @function)
+(method_declaration name: (field_identifier) @method)
+(import_declaration (import_spec path: (interpreted_string_literal) @import))
+(call_expression function: (identifier) @call)
+(var_declaration (var_spec name: (identifier) @variable))
+(const_declaration (const_spec name: (identifier) @constant))

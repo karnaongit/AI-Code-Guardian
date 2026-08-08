@@ -108,7 +108,63 @@ class IndexStats:
 
 from enum import Enum
 from dataclasses import dataclass, field
-from typing import Any
+from typing import Any, List, Optional
+
+class InvestigationAction(str, Enum):
+    EXPLAIN_FINDING = "EXPLAIN_FINDING"
+    SHOW_EVIDENCE = "SHOW_EVIDENCE"
+    GENERATE_FIX = "GENERATE_FIX"
+    VALIDATE_FIX = "VALIDATE_FIX"
+    SHOW_REFERENCES = "SHOW_REFERENCES"
+
+@dataclass
+class InvestigationSummary:
+    title: str = ""
+    severity: str = ""
+    cwe: str = ""
+    owasp: str = ""
+    description: str = ""
+    recommendation: str = ""
+    file: str = ""
+    class_name: str = ""
+    function_name: str = ""
+    line: int = 0
+    evidence: str = ""
+    snippet: str = ""
+    confidence: str = ""
+
+@dataclass
+class InvestigationContext:
+    finding_id: str
+    summary: InvestigationSummary
+    evidence: str = ""
+    semantic_context: str = ""
+    related_findings: List[str] = field(default_factory=list)
+    retrieved_context: str = ""
+    future_execution_path: str = ""
+
+@dataclass
+class InvestigationSession:
+    session_id: str
+    repository_id: str
+    finding_id: str
+    context: InvestigationContext
+    conversation_history: List[Any] = field(default_factory=list)
+    created_at: str = ""
+    updated_at: str = ""
+
+@dataclass
+class InvestigationResult:
+    summary: str = ""
+    root_cause: str = ""
+    attack_scenario: str = ""
+    evidence: str = ""
+    business_impact: str = ""
+    secure_fix: str = ""
+    secure_code: str = ""
+    validation_steps: str = ""
+    references: str = ""
+    policy_decision: Optional[dict] = None
 
 
 class MessageRole(str, Enum):

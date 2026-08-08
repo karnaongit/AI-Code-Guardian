@@ -1,0 +1,35 @@
+COMMAND_EXECUTION:
+  category: Command Injection
+  severity: High
+
+WEAK_CRYPTOGRAPHY:
+  category: Weak Cryptography
+  severity: Medium
+
+UNSAFE_DESERIALIZATION:
+  category: Unsafe Deserialization
+  severity: High
+
+INSECURE_PROTOCOL:
+  category: Insecure Protocol
+  severity: Medium
+
+HARDCODED_SECRET:
+  category: Hardcoded Secret
+  severity: High
+
+SQL_INJECTION:
+  category: SQL Injection
+  severity: Critical
+
+PATH_TRAVERSAL:
+  category: Path Traversal
+  severity: High
+
+SSRF:
+  category: Server-Side Request Forgery
+  severity: High
+
+XXE:
+  category: XML External Entity
+  severity: High

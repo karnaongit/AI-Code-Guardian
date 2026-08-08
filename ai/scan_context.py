@@ -42,7 +42,7 @@ def finding_text(f: dict) -> str:
 
 def findings_to_documents(report: dict) -> list[Document]:
     docs: list[Document] = []
-    for f in report.get("scan", {}).get("findings", []):
+    for f in report.get("security_findings", []):
         text = finding_text(f)
         docs.append(Document(
             doc_id=hashlib.sha1(text.encode()).hexdigest()[:16],
@@ -52,19 +52,15 @@ def findings_to_documents(report: dict) -> list[Document]:
             start_line=int(f.get("line") or 0),
             end_line=int(f.get("line") or 0),
             metadata={"finding_id": f.get("finding_id"),
-                      "rule_id": f.get("rule_id"),
+                      "rule_id": f.get("rule"),
                       "severity": f.get("severity")},
         ))
     # one summary document so "how did the scan go overall" is answerable
-    risk = report.get("risk", {})
-    scan = report.get("scan", {})
-    summary_content = ("SCAN SUMMARY | target " + str(scan.get("target"))
-                 + f" | files_scanned {scan.get('files_scanned')}"
-                 + f" | total_findings {scan.get('total_findings')}"
-                 + f" | by_severity {json.dumps(scan.get('by_severity', {}))}"
-                 + f" | security_score {risk.get('security_score')}"
-                 + f" | overall_risk {risk.get('overall_risk_score')}"
-                 + f" | merge_decision {risk.get('merge_decision')}")
+    summary = report.get("summary", {})
+    summary_content = ("SCAN SUMMARY | target " + str(summary.get("repository"))
+                 + f" | files_scanned {summary.get('files_scanned')}"
+                 + f" | total_findings {summary.get('security_findings_count')}"
+                 + f" | security_score {summary.get('repository_risk_score')}")
     docs.append(Document(
         doc_id=hashlib.sha1(summary_content.encode()).hexdigest()[:16],
         content=summary_content,
@@ -73,6 +69,23 @@ def findings_to_documents(report: dict) -> list[Document]:
     ))
     return docs
 
+def get_scan_summary_context(report: Optional[dict]) -> str:
+    """Returns a general summary of the scan report to always include in context."""
+    if not report:
+        return ""
+    summary_data = report.get("summary", {})
+    
+    # Extract unique categories from findings
+    findings = report.get("security_findings", [])
+    categories = list(set(f.get("category", "Unknown") for f in findings))
+    
+    summary = ("SCAN SUMMARY:\n"
+             + f"- Target: {summary_data.get('repository', 'unknown')}\n"
+             + f"- Files scanned: {summary_data.get('files_scanned', 0)}\n"
+             + f"- Total findings: {summary_data.get('security_findings_count', 0)}\n"
+             + f"- Vulnerability categories found: {', '.join(categories) if categories else 'None'}\n"
+             + f"- Repository risk score: {summary_data.get('repository_risk_score', 0)}\n")
+    return summary
 
 def exact_match_context(question: str, report: Optional[dict],
                         max_findings: int = 6) -> str:
@@ -81,7 +94,7 @@ def exact_match_context(question: str, report: Optional[dict],
     matches — never guesses."""
     if not report:
         return ""
-    findings = report.get("scan", {}).get("findings", [])
+    findings = report.get("security_findings", [])
     if not findings:
         return ""
     q_tokens = {t.lower() for t in _TOKEN.findall(question)}
@@ -89,7 +102,7 @@ def exact_match_context(question: str, report: Optional[dict],
 
     hits: list[dict] = []
     for f in findings:
-        rid = str(f.get("rule_id") or "").lower()
+        rid = str(f.get("rule") or "").lower()
         fid = str(f.get("finding_id") or "").lower()
         fpath = str(f.get("file") or "").lower().replace("\\", "/")
         fname = fpath.rsplit("/", 1)[-1]

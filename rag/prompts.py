@@ -12,13 +12,13 @@ Rules:
 
 Return exactly this format:
 
-{
+{{
     "why": "...",
     "fix": "...",
     "references": [
         "..."
     ]
-}
+}}
 
 =========================
 Retrieved Security Knowledge

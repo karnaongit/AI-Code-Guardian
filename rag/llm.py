@@ -2,10 +2,9 @@ import json
 import logging
 import os
 from typing import Dict, List
-
+from urllib import response
+from scanner.language_learning.nemotron_llm import NemotronLLM
 from dotenv import load_dotenv
-from google import genai
-
 from rag.prompts import SECURITY_ANALYST_PROMPT
 
 logging.basicConfig(level=logging.INFO)
@@ -15,24 +14,24 @@ load_dotenv()
 
 class SecurityLLM:
     """
-    Handles interaction with the Gemini model.
+    Handles interaction with the Nemotron model.
     """
 
     def __init__(self):
 
-        api_key = os.getenv("GEMINI_API_KEY")
+        api_key = os.getenv("NVIDIA_API_KEY") 
 
         if not api_key:
             raise ValueError(
-                "GEMINI_API_KEY not found in .env"
+                "NVIDIA_API_KEY not found in .env"
             )
 
-        self.client = genai.Client(api_key=api_key)
+        self.client = NemotronLLM()
 
-        self.model = os.getenv(
-            "LLM_MODEL",
-            "gemini-2.5-flash"
-        )
+        # self.model = os.getenv(
+        #     "LLM_MODEL",
+        #     "gemini-2.5-flash"
+        # )
 
     # --------------------------------------------------
 
@@ -101,12 +100,10 @@ Relevance Score:
             "Do not wrap in markdown."
         )
 
-        response = self.client.models.generate_content(
-            model=self.model,
-            contents=f"{system_prompt}\n\n{prompt}"
-        )
-
-        text = response.text.strip()
+        text = self.client.generate(
+    prompt=prompt,
+    system_prompt=system_prompt,
+)
 
         # Remove markdown fences if Gemini adds them
         if text.startswith("```"):
@@ -115,7 +112,7 @@ Relevance Score:
         try:
             result = json.loads(text)
         except Exception:
-            logging.exception("Failed to parse Gemini output.")
+            logging.exception("Failed to parse NVIDIA output.")
             logging.error(text)
 
             return {
@@ -150,9 +147,7 @@ Relevance Score:
             "You are AI Code Guardian, an expert application security assistant."
         )
 
-        response = self.client.models.generate_content(
-            model=self.model,
-            contents=f"{system_prompt}\n\n{prompt}"
-        )
-
-        return response.text
+        return self.client.generate(
+    prompt=prompt,
+    system_prompt=system_prompt,
+)

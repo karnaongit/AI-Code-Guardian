@@ -26,7 +26,7 @@ from typing import  Optional
 from typer import prompt
 from rag.llm import SecurityLLM
 from ai.conversation_memory import ConversationMemory
-from ai.scan_context import exact_match_context
+from ai.scan_context import exact_match_context, get_scan_summary_context
 from ai.validator import ResponseValidator
 from ai.models import (
     AssistantResponse,
@@ -93,11 +93,16 @@ class RAGPipeline:
         self._validator = ResponseValidator(repo_root=repo_root,
                                             scan_report=scan_report)
 
+    def set_retriever_index(self, index_name: str) -> None:
+        """Switch the retriever to search a different FAISS index (e.g. a specific repository)."""
+        if hasattr(self._retriever, "load_index"):
+            self._retriever.load_index(index_name)
+
     # ------------------------------------------------------------------
     # Non-streaming
     # ------------------------------------------------------------------
 
-    def ask(self, question: str, top_k: Optional[int] = None) -> AssistantResponse:
+    def ask(self, question: str, top_k: Optional[int] = None, investigation_context: str | None = None) -> AssistantResponse:
         t0 = time.time()
 
         # Handle greetings
@@ -115,25 +120,46 @@ class RAGPipeline:
             return response
 
         # Retrieve relevant context
-        retrieved_docs = self._retriever.search(question)
-
-        # Inject scan findings if available
-        exact_ctx = exact_match_context(question, self._scan_report)
-
         context = ""
+        retrieved_docs = []
+        
+        if investigation_context:
+            context += "### Investigated Vulnerability Context\n"
+            context += investigation_context + "\n\n"
+        else:
+            # Retrieve relevant context only if not in a scoped investigation
+            retrieved_docs = self._retriever.search(question)
 
-        if exact_ctx:
-            context += exact_ctx + "\n\n"
+            # Inject scan findings if available
+            exact_ctx = exact_match_context(question, self._scan_report)
+            summary_ctx = get_scan_summary_context(self._scan_report)
 
-        for doc in retrieved_docs:
-            context += f"""
-        Source: {doc.get('source')}
-        Vulnerability: {doc.get('vulnerability')}
-        Description: {doc.get('description')}
-        Recommendation: {doc.get('recommendation')}
-        Reference: {doc.get('url')}
+            if summary_ctx:
+                context += summary_ctx + "\n\n"
 
-        """
+            if exact_ctx:
+                context += exact_ctx + "\n\n"
+
+            for doc in retrieved_docs:
+                doc_type = doc.get("document_type", "security_reference")
+                if doc_type == "repository":
+                    context += f"""
+            File: {doc.get('file')}
+            Repository: {doc.get('repo')}
+            Language: {doc.get('language')}
+            Content:
+            {doc.get('content')}
+
+            """
+                else:
+                    context += f"""
+            Source: {doc.get('source')}
+            Vulnerability: {doc.get('vulnerability')}
+            Description: {doc.get('description')}
+            Recommendation: {doc.get('recommendation')}
+            Reference: {doc.get('url')}
+
+            """
         # Nothing found
         if not context.strip():
             response = AssistantResponse(
@@ -174,11 +200,12 @@ class RAGPipeline:
 
         latency = round((time.time() - t0) * 1000, 1)
 
-        citations = [
-    doc.get("source", "")
-    for doc in retrieved_docs
-    if doc.get("source")
-]
+        citations = []
+        for doc in retrieved_docs:
+            if doc.get("document_type") == "repository" and doc.get("file"):
+                citations.append(doc.get("file"))
+            elif doc.get("source"):
+                citations.append(doc.get("source"))
 
         response = AssistantResponse(
             answer=self._append_citations(
@@ -196,6 +223,38 @@ class RAGPipeline:
         self._memory.add_assistant_message(response)
 
         return response
+
+    def take_action(self, session, action, question=None, workspace_id=None):
+        from ai.langgraph_orchestrator import LangGraphOrchestrator
+        from ai.models import InvestigationResult
+        import json
+        
+        # Instantiate orchestrator with existing dependencies
+        orchestrator = LangGraphOrchestrator(self._llm, self._retriever)
+        
+        # Build initial state
+        initial_state = {
+            "workspace_id": workspace_id,
+            "action": action,
+            "session": session,
+            "question": question,
+            "repo_name": session.repository_id if session else "",
+            "finding_id": session.finding_id if session else "",
+            "evidence": "",
+            "retrieved_context": "",
+            "graph_context": "",
+            "response": None,
+            "error": None
+        }
+        
+        # Invoke graph
+        final_state = orchestrator.invoke(initial_state)
+        
+        # Return response
+        if final_state.get("response"):
+            return final_state["response"]
+            
+        return InvestigationResult(summary="Action failed to produce a response.")
 
     # ------------------------------------------------------------------
     # Streaming (for Streamlit st.write_stream)
