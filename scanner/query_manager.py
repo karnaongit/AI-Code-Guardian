@@ -46,6 +46,10 @@ class QueryManager:
 
         if query_path.exists():
             return query_path.read_text(encoding="utf-8")
+            
+        dynamic_path = self.learning_manager.cache.query_path(language_name)
+        if dynamic_path.exists():
+            return dynamic_path.read_text(encoding="utf-8")
 
         return self.learning_manager.ensure(
             language_name=language_name,
