@@ -8,6 +8,8 @@ import FindingDrawer, { FindingDetail } from "../components/scan/FindingDrawer";
 import ChatDrawer from "../components/chat/ChatDrawer";
 import VulnerabilityViewer from "../components/editor/VulnerabilityViewer";
 import ASTMindMap from "../components/mindmap/ASTMindMap";
+import CyberDashboard from "../components/cyberlock/CyberDashboard";
+import { buildMindMapFromScan } from "../components/mindmap/utils";
 
 import {
   Shield,
@@ -309,9 +311,9 @@ function AppInner() {
           </header>
 
           {/* Scrollable content */}
-          <div className="p-6 space-y-5">
+          <div className="px-5 py-3 space-y-3">
 
-            {/* Triage funnel — always visible */}
+            {/* Triage funnel — compact single line */}
             <TriageFunnel metrics={metrics} />
 
             {/* ── Tab content with fade-in transition ─ */}

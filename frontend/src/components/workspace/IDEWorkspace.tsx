@@ -22,6 +22,10 @@ export default function IDEWorkspace({ onScanComplete }: IDEWorkspaceProps) {
   const [findings, setFindings] = useState<any[]>([]);
   const [scanFindingsMap, setScanFindingsMap] = useState<Record<string, any[]>>({});
 
+  // Resizable Explorer state
+  const [sidebarWidth, setSidebarWidth] = useState(250);
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+
   // Restore state from sessionStorage on mount
   useEffect(() => {
     try {
@@ -62,6 +66,26 @@ export default function IDEWorkspace({ onScanComplete }: IDEWorkspaceProps) {
     } catch (e) {
       console.warn("Failed to save workspace state to sessionStorage:", e);
     }
+  };
+
+  const handleMouseDownResize = (e: React.MouseEvent) => {
+    e.preventDefault();
+    const startX = e.clientX;
+    const startWidth = sidebarWidth;
+
+    const handleMouseMove = (moveEvent: MouseEvent) => {
+      const delta = moveEvent.clientX - startX;
+      const newWidth = Math.max(140, Math.min(500, startWidth + delta));
+      setSidebarWidth(newWidth);
+    };
+
+    const handleMouseUp = () => {
+      window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("mouseup", handleMouseUp);
+    };
+
+    window.addEventListener("mousemove", handleMouseMove);
+    window.addEventListener("mouseup", handleMouseUp);
   };
 
   const handleScan = async (targetOrOptions: string | ScanOptions, isUrl?: boolean, aiEnabledParam?: boolean) => {
@@ -128,13 +152,10 @@ export default function IDEWorkspace({ onScanComplete }: IDEWorkspaceProps) {
         let errMsg = "Scan failed";
         try {
           const errData = await res.json();
-          console.error("Scan failed - Server Error Detail:", errData);
           if (errData.detail) {
             errMsg = typeof errData.detail === "string" ? errData.detail : JSON.stringify(errData.detail);
           }
-        } catch (e) {
-          console.error("Could not parse scan error response JSON:", e);
-        }
+        } catch (e) {}
         throw new Error(errMsg);
       }
 
@@ -212,7 +233,6 @@ export default function IDEWorkspace({ onScanComplete }: IDEWorkspaceProps) {
 
     let replacement = originalLine;
 
-    // Call backend AutoFix service
     try {
       const res = await fetch(`${API_BASE}/api/v1/findings/autofix`, {
         method: "POST",
@@ -237,34 +257,16 @@ export default function IDEWorkspace({ onScanComplete }: IDEWorkspaceProps) {
       console.warn("Backend autofix call failed, using client-side rule transformer:", e);
     }
 
-    // Client-side fallback transformer if backend didn't transform or errored
     if (replacement === originalLine) {
       const cat = (finding.category || finding.title || "").toLowerCase();
       const cwe = (finding.cwe || finding.cwe_id || "").toUpperCase();
 
       if (cat.includes("sql") || cwe === "CWE-89") {
-        if (trimmed.includes("+")) {
-          replacement = `${indent}cursor.execute("SELECT * FROM users WHERE id = %s", (user_input,))`;
-        } else {
-          replacement = originalLine.replace(/execute\((.*?)\)/, 'execute("SELECT * FROM users WHERE id = %s", (user_input,))');
-        }
-      } else if (cat.includes("crypto") || cat.includes("md5") || cat.includes("sha1") || cwe === "CWE-327") {
-        let fixed = trimmed.replace("hashlib.md5", "hashlib.sha256").replace("hashlib.sha1", "hashlib.sha256").replace("MD5", "SHA-256");
+        replacement = `${indent}cursor.execute("SELECT * FROM users WHERE id = %s", (user_input,))`;
+      } else if (cat.includes("crypto") || cat.includes("md5") || cwe === "CWE-327") {
+        let fixed = trimmed.replace("hashlib.md5", "hashlib.sha256").replace("MD5", "SHA-256");
         replacement = `${indent}${fixed}`;
-      } else if (cat.includes("tls") || cat.includes("ssl") || cat.includes("verify") || cwe === "CWE-295") {
-        let fixed = trimmed.replace(/verify\s*=\s*False/i, "verify=True").replace(/_create_unverified_context/i, "create_default_context");
-        replacement = `${indent}${fixed}`;
-      } else if (cat.includes("secret") || cat.includes("password") || cwe === "CWE-798") {
-        const varMatch = trimmed.match(/^([a-zA-Z0-9_]+)\s*=\s*["'].*?["']/);
-        if (varMatch) {
-          replacement = `${indent}${varMatch[1]} = os.getenv("${varMatch[1].toUpperCase()}", "")`;
-        } else {
-          replacement = `${indent}SECRET_KEY = os.getenv("SECRET_KEY", "")`;
-        }
-      } else if (finding.remediation_patch) {
-        replacement = `${indent}${finding.remediation_patch.trim()}`;
       } else {
-        // Never replace line with just a comment! Preserve code and add inline remediation tag
         replacement = `${indent}${trimmed}  # remediated: ${finding.category || "security-fix"}`;
       }
     }
@@ -273,7 +275,6 @@ export default function IDEWorkspace({ onScanComplete }: IDEWorkspaceProps) {
     const updatedContent = lines.join('\n');
     setFileContent(updatedContent);
 
-    // Save updated content state to storage
     if (scanId && selectedFilePath) {
       saveStateToStorage(scanId, fileTree, scanFindingsMap, selectedFilePath, updatedContent, findings);
     }
@@ -298,26 +299,45 @@ export default function IDEWorkspace({ onScanComplete }: IDEWorkspaceProps) {
   };
 
   return (
-    <div className="flex flex-col h-[calc(100vh-160px)] gap-4">
+    <div className="flex flex-col h-[calc(100vh-115px)] gap-3.5">
       <div className="shrink-0">
         <RepoInput onScan={handleScan} isScanning={isScanning} />
       </div>
       <div className="flex-1 flex overflow-hidden rounded-xl bg-[#0c0d11] border border-white/8">
-        {/* File Tree Sidebar */}
-        <div className="w-60 shrink-0 overflow-hidden">
+        {/* File Tree Sidebar (Resizable & Expandable/Shrinkable) */}
+        <div
+          style={{ width: isSidebarCollapsed ? "44px" : `${sidebarWidth}px` }}
+          className="shrink-0 overflow-hidden transition-[width] duration-150 ease-out flex flex-col relative"
+        >
           {isScanning ? (
             <div className="h-full flex flex-col items-center justify-center text-[#ff5400] gap-3 bg-[#0c0d11]">
               <Loader2 className="w-6 h-6 animate-spin" />
-              <span className="text-xs font-mono font-semibold tracking-wider text-[#8e8e9a]">SCANNING...</span>
+              {!isSidebarCollapsed && (
+                <span className="text-xs font-mono font-semibold tracking-wider text-[#8e8e9a]">SCANNING...</span>
+              )}
             </div>
           ) : (
             <FileTreeSidebar
               tree={fileTree}
               onSelectFile={handleSelectFile}
               selectedPath={selectedFilePath}
+              findingsMap={scanFindingsMap}
+              isCollapsed={isSidebarCollapsed}
+              onToggleCollapse={() => setIsSidebarCollapsed((prev) => !prev)}
             />
           )}
         </div>
+
+        {/* Resizer Handle */}
+        {!isSidebarCollapsed && (
+          <div
+            onMouseDown={handleMouseDownResize}
+            className="w-1.5 hover:w-2 bg-[#12131a] hover:bg-[#ff5400]/40 cursor-col-resize shrink-0 transition-all border-r border-white/8 flex items-center justify-center group relative z-20"
+            title="Drag to resize explorer"
+          >
+            <div className="w-0.5 h-6 bg-white/20 group-hover:bg-[#ff5400] rounded-full transition-colors" />
+          </div>
+        )}
 
         {/* Code Viewer (Center) */}
         <div className="flex-1 overflow-hidden border-l border-white/8 flex flex-col">
@@ -350,4 +370,3 @@ export default function IDEWorkspace({ onScanComplete }: IDEWorkspaceProps) {
     </div>
   );
 }
-
