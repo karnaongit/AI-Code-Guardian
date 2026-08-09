@@ -44,8 +44,8 @@ from guardian.core.context import AnalysisContext
 from guardian.core.models import Finding, Severity
 from guardian.engines.base import BaseEngine, EngineResult
 from guardian.evidence.models import Evidence, EvidenceType, FindingSource
-from guardian.policy.extractor import PolicyExtractor
-from guardian.policy.models import BusinessPolicy, ControlType, PolicySet
+from guardian.policies.extractor import PolicyExtractor
+from guardian.policies.models import BusinessPolicy, ControlType, PolicySet
 from guardian.reasoning.context import render_evidence, render_ust_context
 from guardian.reasoning.gateway import ReasoningRequest
 from guardian.reasoning.schemas import (

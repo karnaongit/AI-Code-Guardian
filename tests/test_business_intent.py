@@ -18,7 +18,7 @@ from guardian.engines.base import run_engine
 from guardian.engines.business_intent import BusinessIntentEngine
 from guardian.engines.security import SecurityEngine
 from guardian.evidence.models import EvidenceType
-from guardian.policy import ControlType, PolicyExtractor
+from guardian.policies import ControlType, PolicyExtractor
 from guardian.reasoning.gateway import NemotronReasoningService
 from guardian.reasoning.schemas import ComplianceVerdict
 from guardian.ust import USTBuilder

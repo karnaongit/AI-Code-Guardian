@@ -24,7 +24,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Iterable, Optional
 
-from guardian.policy.models import (
+from guardian.policies.models import (
     BusinessPolicy, Condition, ControlType, PolicyPriority, PolicySet,
 )
 

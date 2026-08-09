@@ -236,7 +236,7 @@ python -m pytest tests/ -q
 ```
 AI-Code-Guardian/
 ├── Architecture.md                     <-- High-level system architecture specification
-├── END_TO_END_SYSTEM_DESIGN.md         <-- Detailed end-to-end system design (mirror)
+├── END_TO_END_SYSTEM_DESIGN.md         <-- Detailed end-to-end system design (this file)
 ├── README.md                           <-- Overview and Quick Start Guide
 ├── pyproject.toml / requirements.txt   <-- Build configuration & dependencies
 ├── backend/                            <-- FastAPI REST API Backend
