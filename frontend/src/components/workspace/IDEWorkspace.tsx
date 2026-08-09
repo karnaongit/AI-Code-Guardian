@@ -298,7 +298,7 @@ export default function IDEWorkspace({ onScanComplete }: IDEWorkspaceProps) {
               content={fileContent}
               language={getLanguageFromPath(selectedFilePath)}
               findings={findings}
-              onChange={setFileContent}
+              onChange={(val) => setFileContent(val || "")}
               readOnly={false}
             />
           </div>

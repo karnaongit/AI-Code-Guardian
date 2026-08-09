@@ -1,6 +1,6 @@
 """
-LLM Layer — NVIDIA Nemotron Provider (spec §3, §11, §12)
-=========================================================
+LLM Layer — NVIDIA Nemotron 3 Ultra Provider (spec §3, §11, §12)
+================================================================
 Implements `BaseLLM` against NVIDIA's OpenAI-compatible endpoint.
 
 Transport strategy: the `openai` SDK is used when installed (it is the
@@ -163,7 +163,7 @@ class NemotronLLM(BaseLLM):
 
     def _payload(self, messages: list[dict], temperature: Optional[float],
                  max_tokens: Optional[int], stream: bool) -> dict:
-        return {
+        payload = {
             "model": self._cfg.model,
             "messages": messages,
             "temperature": self._cfg.temperature if temperature is None else temperature,
@@ -171,6 +171,13 @@ class NemotronLLM(BaseLLM):
             "top_p": self._cfg.top_p,
             "stream": stream,
         }
+        # Nemotron 3 Ultra reasoning / chain-of-thought support
+        if self._cfg.enable_thinking:
+            payload["extra_body"] = {
+                "chat_template_kwargs": {"enable_thinking": True},
+                "reasoning_budget": self._cfg.reasoning_budget,
+            }
+        return payload
 
     def _request_with_retry(self, payload: dict, stream: bool) -> dict:
         """Exponential backoff with jitter over retryable failures (spec §11)."""
@@ -236,6 +243,12 @@ class NemotronLLM(BaseLLM):
                 if not chunk.choices:
                     continue
                 delta = chunk.choices[0].delta
+                # Nemotron 3 Ultra emits reasoning_content during thinking
+                reasoning = getattr(delta, "reasoning_content", None)
+                if reasoning:
+                    log.debug("reasoning token: %s", reasoning[:80])
+                    # Skip reasoning tokens in the output stream — the
+                    # consumer only receives the final answer content.
                 token = getattr(delta, "content", None)
                 if token:
                     yield token
@@ -266,7 +279,10 @@ class NemotronLLM(BaseLLM):
                         continue
                     choices = chunk.get("choices") or []
                     if choices:
-                        token = (choices[0].get("delta") or {}).get("content")
+                        delta = choices[0].get("delta") or {}
+                        # Skip reasoning_content from Nemotron Ultra
+                        # — only yield final answer content tokens.
+                        token = delta.get("content")
                         if token:
                             yield token
         except LLMError:

@@ -44,8 +44,8 @@ _NOT_FOUND_MARKER = "I could not find evidence in the indexed repository"
 import re
 
 _GREETING_PATTERNS = {
-    re.compile(r"^(hi|hello|hey|greetings|good\s+(morning|afternoon|evening))\b[\!\?\. ]*$", re.I):
-        "Hello! How can I help you with your repository security scan or code review today?",
+    re.compile(r"^(h[iaeo]+|greetings|good\s+(morning|afternoon|evening))\b[\!\?\. ]*$", re.I):
+        "Hello! I am your AI Security Copilot. How can I help you with your repository security scan or code review today?",
     re.compile(r"^(who\s+are\s+you|what\s+can\s+you\s+do|help|what\s+is\s+this)\b[\!\?\. ]*$", re.I):
         "I am your AI Code Guardian Assistant! I can help explain security vulnerabilities, risk scores, post-quantum crypto risks, and business intent findings.",
     re.compile(r"^(thanks|thank\s+you|thx|awesome|great|cool)\b[\!\?\. ]*$", re.I):

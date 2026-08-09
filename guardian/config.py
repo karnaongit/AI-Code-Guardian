@@ -42,6 +42,8 @@ class GuardianConfig:
     enable_intent: bool = True
     enable_threat_intel: bool = False   # requires network; off by default
     enable_ai: bool = False             # requires NVIDIA_API_KEY; off by default
+    enable_sandbox: bool = False         # scan an isolated copy of the repository
+    enable_knowledge: bool = False       # build repository graph and semantic doc index
 
     # risk
     alignment_score_default: float = 75.0

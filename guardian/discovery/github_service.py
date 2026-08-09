@@ -43,10 +43,12 @@ def is_github_url(target: str) -> bool:
 
 def parse_github_url(target: str) -> Tuple[str, str, Optional[str]]:
     """Extract (owner, repo, ref) from a GitHub URL or slug."""
-    s = target.strip()
+    s = target.strip().rstrip('/')
     m = _GITHUB_URL_PAT.match(s)
     if m:
         owner, repo, ref = m.group(1), m.group(2).removesuffix(".git"), m.group(3)
+        if ref:
+            ref = ref.rstrip('/')
         return owner, repo, ref
     m2 = _GITHUB_SLUG_PAT.match(s)
     if m2:

@@ -46,7 +46,7 @@ class TestLLMConfig:
     def test_malformed_env_falls_back_to_default(self, monkeypatch):
         monkeypatch.setenv("NVIDIA_API_KEY", "nvapi-x")
         monkeypatch.setenv("LLM_MAX_TOKENS", "not-a-number")
-        assert LLMConfig.from_env(dotenv_path="/nonexistent").max_tokens == 2048
+        assert LLMConfig.from_env(dotenv_path="/nonexistent").max_tokens == 16384
 
 
 # --------------------------------------------------------------- factory

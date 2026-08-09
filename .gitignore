@@ -1,4 +1,5 @@
 .env
+.DS_Store
 .venv-app/
 .venv/
 .venv-*/
@@ -6,12 +7,15 @@ __pycache__/
 *.py[cod]
 .pytest_cache/
 .acg_index/
+.acg_workspaces/
 guardian/.acg_index/
 *.egg-info/
 reports/
 graphify-out/
+chrome-headless-profile/
+*.log
+frontend-*.png
 build/
 dist/
 frontend/node_modules/
 frontend/.next/
-
