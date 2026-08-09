@@ -34,7 +34,6 @@ import {
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
 const TABS = [
-  { id: "cyber_dashboard", label: "Dashboard",          icon: LayoutDashboard },
   { id: "workspace",       label: "IDE Workspace",       icon: Code2 },
   { id: "mindmap",         label: "Mind Map",            icon: Network },
   { id: "overview",        label: "Overview",            icon: BarChart2 },
@@ -72,6 +71,7 @@ function AppInner() {
 
   const getTabFromURL = useCallback(() => {
     const t = searchParams.get("tab");
+    if (t === "cyber_dashboard") return "cyber_dashboard";
     return TABS.some((x) => x.id === t) ? t! : "cyber_dashboard";
   }, [searchParams]);
 
@@ -290,7 +290,7 @@ function AppInner() {
               <span className="text-[#8e8e9a] font-mono text-[10px]">Platform</span>
               <ChevronRight className="w-3 h-3 text-[#8e8e9a]/50" />
               <span className="text-[#f4f4f8] font-mono text-[10px] font-semibold">
-                {TABS.find(t => t.id === activeTab)?.label}
+                {activeTab === "cyber_dashboard" ? "Homepage" : TABS.find(t => t.id === activeTab)?.label}
               </span>
             </div>
             <div className="flex items-center gap-3">

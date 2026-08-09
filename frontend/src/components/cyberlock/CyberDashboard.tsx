@@ -40,10 +40,9 @@ export default function CyberDashboard({ onNavigatePlatform }: CyberDashboardPro
         {/* ------------------------------------------------------------- */}
         <header className="relative z-10 flex flex-wrap items-center justify-between pb-8 border-b border-white/10 gap-4">
 
-          
           {/* Brand Logo & Monospace Navigation Menu */}
           <div className="flex items-center gap-8">
-            <div className="flex items-center gap-2.5 cursor-pointer group">
+            <div className="flex items-center gap-2.5 cursor-pointer group" onClick={onNavigatePlatform}>
               <div className="w-7 h-7 rounded-md bg-[#181920] border border-white/15 flex items-center justify-center group-hover:border-[#ff5400] transition-colors">
                 <Lock className="w-3.5 h-3.5 text-[#ff5400]" />
               </div>
@@ -54,16 +53,22 @@ export default function CyberDashboard({ onNavigatePlatform }: CyberDashboardPro
 
             {/* Monospace All-Caps Links */}
             <nav className="hidden md:flex items-center gap-6 font-mono text-[11px] tracking-[0.2em] text-[#8e8e9a]">
-              {(["HOME", "SERVICES", "ABOUT", "STORIES", "CONTACT"] as const).map((link) => (
+              {(["PROJECT", "MODULES", "ARCHITECTURE", "PIPELINE", "DOCS"] as const).map((link) => (
                 <button
                   key={link}
-                  onClick={() => setActiveTab(link)}
+                  onClick={() => {
+                    if (link === "MODULES" || link === "ARCHITECTURE" || link === "PIPELINE") {
+                      onNavigatePlatform?.();
+                    } else {
+                      setActiveTab(link as any);
+                    }
+                  }}
                   className={`hover:text-white transition-colors relative py-1 ${
-                    activeTab === link ? "text-white font-bold" : ""
+                    activeTab === (link as any) ? "text-white font-bold" : ""
                   }`}
                 >
                   {link}
-                  {activeTab === link && (
+                  {activeTab === (link as any) && (
                     <span className="absolute bottom-0 left-0 right-0 h-[2px] bg-[#ff5400]" />
                   )}
                 </button>
@@ -76,15 +81,12 @@ export default function CyberDashboard({ onNavigatePlatform }: CyberDashboardPro
             {onNavigatePlatform && (
               <button
                 onClick={onNavigatePlatform}
-                className="hidden sm:flex items-center gap-2 font-mono text-[11px] tracking-wider px-4 py-2 rounded-full border border-white/15 text-[#8e8e9a] hover:border-[#ff5400] hover:text-[#ff5400] transition"
+                className="flex items-center gap-2 font-mono text-[11px] tracking-wider px-5 py-2 rounded-full border border-[#ff5400]/40 text-[#f4f4f8] bg-[#ff5400]/10 hover:border-[#ff5400] hover:bg-[#ff5400]/20 transition-all font-semibold shadow-sm"
               >
-                <Terminal className="w-3 h-3 text-[#ff5400]" />
-                PLATFORM APP
+                <Terminal className="w-3.5 h-3.5 text-[#ff5400]" />
+                LAUNCH PLATFORM IDE
               </button>
             )}
-            <button className="font-mono text-[11px] tracking-widest px-5 py-2 rounded-full border border-white/20 text-[#f4f4f8] hover:border-[#ff5400] hover:text-[#ff5400] hover:bg-[#ff5400]/10 transition-all font-semibold shadow-sm">
-              BOOK A CALL
-            </button>
           </div>
         </header>
 
@@ -100,36 +102,46 @@ export default function CyberDashboard({ onNavigatePlatform }: CyberDashboardPro
             <div className="absolute -right-20 -bottom-20 w-[420px] h-[420px] rounded-full bg-[radial-gradient(circle_at_50%_50%,rgba(255,84,0,0.45)_0%,rgba(255,140,0,0.15)_40%,transparent_75%)] blur-2xl pointer-events-none" />
             <div className="absolute right-10 bottom-10 w-64 h-64 rounded-full border border-[#ff5400]/20 pointer-events-none animate-spin-slow opacity-40" />
 
-            {/* Sub-Header Text from image_12.png */}
+            {/* Sub-Header Text for Academic/Research Project */}
             <div className="space-y-4 relative z-10">
               <div className="font-mono text-[10px] sm:text-[11px] tracking-[0.2em] text-[#8e8e9a] uppercase font-semibold">
-                WE ARE AN AI CODE SECURITY PLATFORM. MAKING CODE PROTECTION SIMPLE. SINCE 2021
+                RESEARCH & DEVELOPMENT PROJECT · UST & AI CODE SECURITY PLATFORM
               </div>
 
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#181922] border border-white/10 text-xs font-mono text-[#ff5400]">
                 <Lock className="w-3 h-3 text-[#ff5400]" />
-                <span>SECURE BY DESIGN</span>
+                <span>UST & EVIDENCE-GROUNDED AI</span>
               </div>
 
-              {/* Large Sans-Serif Heading */}
-              <h1 className="font-heading text-3xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-[#f4f4f8] leading-[1.08]">
-                Protect what matters online
+              {/* Project Heading */}
+              <h1 className="font-heading text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-[#f4f4f8] leading-[1.1]">
+                AI Code Guardian
               </h1>
 
               <p className="text-sm text-[#8e8e9a] max-w-lg leading-relaxed font-normal">
-                AI-powered code analysis that finds vulnerabilities, explains exploitability, and auto-fixes issues — with zero friction.
+                Multi-language AST analysis platform combining Tree-sitter normalization, deterministic vulnerability detection, RAG domain knowledge retrieval, and NVIDIA Nemotron reasoning with evidence guardrails.
               </p>
             </div>
 
-            {/* Action Buttons reproduced from image_12.png */}
+            {/* Action Buttons for Project Navigation */}
             <div className="flex flex-wrap items-center gap-4 pt-8 relative z-10">
-              <button className="font-mono font-bold text-xs tracking-wider px-6 py-3 rounded-full bg-[#ff5400] text-black hover:bg-[#ff6a1a] transition-all shadow-[0_0_20px_rgba(255,84,0,0.4)] flex items-center gap-2">
-                <Lock className="w-3.5 h-3.5" />
-                BOOK A CALL
-              </button>
+              {onNavigatePlatform && (
+                <button
+                  onClick={onNavigatePlatform}
+                  className="font-mono font-bold text-xs tracking-wider px-6 py-3 rounded-full bg-[#ff5400] text-black hover:bg-[#ff6a1a] transition-all shadow-[0_0_20px_rgba(255,84,0,0.4)] flex items-center gap-2"
+                >
+                  <Terminal className="w-3.5 h-3.5" />
+                  OPEN IDE WORKSPACE
+                </button>
+              )}
 
-              <button className="font-mono text-xs tracking-wider px-6 py-3 rounded-full border border-white/20 text-[#f4f4f8] hover:border-[#ff5400] hover:text-[#ff5400] transition-all">
-                VIEW SERVICES
+              <button
+                onClick={() => {
+                  onNavigatePlatform?.();
+                }}
+                className="font-mono text-xs tracking-wider px-6 py-3 rounded-full border border-white/20 text-[#f4f4f8] hover:border-[#ff5400] hover:text-[#ff5400] transition-all"
+              >
+                VIEW MIND MAP & ARCHITECTURE
               </button>
             </div>
           </div>
@@ -192,6 +204,98 @@ export default function CyberDashboard({ onNavigatePlatform }: CyberDashboardPro
 
           </div>
 
+        </div>
+
+        {/* ------------------------------------------------------------- */}
+        {/* LAYMAN-FRIENDLY PROJECT OVERVIEW & HOW IT WORKS               */}
+        {/* ------------------------------------------------------------- */}
+        <div className="relative z-10 my-8 space-y-6">
+          <div className="flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-[#ff5400] animate-pulse" />
+            <h2 className="text-xs font-mono font-bold tracking-[0.2em] uppercase text-[#f4f4f8]">
+              PROJECT OVERVIEW & KEY CONCEPTS (IN SIMPLE TERMS)
+            </h2>
+          </div>
+
+          {/* 3 Plain-English Feature Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+            
+            {/* Card 1 */}
+            <div className="p-5 rounded-xl bg-[#12131a]/90 border border-white/10 space-y-2.5 hover:border-[#ff5400]/40 transition-colors">
+              <div className="w-8 h-8 rounded-lg bg-[#ff5400]/10 border border-[#ff5400]/30 flex items-center justify-center text-[#ff5400]">
+                <ShieldCheck className="w-4 h-4" />
+              </div>
+              <h3 className="text-sm font-bold text-white font-heading">Automated Code Guard</h3>
+              <p className="text-xs text-[#8e8e9a] leading-relaxed">
+                Like an automated security inspector that reads through your entire codebase, discovering hidden vulnerabilities (SQL injections, weak passwords, bad cryptography) before attackers do.
+              </p>
+            </div>
+
+            {/* Card 2 */}
+            <div className="p-5 rounded-xl bg-[#12131a]/90 border border-white/10 space-y-2.5 hover:border-[#ff5400]/40 transition-colors">
+              <div className="w-8 h-8 rounded-lg bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
+                <CheckCircle2 className="w-4 h-4" />
+              </div>
+              <h3 className="text-sm font-bold text-white font-heading">Zero-Hallucination AI</h3>
+              <p className="text-xs text-[#8e8e9a] leading-relaxed">
+                Normal AI tools often make up non-existent bugs. Our AI engine double-checks every claim against strict code evidence so every reported bug is real and proven.
+              </p>
+            </div>
+
+            {/* Card 3 */}
+            <div className="p-5 rounded-xl bg-[#12131a]/90 border border-white/10 space-y-2.5 hover:border-[#ff5400]/40 transition-colors">
+              <div className="w-8 h-8 rounded-lg bg-blue-500/10 border border-blue-500/30 flex items-center justify-center text-blue-400">
+                <Layers className="w-4 h-4" />
+              </div>
+              <h3 className="text-sm font-bold text-white font-heading">Interactive Code Mind Map</h3>
+              <p className="text-xs text-[#8e8e9a] leading-relaxed">
+                Transforms your project into an interactive visual graph map. Easily explore folders, files, and functions to see exactly where risks are located in 3D node view.
+              </p>
+            </div>
+
+          </div>
+
+          {/* How It Works 4-Step Pipeline */}
+          <div className="p-6 rounded-2xl bg-[#0e1017] border border-white/10 space-y-4">
+            <div className="flex items-center justify-between">
+              <span className="text-[11px] font-mono font-bold tracking-widest text-[#ff5400] uppercase">
+                HOW THE ANALYSIS PIPELINE WORKS (4 STEPS)
+              </span>
+              <span className="text-[10px] font-mono text-[#8e8e9a]">TREE-SITTER + OWASP RAG + AI</span>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-2">
+              
+              {/* Step 1 */}
+              <div className="p-3.5 rounded-lg bg-[#151722] border border-white/5 space-y-1.5 relative">
+                <div className="text-[10px] font-mono font-bold text-[#ff5400]">STEP 01</div>
+                <div className="text-xs font-bold text-white">Parse & Normalize</div>
+                <div className="text-[11px] text-[#8e8e9a]">Converts Python, Java, JS/TS & Rust into a unified syntax tree structure.</div>
+              </div>
+
+              {/* Step 2 */}
+              <div className="p-3.5 rounded-lg bg-[#151722] border border-white/5 space-y-1.5 relative">
+                <div className="text-[10px] font-mono font-bold text-[#ff5400]">STEP 02</div>
+                <div className="text-xs font-bold text-white">Static Rule Engine</div>
+                <div className="text-[11px] text-[#8e8e9a]">Scans for 50+ security flaws, broken crypto algorithms & dependency issues.</div>
+              </div>
+
+              {/* Step 3 */}
+              <div className="p-3.5 rounded-lg bg-[#151722] border border-white/5 space-y-1.5 relative">
+                <div className="text-[10px] font-mono font-bold text-[#ff5400]">STEP 03</div>
+                <div className="text-xs font-bold text-white">AI Plain-English Explanation</div>
+                <div className="text-[11px] text-[#8e8e9a]">NVIDIA Nemotron AI explains what each vulnerability means and how to fix it.</div>
+              </div>
+
+              {/* Step 4 */}
+              <div className="p-3.5 rounded-lg bg-[#151722] border border-white/5 space-y-1.5 relative">
+                <div className="text-[10px] font-mono font-bold text-[#ff5400]">STEP 04</div>
+                <div className="text-xs font-bold text-white">Interactive Fixes</div>
+                <div className="text-[11px] text-[#8e8e9a]">Test, patch, and review code fixes directly inside the integrated web IDE.</div>
+              </div>
+
+            </div>
+          </div>
         </div>
 
         {/* STRATEGIC CROSS-HAIR INTERSECTION MARKER FROM image_12.png */}
