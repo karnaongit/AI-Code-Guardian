@@ -26,6 +26,7 @@ export const ChatDrawer: React.FC<ChatDrawerProps> = ({
   onClose,
   initialContext = "",
 }) => {
+  const [threadId] = useState<string>(() => crypto.randomUUID());
   const [persona, setPersona] = useState<PersonaType>("Developer");
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
@@ -71,6 +72,7 @@ export const ChatDrawer: React.FC<ChatDrawerProps> = ({
           })),
           persona: persona,
           temperature: 0.2,
+          thread_id: threadId,
         }),
       });
 

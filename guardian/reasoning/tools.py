@@ -18,6 +18,7 @@ log = logging.getLogger(__name__)
 # Registry of active scan findings & evidence for tool execution
 _ACTIVE_FINDINGS: Dict[str, Any] = {}
 _SECURITY_KNOWLEDGE: List[Dict[str, Any]] = []
+_REPO_OVERVIEW: Dict[str, Any] = {}
 
 def _ensure_knowledge_loaded():
     global _SECURITY_KNOWLEDGE
@@ -36,11 +37,15 @@ def _ensure_knowledge_loaded():
 _ensure_knowledge_loaded()
 
 
-def register_scan_context(findings: List[Any], knowledge: Optional[List[Dict[str, Any]]] = None) -> None:
-    """Register active scan context for tool queries."""
-    global _ACTIVE_FINDINGS, _SECURITY_KNOWLEDGE
+def register_scan_context(
+    findings: List[Any],
+    knowledge: Optional[List[Dict[str, Any]]] = None,
+    repo_overview: Optional[Dict[str, Any]] = None
+) -> None:
+    """Register active scan context and repository overview for tool queries."""
+    global _ACTIVE_FINDINGS, _SECURITY_KNOWLEDGE, _REPO_OVERVIEW
     
-    _ACTIVE_FINDINGS = {}
+    _ACTIVE_FINDINGS.clear()
     for f in findings:
         fid = getattr(f, "finding_id", None) if not isinstance(f, dict) else f.get("finding_id")
         if not fid:
@@ -53,6 +58,14 @@ def register_scan_context(findings: List[Any], knowledge: Optional[List[Dict[str
         _SECURITY_KNOWLEDGE = knowledge
     else:
         _ensure_knowledge_loaded()
+
+    if repo_overview:
+        _REPO_OVERVIEW = repo_overview
+
+
+def get_repo_overview() -> Dict[str, Any]:
+    """Retrieve active repository overview metadata."""
+    return _REPO_OVERVIEW
 
 
 def get_finding_detail(finding_id: str) -> Dict[str, Any]:

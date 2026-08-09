@@ -7,9 +7,7 @@ import IDEWorkspace from "../components/workspace/IDEWorkspace";
 import FindingDrawer, { FindingDetail } from "../components/scan/FindingDrawer";
 import ChatDrawer from "../components/chat/ChatDrawer";
 import VulnerabilityViewer from "../components/editor/VulnerabilityViewer";
-import CodeMindMap from "../components/mindmap/CodeMindMap";
-import { buildMindMapFromScan } from "../components/mindmap/utils";
-import CyberDashboard from "../components/cyberlock/CyberDashboard";
+import ASTMindMap from "../components/mindmap/ASTMindMap";
 
 import {
   Shield,
@@ -331,7 +329,7 @@ function AppInner() {
                   <p className="text-xs font-mono text-[#8e8e9a] -mt-3 mb-3">
                     Interactive graph visualizing code structure, module dependencies, function call graphs, and risk findings.
                   </p>
-                  <CodeMindMap data={mindMapData} />
+                  <ASTMindMap scanId={report?.scan_id || report?.scanId} fallbackData={mindMapData} />
                 </div>
               )}
 

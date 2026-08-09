@@ -173,19 +173,20 @@ class USTNode:
 
     @classmethod
     def from_cache_dict(cls, data: dict) -> 'USTNode':
-        if "type" in data:
+        d = dict(data)
+        if "type" in d and not isinstance(d["type"], USTNodeType):
             try:
-                data["type"] = USTNodeType(data["type"])
+                d["type"] = USTNodeType(d["type"])
             except ValueError:
-                data["type"] = USTNodeType.UNKNOWN
-        if "span" in data and isinstance(data["span"], dict):
-            data["span"] = SourceSpan(**data["span"])
+                d["type"] = USTNodeType.UNKNOWN
+        if "span" in d and isinstance(d["span"], dict):
+            d["span"] = SourceSpan(**d["span"])
         
         # Remove init=False fields if they snuck in
-        if "node_id" in data:
-            del data["node_id"]
+        if "node_id" in d:
+            del d["node_id"]
             
-        return cls(**data)
+        return cls(**d)
 
 
 @dataclass

@@ -116,3 +116,128 @@ async def get_file_content(
         return {"content": content}
     except UnicodeDecodeError:
         return {"content": "// Binary file or unsupported encoding"}
+
+
+import hashlib
+
+def transform_ust_to_react_flow(scan_data: Dict[str, Any], max_depth: int = 3) -> Dict[str, Any]:
+    """Flattens hierarchical USTNode structures into React Flow nodes and edges with max depth limiting."""
+    nodes = []
+    edges = []
+    
+    target_dir = scan_data.get("target") or scan_data.get("scan", {}).get("target") or "repository"
+    repo_name = Path(target_dir).name or "Repository Root"
+    findings = scan_data.get("scan", {}).get("findings", [])
+    
+    # 1. Root Node (Depth 0)
+    root_id = "root-repo"
+    nodes.append({
+        "id": root_id,
+        "type": "folder",
+        "data": {
+            "label": repo_name,
+            "path": "/",
+            "riskScore": 75 if findings else 0,
+        }
+    })
+    
+    if max_depth <= 0:
+        return {"nodes": nodes, "edges": edges}
+
+    # Extract UST files
+    ust_files = scan_data.get("ust", {}).get("files", {})
+    vuln_files = {}
+    for f in findings:
+        f_path = (f.get("file") or f.get("file_path") or "").replace("\\", "/")
+        if f_path:
+            vuln_files.setdefault(f_path, []).append(f)
+
+    # Process files
+    for f_path, file_data in ust_files.items():
+        rel_path = f_path.replace("\\", "/")
+        file_id = f"file-{hashlib.md5(rel_path.encode()).hexdigest()[:8]}"
+        
+        file_findings = vuln_files.get(rel_path, [])
+        risk_score = min(100, len(file_findings) * 30) if file_findings else 0
+        
+        # Depth 1: File Node
+        nodes.append({
+            "id": file_id,
+            "type": "file",
+            "data": {
+                "label": Path(rel_path).name,
+                "path": rel_path,
+                "language": Path(rel_path).suffix.lstrip("."),
+                "riskScore": risk_score,
+                "findings": file_findings,
+            }
+        })
+        edges.append({
+            "id": f"e-{root_id}-{file_id}",
+            "source": root_id,
+            "target": file_id,
+            "label": "contains"
+        })
+
+        if max_depth >= 2:
+            ast_nodes = file_data.get("nodes", []) if isinstance(file_data, dict) else getattr(file_data, "nodes", [])
+            for idx, n in enumerate(ast_nodes[:15]):
+                n_dict = n.to_dict() if hasattr(n, "to_dict") else (n if isinstance(n, dict) else {})
+                n_type = str(n_dict.get("type", "unknown")).lower()
+                n_name = n_dict.get("name") or n_dict.get("symbol") or f"element_{idx}"
+                
+                react_type = "function" if "func" in n_type or "call" in n_type else ("class" if "class" in n_type else "module")
+                child_id = f"{file_id}-node-{idx}"
+                
+                nodes.append({
+                    "id": child_id,
+                    "type": react_type,
+                    "data": {
+                        "label": f"{n_type.capitalize()}: {n_name}",
+                        "path": f"{rel_path}:{n_dict.get('span', {}).get('start_line', 1)}",
+                        "riskScore": 20 if n_dict.get("security_tags") else 0,
+                    }
+                })
+                edges.append({
+                    "id": f"e-{file_id}-{child_id}",
+                    "source": file_id,
+                    "target": child_id,
+                    "label": n_type
+                })
+                
+                # Depth 3: Finding Node attached to AST element
+                if max_depth >= 3 and file_findings and idx < len(file_findings):
+                    f_item = file_findings[idx]
+                    finding_id = f"finding-{child_id}-{idx}"
+                    nodes.append({
+                        "id": finding_id,
+                        "type": "finding",
+                        "data": {
+                            "label": f"{f_item.get('category', 'Issue')} ({f_item.get('cwe', 'CWE')})",
+                            "path": f"{f_item.get('file')}:{f_item.get('line', 1)}",
+                            "severity": (f_item.get('severity') or 'high').lower(),
+                            "reason": f_item.get('description') or f_item.get('reason'),
+                        }
+                    })
+                    edges.append({
+                        "id": f"e-{child_id}-{finding_id}",
+                        "source": child_id,
+                        "target": finding_id,
+                        "label": "vulnerability"
+                    })
+
+    return {"nodes": nodes, "edges": edges}
+
+
+@router.get("/ast")
+async def get_ast_graph(
+    scan_id: str = Query(..., description="ID of the scan"),
+    max_depth: int = Query(3, ge=1, le=5, description="Maximum tree depth for visualization")
+):
+    """Retrieves Universal Syntax Tree topology transformed into React Flow graph nodes and edges."""
+    if scan_id not in _SCANS_STORE:
+        raise HTTPException(status_code=404, detail="Scan not found.")
+        
+    scan_data = _SCANS_STORE[scan_id]
+    graph_payload = transform_ust_to_react_flow(scan_data, max_depth=max_depth)
+    return graph_payload

@@ -51,13 +51,19 @@ def synthesize_security_answer(
     normalized_findings = [_normalize_finding(f) for f in findings]
 
     if _is_small_talk(query_lower):
-        repo = (profile or {}).get("repo_path") or (profile or {}).get("root") or "the active repository"
-        return (
-            f"Hi. I am your AI Security Copilot for {repo}.\n\n"
-            "Ask me about a finding, a file, a rule such as `SEC-004`, or say "
-            "`what should be fixed first` and I will ground the answer in the current scan.",
-            [],
-        )
+        if conversation and len(list(conversation)) > 1:
+            return (
+                "Let me know if you need help applying this fix or analyzing another file!",
+                [],
+            )
+        else:
+            repo = (profile or {}).get("repo_path") or (profile or {}).get("root") or "the active repository"
+            return (
+                f"Hi. I am your AI Security Copilot for {repo}.\n\n"
+                "Ask me about a finding, a file, a rule such as `SEC-004`, or say "
+                "`what should be fixed first` and I will ground the answer in the current scan.",
+                [],
+            )
 
     if not normalized_findings:
         return (
@@ -223,19 +229,20 @@ def _finding_answer(
     category = finding["category"]
     snippet = finding["snippet"].strip()
 
-    lines = [
-        f"**Context:** `{rule}` was found in {location}. It is categorized as **{category}**"
-        f" with **{finding['severity']}** severity.",
-    ]
-    if finding["description"]:
-        lines.append(f"The scanner reason is: {finding['description']}")
+    lines = []
+    
+    if not wants_fix:
+        lines.append(f"**Context:** `{rule}` was found in {location}. It is categorized as **{category}**"
+                     f" with **{finding['severity']}** severity.")
+        if finding["description"]:
+            lines.append(f"The scanner reason is: {finding['description']}")
+        lines.extend([
+            "",
+            f"**The Risk:** {_risk_for(finding)}",
+            ""
+        ])
 
-    lines.extend([
-        "",
-        f"**The Risk:** {_risk_for(finding)}",
-        "",
-        f"**Remediation:** {_remediation_for(finding)}",
-    ])
+    lines.append(f"**Remediation:** {_remediation_for(finding)}")
 
     code = _code_fix_for(finding)
     if code:

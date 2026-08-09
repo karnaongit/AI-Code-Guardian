@@ -20,6 +20,7 @@ from guardian.reasoning.tools import (
     query_security_knowledge,
     get_scan_funnel_summary,
     get_active_findings_context,
+    get_repo_overview,
 )
 
 router = APIRouter(prefix="/chat", tags=["chat"])
@@ -34,6 +35,7 @@ class ChatCompletionRequest(BaseModel):
     messages: List[ChatMessage]
     persona: str = Field("Developer", description="Persona: 'Executive', 'Developer', or 'Red Teamer'")
     temperature: float = Field(0.2, ge=0.0, le=1.0)
+    thread_id: str = Field(..., description="Thread ID for conversation state")
 
 
 class ChatCompletionResponse(BaseModel):
@@ -59,7 +61,7 @@ async def chat_completion(request: ChatCompletionRequest):
     tools_used = []
     tool_insights = []
 
-    is_greeting = query_lower in GREETINGS or len(query_lower) <= 3
+    is_greeting = (query_lower in GREETINGS or len(query_lower) <= 3) and len(request.messages) <= 1
 
     if is_greeting:
         reply = (
@@ -68,6 +70,19 @@ async def chat_completion(request: ChatCompletionRequest):
             f"or review active scan findings across your repository. How can I assist you today?"
         )
         return ChatCompletionResponse(persona=request.persona, reply=reply, tools_used=[])
+
+    # 0. Repository Overview Context
+    repo_overview = get_repo_overview()
+    if repo_overview:
+        tools_used.append("get_repo_overview")
+        tool_insights.append(
+            f"### Repository Overview:\n"
+            f"- Project: `{repo_overview.get('repo_name', 'Active Repository')}`\n"
+            f"- Summary: {repo_overview.get('summary', '')}\n"
+            f"- Languages: {', '.join(repo_overview.get('primary_languages', []))}\n"
+            f"- Frameworks: {', '.join(repo_overview.get('frameworks_detected', [])) or 'Standard'}\n"
+            f"- Scanned Files: {repo_overview.get('total_files_scanned', 0)}"
+        )
 
     # 1. RAG Knowledge Retrieval — query-aware, not a fixed answer.
     knowledge_entries = query_security_knowledge(user_query)
@@ -120,11 +135,11 @@ async def chat_completion(request: ChatCompletionRequest):
         knowledge=knowledge_entries,
     )
 
-    if _ACTIVE_FINDINGS:
-        reply = deterministic_reply
-        tools_used.append("synthesize_security_answer")
-    elif not settings.NVIDIA_API_KEY:
-        if knowledge_entries:
+    if not settings.NVIDIA_API_KEY:
+        if _ACTIVE_FINDINGS:
+            reply = deterministic_reply
+            tools_used.append("synthesize_security_answer")
+        elif knowledge_entries:
             top = knowledge_entries[0]
             reply = (
                 f"I do not see active repository scan findings loaded yet, but this guidance is relevant:\n\n"
@@ -132,15 +147,11 @@ async def chat_completion(request: ChatCompletionRequest):
                 f"**The Risk:** {top.get('content', '')[:500]}\n\n"
                 f"**Remediation:** Run a repository scan so I can connect this guidance to exact files, lines, and fixes."
             )
+            tools_used.append("synthesize_security_answer")
         else:
             reply = deterministic_reply
-        tools_used.append("synthesize_security_answer")
+            tools_used.append("synthesize_security_answer")
     else:
-        context_msg = (
-            context_msg
-            + "\n\nFALLBACK SYNTHESIS TO FOLLOW IF MODEL CONTEXT IS AMBIGUOUS:\n"
-            + deterministic_reply
-        )
         try:
             async with httpx.AsyncClient(timeout=30.0) as client:
                 res = await client.post(
@@ -160,6 +171,7 @@ async def chat_completion(request: ChatCompletionRequest):
                 data = res.json()
                 reply = data["choices"][0]["message"]["content"]
         except Exception as e:
+            print(f"LLM API Error: {e}")
             reply = deterministic_reply
             tools_used.append("synthesize_security_answer")
 

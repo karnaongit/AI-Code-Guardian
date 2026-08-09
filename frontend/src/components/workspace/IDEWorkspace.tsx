@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import RepoInput from "./RepoInput";
+import RepoInput, { ScanOptions } from "./RepoInput";
 import FileTreeSidebar, { FileNode } from "./FileTreeSidebar";
 import CodeViewer from "./CodeViewer";
 import VulnerabilityPanel from "./VulnerabilityPanel";
@@ -64,7 +64,7 @@ export default function IDEWorkspace({ onScanComplete }: IDEWorkspaceProps) {
     }
   };
 
-  const handleScan = async (target: string, isUrl: boolean, aiEnabled: boolean) => {
+  const handleScan = async (targetOrOptions: string | ScanOptions, isUrl?: boolean, aiEnabledParam?: boolean) => {
     setIsScanning(true);
     setScanId(null);
     setFileTree(null);
@@ -73,22 +73,56 @@ export default function IDEWorkspace({ onScanComplete }: IDEWorkspaceProps) {
     setScanFindingsMap({});
 
     try {
-      const payload: any = {
-        scan_mode: "precision",
-        enable_ai: aiEnabled,
-      };
-      
-      if (isUrl) {
-        payload.repo_url = target;
-      } else {
-        payload.target_path = target;
-      }
+      let res: Response;
 
-      const res = await fetch(`${API_BASE}/api/v1/scans`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
+      if (typeof targetOrOptions === "object") {
+        const { sourceType, target, zipFile, aiEnabled } = targetOrOptions;
+        if (sourceType === "zip" && zipFile) {
+          const formData = new FormData();
+          formData.append("file", zipFile);
+          formData.append("scan_mode", "precision");
+          formData.append("enable_ai", String(aiEnabled));
+
+          res = await fetch(`${API_BASE}/api/v1/scans/upload`, {
+            method: "POST",
+            body: formData,
+          });
+        } else {
+          const payload: any = {
+            source_type: sourceType,
+            scan_mode: "precision",
+            enable_ai: aiEnabled,
+          };
+          if (sourceType === "github") {
+            payload.repo_url = target;
+          } else {
+            payload.target_path = target;
+          }
+
+          res = await fetch(`${API_BASE}/api/v1/scans`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+          });
+        }
+      } else {
+        const payload: any = {
+          source_type: isUrl ? "github" : "local",
+          scan_mode: "precision",
+          enable_ai: !!aiEnabledParam,
+        };
+        if (isUrl) {
+          payload.repo_url = targetOrOptions;
+        } else {
+          payload.target_path = targetOrOptions;
+        }
+
+        res = await fetch(`${API_BASE}/api/v1/scans`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+      }
 
       if (!res.ok) {
         let errMsg = "Scan failed";

@@ -13,6 +13,8 @@ from guardian.cache.redis_manager import RedisManager
 logger = logging.getLogger(__name__)
 
 
+_MEMORY_SAVER = None
+
 def get_checkpointer() -> Any:
     """
     Returns a configured langgraph checkpointer.
@@ -33,6 +35,9 @@ def get_checkpointer() -> Any:
             logger.warning(f"Failed to initialize RedisSaver: {exc}. Falling back to MemorySaver.")
 
     # 2. Fallback to in-memory checkpointer
-    logger.info("Using in-memory MemorySaver for state checkpointing.")
-    from langgraph.checkpoint.memory import MemorySaver
-    return MemorySaver()
+    global _MEMORY_SAVER
+    if _MEMORY_SAVER is None:
+        logger.info("Using in-memory MemorySaver for state checkpointing.")
+        from langgraph.checkpoint.memory import MemorySaver
+        _MEMORY_SAVER = MemorySaver()
+    return _MEMORY_SAVER

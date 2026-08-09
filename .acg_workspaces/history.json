@@ -58,5 +58,41 @@
     "criticality": "NORMAL",
     "registered_at": 1786092769.0843801,
     "last_scan_time": null
+  },
+  "repo-3f5f4dc30e30": {
+    "repository_id": "repo-3f5f4dc30e30",
+    "repo_name": "repo-zip-4a350ae698",
+    "repo_path": "/Users/prajwalkajale/Documents/acg2 copy/.acg_workspaces/repo-zip-4a350ae698",
+    "source_type": "LOCAL",
+    "size_bytes": 0,
+    "size_mb": 0.0,
+    "business_domain": "general",
+    "criticality": "NORMAL",
+    "registered_at": 1786217115.3612525,
+    "last_scan_time": null
+  },
+  "repo-73b5f2fbbc04": {
+    "repository_id": "repo-73b5f2fbbc04",
+    "repo_name": "repo-zip-d5e29fa554",
+    "repo_path": "/Users/prajwalkajale/Documents/acg2 copy/.acg_workspaces/repo-zip-d5e29fa554",
+    "source_type": "LOCAL",
+    "size_bytes": 0,
+    "size_mb": 0.0,
+    "business_domain": "general",
+    "criticality": "NORMAL",
+    "registered_at": 1786217126.9498718,
+    "last_scan_time": null
+  },
+  "repo-0f3544f3829b": {
+    "repository_id": "repo-0f3544f3829b",
+    "repo_name": "repo-zip-779516588e",
+    "repo_path": "/Users/prajwalkajale/Documents/acg2 copy/.acg_workspaces/repo-zip-779516588e",
+    "source_type": "LOCAL",
+    "size_bytes": 0,
+    "size_mb": 0.0,
+    "business_domain": "general",
+    "criticality": "NORMAL",
+    "registered_at": 1786217166.5358186,
+    "last_scan_time": null
   }
 }

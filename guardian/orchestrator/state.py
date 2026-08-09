@@ -7,6 +7,7 @@ Every future agent communicates exclusively through this shared state.
 from __future__ import annotations
 
 import time
+import operator
 from typing import Annotated, Any, Dict, List, Optional, TypedDict
 
 from langgraph.graph.message import add_messages
@@ -58,7 +59,9 @@ class AgentWorkflowState(TypedDict, total=False):
     completed_agents: List[str]
     pending_agents: List[str]
     findings: List[Dict[str, Any]]
-    evidence: List[Dict[str, Any]]
+    repo_overview: Dict[str, Any]
+    active_evidence_ids: List[str]
+    evidence: Annotated[List[Dict[str, Any]], operator.add]
     risk_scores: Dict[str, Any]
     validation_results: List[Dict[str, Any]]
     patches: List[Dict[str, Any]]
@@ -89,6 +92,8 @@ def create_initial_state(
     policy_context: Optional[Dict[str, Any]] = None,
     repository_context: Optional[Dict[str, Any]] = None,
     findings: Optional[List[Dict[str, Any]]] = None,
+    repo_overview: Optional[Dict[str, Any]] = None,
+    active_evidence_ids: Optional[List[str]] = None,
     evidence: Optional[List[Dict[str, Any]]] = None,
     threat_context: Optional[Dict[str, Any]] = None,
     policy_results: Optional[Dict[str, Any]] = None,
@@ -127,6 +132,8 @@ def create_initial_state(
         "completed_agents": [],
         "pending_agents": [],
         "findings": findings or [],
+        "repo_overview": repo_overview or {},
+        "active_evidence_ids": active_evidence_ids or [],
         "evidence": evidence or [],
         "risk_scores": {},
         "validation_results": [],
