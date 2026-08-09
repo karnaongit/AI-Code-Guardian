@@ -8,6 +8,8 @@ import FindingDrawer, { FindingDetail } from "../components/scan/FindingDrawer";
 import ChatDrawer from "../components/chat/ChatDrawer";
 import VulnerabilityViewer from "../components/editor/VulnerabilityViewer";
 import ASTMindMap from "../components/mindmap/ASTMindMap";
+import { buildMindMapFromScan } from "../components/mindmap/utils";
+import CyberDashboard from "../components/cyberlock/CyberDashboard";
 
 import {
   Shield,
