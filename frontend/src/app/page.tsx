@@ -10,6 +10,7 @@ import VulnerabilityViewer from "../components/editor/VulnerabilityViewer";
 import ASTMindMap from "../components/mindmap/ASTMindMap";
 import { buildMindMapFromScan } from "../components/mindmap/utils";
 import CyberDashboard from "../components/cyberlock/CyberDashboard";
+import BusinessIntentPage from "../components/intent/BusinessIntentPage";
 
 import {
   Shield,
@@ -31,6 +32,7 @@ import {
   Zap,
   PanelLeftClose,
   PanelLeftOpen,
+  BookText,
 } from "lucide-react";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
@@ -39,6 +41,7 @@ const TABS = [
   { id: "cyber_dashboard", label: "Dashboard",          icon: LayoutDashboard },
   { id: "workspace",       label: "IDE Workspace",       icon: Code2 },
   { id: "mindmap",         label: "Mind Map",            icon: Network },
+  { id: "business_intent", label: "Business Intent",    icon: BookText },
   { id: "overview",        label: "Overview",            icon: BarChart2 },
   { id: "security_compliance", label: "Security",        icon: Lock },
   { id: "pr_review",       label: "PR Review",           icon: GitPullRequest },
@@ -333,6 +336,11 @@ function AppInner() {
                   </p>
                   <ASTMindMap scanId={report?.scan_id || report?.scanId} fallbackData={mindMapData} />
                 </div>
+              )}
+
+              {/* Business Intent */}
+              {activeTab === "business_intent" && (
+                <BusinessIntentPage report={report} />
               )}
 
               {/* Overview */}
