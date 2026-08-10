@@ -13,8 +13,9 @@ from pathlib import Path
 from typing import Any
 
 from fastapi import APIRouter, Body
-from guardian.intent.engine import BusinessIntentEngine
+from guardian.engines.business_intent import BusinessIntentEngine
 from guardian.intent.ingestion.document_loader import DocumentLoader, get_business_docs_dir
+
 
 logger = logging.getLogger("guardian.api.business_intent")
 

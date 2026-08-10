@@ -81,6 +81,10 @@ class DocumentLoader:
 
         docs = []
         for file_path in sorted(self.docs_dir.glob("*")):
+            # Skip export scan report files that were saved in the business_docs directory
+            if file_path.name.startswith("guardian_report") or "scan_report" in file_path.name.lower():
+                continue
+
             if file_path.is_file() and file_path.suffix.lower() in self.SUPPORTED_EXTENSIONS:
                 stat = file_path.stat()
                 docs.append({
