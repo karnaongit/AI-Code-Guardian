@@ -43,6 +43,7 @@ const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 const TABS = [
   { id: "workspace",       label: "IDE Workspace",       icon: Code2 },
   { id: "mindmap",         label: "Mind Map",            icon: Network },
+  { id: "business_intent", label: "Business Intent",    icon: BookText },
   { id: "overview",        label: "Overview",            icon: BarChart2 },
   { id: "security_compliance", label: "Security",        icon: Lock },
   { id: "pr_review",       label: "PR Review",           icon: GitPullRequest },
@@ -399,6 +400,11 @@ function AppInner() {
                     <ASTMindMap scanId={report?.scan_id || report?.scanId} fallbackData={mindMapData} />
                   </div>
                 )
+              )}
+
+              {/* Business Intent */}
+              {activeTab === "business_intent" && (
+                <BusinessIntentPage report={report} />
               )}
 
               {/* Overview */}

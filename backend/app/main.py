@@ -13,6 +13,7 @@ from backend.app.api.v1.files import router as files_router
 from backend.app.api.v1.findings import router as findings_router
 from backend.app.api.v1.reports import router as reports_router
 from backend.app.api.v1.scans import router as scans_router
+from backend.app.api.v1.business_intent import router as business_intent_router
 from backend.app.core.config import settings
 
 from contextlib import asynccontextmanager
