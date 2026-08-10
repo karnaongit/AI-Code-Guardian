@@ -47,7 +47,6 @@ const TABS = [
   { id: "overview",        label: "Overview",            icon: BarChart2 },
   { id: "security_compliance", label: "Security",        icon: Lock },
   { id: "pr_review",       label: "PR Review",           icon: GitPullRequest },
-  { id: "business_intent", label: "Business Intent",     icon: BookText },
   { id: "reports",         label: "Reports",             icon: FileText },
 ];
 
@@ -402,10 +401,6 @@ function AppInner() {
                 )
               )}
 
-              {/* Business Intent */}
-              {activeTab === "business_intent" && (
-                <BusinessIntentPage report={report} />
-              )}
 
               {/* Overview */}
               {activeTab === "overview" && (
