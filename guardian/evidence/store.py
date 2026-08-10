@@ -67,11 +67,16 @@ class EvidenceStore:
                     await session.commit()
 
         try:
-            loop = asyncio.get_event_loop()
-            if loop.is_running():
-                loop.create_task(_save())
-            else:
+            loop = asyncio.get_running_loop()
+            loop.create_task(_save())
+        except RuntimeError:
+            # No running event loop — create a new one for synchronous execution
+            try:
+                loop = asyncio.new_event_loop()
                 loop.run_until_complete(_save())
+                loop.close()
+            except Exception as e:
+                log.debug(f"Async DB persistence skipped/failed: {e}")
         except Exception as e:
             log.debug(f"Async DB persistence skipped/failed: {e}")
 

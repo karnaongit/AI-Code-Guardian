@@ -25,7 +25,7 @@ ust = [
 ai = [
     "openai>=1.30",
     "sentence-transformers>=2.7",
-    "faiss-cpu>=1.8",
+    "qdrant-client>=1.9.0",
     "requests>=2.31",
     "numpy>=1.24",
 ]

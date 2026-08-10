@@ -37,6 +37,10 @@ def main(argv: list[str] | None = None) -> int:
     p_scan.add_argument("--ai", action="store_true",
                         help="enable NVIDIA Nemotron contextual reasoning "
                              "(requires NVIDIA_API_KEY)")
+    p_scan.add_argument("--sandbox", action="store_true",
+                        help="scan an isolated copy of the repository")
+    p_scan.add_argument("--knowledge", action="store_true",
+                        help="build repository knowledge graph and semantic document index")
 
     for name in ("detect", "intent"):
         p = sub.add_parser(name)
@@ -89,6 +93,10 @@ def main(argv: list[str] | None = None) -> int:
     cfg = GuardianConfig.load(args.config, fail_on_severity=args.fail_on_severity)
     if args.ai:
         cfg.enable_ai = True
+    if args.sandbox:
+        cfg.enable_sandbox = True
+    if args.knowledge:
+        cfg.enable_knowledge = True
     registry = load_builtin_plugins()
     from guardian.core.pipeline import ScanPipeline
 
@@ -149,6 +157,15 @@ def main(argv: list[str] | None = None) -> int:
     if report.get("errors"):
         print(f"\nPartial results: {len(report['errors'])} stage(s) failed "
               f"(see report 'errors').", file=sys.stderr)
+
+    sandbox = report.get("sandbox") or {}
+    if sandbox.get("enabled"):
+        print(f"Sandbox:      isolated workspace ({sandbox.get('mode', 'copy')})")
+
+    knowledge = report.get("knowledge") or {}
+    if knowledge.get("enabled"):
+        print(f"Knowledge:    graph nodes={knowledge.get('graph', {}).get('nodes', 0)}, "
+              f"indexed docs={knowledge.get('documents_indexed', 0)}")
 
     out_dir = Path(args.out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)

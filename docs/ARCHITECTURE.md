@@ -1,203 +1,274 @@
-# AI Code Guardian — Architecture
+# AI Code Guardian — System Architecture & Technical Specification
 
-## Design goal
+> **AI Code Guardian** is a multi-language, UST-driven, evidence-grounded code analysis, security auditing, post-quantum cryptography (PQC) readiness checking, business-intent compliance, and vulnerability assessment platform.
 
-Be a **multi-language, UST-driven, evidence-grounded** analysis platform:
-the Unified Syntax Tree understands code structure, deterministic engines
-detect evidence, RAG supplies trusted knowledge, Nemotron reasons about
-context, guardrails validate every AI claim, and a deterministic risk
-engine produces the final assessment.
+---
 
-The previous architecture was Python-AST-centric with per-language regex
-bridges, and every module produced its own incompatible output and built
-its own LLM prompt. This one has a single code representation, a single
-evidence vocabulary and a single door to the model.
+## 1. Executive Summary & Core Philosophy
 
-## Layout
+AI Code Guardian combines deterministic parsing, static analysis, policy extraction, RAG-enhanced threat intelligence, and AI reasoning (via NVIDIA Nemotron) into a unified platform. 
 
-```
-guardian/
-├── config.py               Configuration (YAML + defaults). Single source of truth.
-├── cli.py / __main__.py    `python -m guardian scan|detect|intent|parsers <path>`
-│
-├── ust/                    UNIFIED SYNTAX TREE — the code representation
-│   ├── models.py           USTNode / USTFile / UST. Stable node IDs, spans,
-│   │                       security/crypto/business tags, control- & data-flow
-│   ├── parsers.py          Tree-sitter registry: extension → language → cached
-│   │                       Parser; returns None (never raises) when a grammar
-│   │                       is absent
-│   ├── languages/          Table-driven normalizers over one shared walk:
-│   │                       python, java, javascript, typescript/tsx, rust
-│   ├── tagging.py          Cross-language crypto/security/business tagging;
-│   │                       algorithm resolution from string-literal arguments
-│   ├── dataflow.py         Language-independent source→sink taint propagation
-│   ├── fallback.py         Degradation ladder: stdlib `ast` (Python) → regex
-│   └── builder.py          Single entry point; per-file failure is contained
-│
-├── evidence/               SHARED EVIDENCE STORE — the source of truth
-│   ├── models.py           Evidence (stable IDs + fingerprints), EvidenceType,
-│   │                       FindingSource, ValidatedFinding
-│   └── store.py            Dedup, typed indexes, filtered selection, and
-│                           resolve() reporting unknown IDs
-│
-├── engines/                DETERMINISTIC ANALYSIS
-│   ├── base.py             AnalysisEngine contract + run_engine() containment
-│   ├── security.py         UST-driven SAST across all languages
-│   ├── quantum.py          Layer A crypto discovery + Layer C contextual pass
-│   └── business_intent.py  Policy ↔ UST-behaviour comparison
-│
-├── policy/                 REQUIREMENTS → TESTABLE STRUCTURES
-│   ├── models.py           BusinessPolicy: action + condition + required control
-│   └── extractor.py        Deterministic structuring; optional LLM assist that
-│                           may only restructure text the user supplied
-│
-├── reasoning/              CONTEXTUAL REASONING — the only LLM consumer
-│   ├── gateway.py          NemotronReasoningService: credentials, timeouts,
-│   │                       retries, cache, token budget, logging, fallback
-│   ├── context.py          Evidence selection + compact packing (enforces
-│   │                       "never send the repository")
-│   ├── knowledge.py        Evidence-driven RAG: FAISS, else curated pack
-│   ├── schemas.py          Structured response schemas + strict validation
-│   └── validation.py       Evidence-ID / location / algorithm / consistency
-│                           checks → AI_VALIDATED | AI_SUGGESTED | rejected
-│
-├── core/
-│   ├── models.py           Finding / ScanResult / Severity (v1 schema plus
-│   │                       optional provenance fields; to_dict stays stable)
-│   ├── context.py          RepositoryContext / AnalysisContext
-│   ├── interfaces.py       LanguagePlugin / Analyzer / Reporter protocols
-│   ├── registry.py         Plugin registry + @register_* decorators
-│   ├── pipeline.py         Orchestrator (see flow below)
-│   ├── risk.py             v1 CRS risk scorer — unchanged, still emitted
-│   └── unified_risk.py     Unified multi-dimensional risk engine
-│
-├── discovery/              File walking, repository profiling, GitHub fetch
-├── quantum/
-│   ├── classification.py   Layer B: deterministic algorithm classification,
-│   │                       CBOM, explainable readiness score
-│   └── detector/mapper/    v1 regex engine — retained as a fallback
-│       inventory/scorer
-├── scanner/                v1 detectors, retained: Python AST taint pass, Java
-│                           regex bridge, entropy secret gate, JS/Rust patterns
-├── dependencies/           Manifest parsing + CVE cross-reference
-├── infrastructure/         Data-driven IaC catalog
-├── intent/                 Domain classifier + v1 requirement-alignment engine
-├── threat_intel/           NVD / CISA KEV / OSV collectors, 24h cache
-├── llm/                    Provider layer: BaseLLM, Nemotron client, guardrails
-├── ai/                     RAG + CodeBERT assistant (chat)
-└── reporting/              JSON · SARIF 2.1.0 · HTML · CSV · printable PDF
+The architecture is built on three strict principles:
 
-data/
-├── rules/Security_Rules.json   OWASP/CWE rule catalog (severity, IDs, advice)
-└── knowledge/                  Curated OWASP/CWE/NIST/FIPS-203-205 pack
-```
+1. **Deterministic Detection Stays Deterministic:** No AI model decides whether a vulnerability exists. Parsing rules and the **Unified Syntax Tree (UST)** perform deterministic detection; the AI model is strictly reserved for contextual reasoning and impact analysis.
+2. **Evidence-Grounded Verification:** Every finding cites stable, unique evidence IDs (e.g., `E12`). Any AI claim citing non-existent evidence or contradicting its evidence is automatically rejected by strict guardrails.
+3. **Graceful Partial Degradation:** A missing language grammar, an unreachable API, or a missing index degrades that specific stage alone; the scan proceeds and produces valid partial results instead of crashing.
 
-## Pipeline
+---
+
+## 2. Technology Stack
+
+### Backend & Core Analysis Engine
+- **Language:** Python 3.10+
+- **API Framework:** FastAPI (Async REST API backend in `backend/`)
+- **ORM & Database:** SQLModel / SQLAlchemy with AsyncPG for PostgreSQL and `pgvector` extension for vector storage
+- **Configuration:** PyYAML (`config/default.yaml`)
+- **CLI Framework:** Python standard `argparse` / Click (`guardian/cli.py`)
+
+### Parsing & Syntax Tree (UST)
+- **Primary AST Parser:** Tree-sitter (`tree-sitter` python bindings)
+- **Supported Grammars:** Python (`tree-sitter-python`), Java (`tree-sitter-java`), JavaScript (`tree-sitter-javascript`), TypeScript/TSX (`tree-sitter-typescript`), Rust (`tree-sitter-rust`)
+- **Fallback Parsers:** Python `ast` module (for Python standard library fallback) and regex-based pattern normalizer (for unparsed languages)
+
+### AI, Reasoning & RAG Layer
+- **LLM Gateway:** NVIDIA Nemotron API (via OpenAI SDK client & custom REST gateway)
+- **Vector Search & RAG:** FAISS (`faiss-cpu`), Local Embeddings (`sentence-transformers`), CodeBERT (`transformers`/torch fallback)
+- **Document Parsers:** `pypdf`, `python-docx`, JSON, YAML, Markdown, CSV, XLSX (for reading compliance policies and business requirement documents)
+
+### Frontend Dashboard
+- **Framework:** Next.js 14 (React 18, TypeScript, App Router)
+- **Styling:** TailwindCSS, PostCSS, Lucide React icons
+- **Code Editor:** `@monaco-editor/react` (Monaco Editor integration)
+- **Flow & Graph Visualizations:** `@xyflow/react` (React Flow v12), `dagre` (graph layouting)
+
+### Reporting & CI/CD
+- **Formats:** JSON, SARIF 2.1.0 (for GitHub/GitLab Code Scanning), HTML, CSV, PDF (`reportlab`)
+- **Testing:** Pytest (385+ automated unit and integration tests)
+- **Containerization:** Docker (`docker-compose.yml`)
+
+---
+
+## 3. Comprehensive Directory & Folder Structure
 
 ```
-Repository
-  → Discovery                discovery/file_walker.py, repo_detector.py
-  → Language detection       ust/parsers.py
-  → Tree-sitter parsing      ust/parsers.py
-  → UST normalization        ust/languages/*, ust/tagging.py, ust/dataflow.py
-  → Static engines           engines/*  +  legacy plugins & analyzers
-  → Shared evidence store    evidence/store.py
-  → Evidence selection       reasoning/context.py
-  → RAG retrieval            reasoning/knowledge.py
-  → Nemotron reasoning       reasoning/gateway.py
-  → Structured response      reasoning/schemas.py
-  → Evidence validation      reasoning/validation.py
-  → Unified risk             core/unified_risk.py
-  → Reports + dashboard      reporting/, dashboard/
+AI-Code-Guardian/
+├── Architecture.md             <-- System architecture specification (this file)
+├── README.md                   <-- Main README and quick start guide
+├── main.py                     <-- Backward-compatible root CLI entrypoint
+├── pyproject.toml              <-- Build system, dependencies, CLI scripts
+├── requirements.txt            <-- Core dependencies list
+├── requirements_ai.txt         <-- AI/RAG optional dependencies list
+├── docker-compose.yml          <-- Containerized orchestration setup
+├── backend/                    <-- Async FastAPI REST backend app
+│   ├── app/
+│   │   ├── main.py             <-- FastAPI application initialization, CORS, middleware
+│   │   ├── core/
+│   │   │   └── config.py       <-- API settings & database configurations
+│   │   └── api/v1/             <-- API v1 route handlers
+│   │       ├── scans.py        <-- Scan initiation & status endpoints
+│   │       ├── findings.py     <-- Vulnerability & evidence retrieval endpoints
+│   │       ├── files.py        <-- File tree & content inspection endpoints
+│   │       ├── chat.py         <-- RAG AI Assistant chat endpoint
+│   │       └── reports.py      <-- Report downloading endpoints
+├── frontend/                   <-- Next.js 14 Web Application UI
+│   ├── package.json            <-- Frontend dependencies (Next.js, Tailwind, React Flow)
+│   ├── next.config.js          <-- Next.js config
+│   └── src/
+│       ├── app/                <-- App router pages (`globals.css`, `layout.tsx`, `page.tsx`)
+│       └── components/         <-- UI components
+│           ├── chat/           <-- Interactive AI Security Chat Assistant component
+│           ├── cyberlock/      <-- Security posture & risk metrics dashboard
+│           ├── editor/         <-- Monaco editor for viewing vulnerable code & line markers
+│           ├── mindmap/        <-- Graph visualizer (@xyflow/react) for UST/Dependency nodes
+│           ├── scan/           <-- Scan launcher & real-time progress bar
+│           └── workspace/      <-- File tree explorer & workspace context viewer
+├── guardian/                   <-- Core Python Engine Package
+│   ├── cli.py                  <-- CLI command-line handler (`python -m guardian`)
+│   ├── config.py               <-- YAML configuration parser & global settings loader
+│   ├── ust/                    <-- Unified Syntax Tree (UST) Engine
+│   │   ├── models.py           <-- USTNode, USTFile, UST data models & node IDs
+│   │   ├── parsers.py          <-- Tree-sitter registry & grammar loader
+│   │   ├── tagging.py          <-- Cross-language crypto/security/business semantic tags
+│   │   ├── dataflow.py         <-- Inter-procedural source-to-sink taint analysis
+│   │   ├── fallback.py         <-- Degradation ladder (Stdlib AST / Regex scanner)
+│   │   ├── builder.py          <-- Master UST builder & file AST worker
+│   │   └── languages/          <-- Language-specific AST normalizers
+│   │       ├── base.py         <-- Base class for language normalizers
+│   │       ├── python_lang.py  <-- Python AST normalizer
+│   │       ├── java_lang.py    <-- Java AST normalizer
+│   │       ├── javascript_lang.py <-- JS/TS AST normalizer
+│   │       └── rust_lang.py    <-- Rust AST normalizer
+│   ├── evidence/               <-- Shared Evidence Store
+│   │   ├── models.py           <-- Evidence data models, stable IDs (E1, E2...), fingerprints
+│   │   └── store.py            <-- Centralized evidence deduplication, indexing, and lookup
+│   ├── engines/                <-- Deterministic Analysis Engines
+│   │   ├── base.py             <-- Base engine abstract class
+│   │   ├── security.py         <-- UST-driven SAST (SQLi, XSS, Path Traversal, Secrets, etc.)
+│   │   ├── quantum.py          <-- Layer A Post-Quantum Crypto (PQC) call-site discovery
+│   │   └── business_intent.py  <-- Policy requirement vs UST control flow comparison
+│   ├── policy/                 <-- Business Policy Ingestion
+│   │   ├── models.py           <-- BusinessPolicy models (Action, Condition, Control)
+│   │   └── extractor.py        <-- Extraction of rules from PDF, MD, TXT, DOCX, CSV
+│   ├── reasoning/              <-- AI Contextual Reasoning Layer
+│   │   ├── gateway.py          <-- NemotronReasoningService (API rate limits, tokens, cache)
+│   │   ├── context.py          <-- Compact evidence selector (enforces character budget)
+│   │   ├── knowledge.py        <-- OWASP/NIST knowledge pack RAG retriever
+│   │   ├── schemas.py          <-- Strict Pydantic response validation schemas
+│   │   └── validation.py       <-- Hallucination detection & evidence validation guardrails
+│   ├── quantum/                <-- Quantum Readiness Engine
+│   │   ├── classification.py   <-- Layer B: NIST FIPS 203/204/205 classification & CBOM
+│   │   ├── detector.py         <-- Crypto call-site scanner fallback
+│   │   └── inventory.py        <-- Cryptographic bill of materials (CBOM) generator
+│   ├── core/                   <-- System Core & Pipeline Management
+│   │   ├── pipeline.py         <-- Master orchestrator executing scan stages
+│   │   ├── models.py           <-- ScanResult, Finding, Severity models
+│   │   ├── context.py          <-- RepositoryContext & analysis state
+│   │   ├── registry.py         <-- Engine & plugin registry
+│   │   ├── risk.py             <-- Legacy CRS risk calculation engine
+│   │   └── unified_risk.py     <-- Multi-dimensional unified risk scorer
+│   ├── discovery/              <-- Repository Walker & Profiler
+│   │   ├── file_walker.py      <-- Recursive file system scanner with gitignore respect
+│   │   ├── repo_detector.py    <-- Tech-stack & project type identification
+│   │   └── github_service.py   <-- Remote GitHub repository cloner
+│   ├── dependencies/           <-- Dependency Vulnerability Engine
+│   │   ├── parsers.py          <-- Parsers for requirements.txt, pom.xml, package.json, etc.
+│   │   └── analyzer.py         <-- CVE cross-referencing for external libraries
+│   ├── infrastructure/         <-- Infrastructure as Code (IaC) Engine
+│   │   ├── rules.py            <-- Security rules for Dockerfile, K8s, Terraform
+│   │   └── analyzer.py         <-- Misconfiguration scanner for cloud infrastructure
+│   ├── intent/                 <-- Domain Classification & Legacy Intent
+│   │   ├── classifier.py       <-- Project domain categorization (e.g. Fintech, Healthcare)
+│   │   └── domains.py          <-- Domain keyword mapping
+│   ├── threat_intel/           <-- Live Threat Intelligence Integration
+│   │   ├── collector.py        <-- Fetcher for NVD, CISA KEV, OSV databases
+│   │   ├── cache.py            <-- 24-hour cache layer for threat feeds
+│   │   └── models.py           <-- Threat intelligence models
+│   ├── llm/                    <-- Low-level LLM Interface & Security Guardrails
+│   │   ├── guardrails.py       <-- Secret & PII redactor before LLM invocation
+│   │   ├── nemotron.py         <-- Low-level Nemotron LLM HTTP client
+│   │   └── prompt_builder.py   <-- Structured prompt formatter
+│   ├── ai/                     <-- Code Assistant & RAG Pipeline
+│   │   ├── rag_pipeline.py     <-- Full repository indexer & semantic search pipeline
+│   │   ├── chatbot.py          <-- Interactive security Q&A conversational agent
+│   │   └── vector_store.py     <-- FAISS index & vector database manager
+│   ├── reporting/              <-- Report Formatters
+│   │   ├── json_reporter.py    <-- Raw JSON report output
+│   │   ├── sarif.py            <-- OASIS SARIF 2.1.0 standard output
+│   │   ├── html_reporter.py    <-- Standalone interactive HTML report generator
+│   │   ├── pdf_reporter.py     <-- PDF executive summary report generator
+│   │   └── csv_reporter.py     <-- CSV export for tabular tools
+│   └── db/                     <-- Persistence Layer
+│       ├── session.py          <-- PostgreSQL connection pool setup
+│       └── models.py           <-- Database ORM tables for scans and findings
+├── config/
+│   └── default.yaml            <-- Default system rules & thresholds configuration
+├── data/
+│   ├── rules/
+│   │   └── Security_Rules.json <-- Security rule catalog mapped to OWASP / CWE
+│   └── knowledge/              <-- Curated OWASP, NIST, and PQC knowledge base
+├── docs/                       <-- Architectural & documentation specs
+├── reports/                    <-- Output folder where generated reports are saved
+└── tests/                      <-- Automated Pytest test suite (385+ tests)
 ```
 
-## Key decisions
+---
 
-1. **UST, not Python AST.** Tree-sitter is the parsing foundation and every
-   language normalizes into one node vocabulary, so a detector is written
-   once and works everywhere. `USTFile.parser` records how nodes were
-   obtained (`tree-sitter` / `python-ast` / `regex` / `none`) and detectors
-   discount confidence accordingly — a regex scan is never presented as a
-   parse.
+## 4. Operational Flow & Processing Pipeline
 
-2. **Rule → evidence → finding, not rule → vulnerability.** A pattern match
-   produces *evidence*. Whether it becomes a finding depends on context: a
-   database call is SQL injection only when data-flow shows untrusted input
-   arriving through dynamic string construction. This is why the
-   parameterised-query idiom no longer false-positives.
+The end-to-end operational flow of an AI Code Guardian scan follows an 11-stage pipeline:
 
-3. **One evidence store.** Every engine publishes observations with stable,
-   quotable IDs. This makes AI claims mechanically checkable, makes
-   selection explicit (a task asks for the few items it needs), and
-   centralises deduplication so two engines observing one line do not
-   double-count into the risk score.
+```
+[Target Repository]
+       │
+       ▼
+ 1. Discovery & Profiling ────► Identifies files, gitignore filters, tech stack & domain
+       │
+       ▼
+ 2. UST Parsing & Normalization ──► Tree-sitter parses Python, Java, JS, TS, Rust into Unified Syntax Tree
+       │                             (Falls back to stdlib AST or regex if grammar missing)
+       │
+       ▼
+ 3. Deterministic Static Engines ─► Security Engine (SAST + Taint Flow)
+       │                             Quantum Engine (Layer A: PQC Call Discovery)
+       │                             Business Intent Engine (Control Flow Verification)
+       │                             Dependencies & IaC Engines (CVE & Config Audit)
+       │
+       ▼
+ 4. Shared Evidence Store ─────► Collects observations with stable IDs (`E1`, `E2`, ...)
+       │                             Deduplicates findings across engines
+       │
+       ▼
+ 5. Policy & Requirements ─────► Extracts policy controls from PDF/MD/DOCX/CSV specs
+       │
+       ▼
+ 6. Context Selection & RAG ───► Selects relevant evidence blocks fitting prompt budget
+       │                             Retrieves OWASP/NIST standards via FAISS vector store
+       │
+       ▼
+ 7. NVIDIA Nemotron AI Pass ───► Reasons about impact, business context & mitigation
+       │                             (Redacts secrets & PII before network transmission)
+       │
+       ▼
+ 8. Evidence Guardrails ──────► Validates AI claims against real code evidence:
+       │                             - Validated -> AI_VALIDATED
+       │                             - Uncorroborated -> AI_SUGGESTED (confidence capped at 0.6)
+       │                             - Hallucinated / Fabricated evidence -> REJECTED
+       │
+       ▼
+ 9. Unified Risk Engine ───────► Computes multi-dimensional risk score across Security, PQC, Policy & Dependencies
+       │
+       ▼
+10. Report Generation ─────────► Generates JSON, SARIF, HTML, CSV, PDF reports
+       │
+       ▼
+11. Dashboard / REST API ──────► Serves Next.js UI & FastAPI REST endpoints for user exploration
+```
 
-4. **One door to the model.** Before, Business Intent and the domain
-   classifier each built their own prompt and swallowed their own errors —
-   both were calling `llm.complete()`, a method `BaseLLM` does not have, and
-   failing silently on every run. `NemotronReasoningService` is now the only
-   LLM consumer.
+---
 
-5. **The repository is never sent.** The gateway accepts only pre-rendered
-   evidence blocks and enforces a hard character budget, dropping background
-   knowledge before evidence and reporting what it dropped. Where the model
-   needs to know what code does, it gets UST structure — smaller and more
-   precise than source.
+## 5. Key Engine Descriptions & Modules
 
-6. **Validation is the product, not a nicety.** A model claim passes schema
-   validation, evidence-ID validation, source-location validation, algorithm
-   validation and consistency checks before it can appear. Fabricated
-   evidence IDs, invented algorithms, claims contradicting their evidence
-   and unsupported missing-control assertions are rejected. Hedged reasoning
-   is downgraded to `AI_SUGGESTED`. AI confidence never reaches 1.0.
+### 5.1 Unified Syntax Tree (UST) — `guardian/ust/`
+Instead of running separate AST parsers or regex scanners for each language, Tree-sitter parses raw source files into concrete syntax trees, which are normalized into a single `USTNode` hierarchy. 
+- A single security rule written against the UST automatically works across Python, Java, JavaScript, TypeScript, and Rust.
+- Inter-procedural dataflow (`guardian/ust/dataflow.py`) tracks taint sources (e.g., HTTP params, user input) to taint sinks (e.g., SQL queries, system calls, command execution).
 
-7. **Deterministic risk.** Nemotron contributes bounded contextual signals;
-   the weights live in `core/unified_risk.py` where they can be reviewed.
-   AI-sourced findings are damped by a fixed multiplier.
+### 5.2 Deterministic Engines — `guardian/engines/`
+- **Security Engine (`security.py`):** Operates on the UST to find SQL injection, XSS, Command Injection, Insecure Deserialization, Path Traversal, Sensitive Logging, and Weak Cryptography.
+- **Quantum Engine (`quantum.py` & `guardian/quantum/`):**
+  - **Layer A (Discovery):** UST site scanning locates cryptographic algorithms and unresolved dynamic calls.
+  - **Layer B (Classification):** Maps algorithms deterministically to NIST PQC standards (FIPS 203 ML-KEM, FIPS 204 ML-DSA, FIPS 205 SLH-DSA) and produces a Cryptographic Bill of Materials (CBOM).
+  - **Layer C (Context):** Evaluates business criticality and migration timelines for legacy algorithms (e.g. RSA, ECC).
+- **Business Intent Engine (`business_intent.py`):** Converts compliance specifications into testable assertions and checks whether the code enforces required authorization, thresholds, and logging controls.
 
-8. **Quantum is a dimension, not a penalty.** Shor-class crypto is
-   Info-severity inventory. Keying a hard block on it blocked every
-   repository that uses RSA — which is all of them — so the gate is opt-in
-   and quantum readiness scores as its own axis.
+### 5.3 Shared Evidence Store — `guardian/evidence/`
+Centralized repository where all engines record observations with immutable evidence IDs (`E1`, `E2`, etc.) and code location fingerprints. Prevents double-counting in risk scores and provides strict evidence grounding for AI analysis.
 
-9. **`UNKNOWN` is a real answer.** `Cipher.getInstance(runtimeAlgo)` is
-   recorded as an unresolved call site. That is materially different from
-   "no crypto here" and from a guess, and a CBOM that compliance teams rely
-   on must not blur them.
+### 5.4 AI Contextual Reasoning & Validation Guardrails — `guardian/reasoning/`
+- **Nemotron Reasoning Service:** Gateway handling API communication with NVIDIA Nemotron.
+- **Context Budget Manager:** Ensures entire repositories are never sent; only selected evidence snippets fitting character budgets are sent.
+- **Strict Validation Guardrails:** Every AI finding is checked. If the model invents a non-existent line number, fabricates an evidence ID, or contradicts the AST evidence, the finding is discarded (`INSUFFICIENT_EVIDENCE`). Validated model insights are marked as `AI_VALIDATED`, while uncorroborated suggestions are capped at `AI_SUGGESTED`.
 
-10. **Graceful degradation everywhere.** Missing grammar, engine failure,
-    unreachable API, broken RAG index, unparsable file, oversized repo — each
-    degrades its own stage, is recorded in `report["errors"]`, and the scan
-    returns partial results.
+### 5.5 Unified Risk Engine — `guardian/core/unified_risk.py`
+Computes an objective, explainable risk score combining:
+- SAST vulnerability severities
+- Dependency CVE exploitability
+- Post-Quantum readiness gaps
+- Policy violation severity
+- AI-sourced finding confidence weighting
 
-## Adding a language
+---
 
-1. Add a grammar row to `ust/parsers._GRAMMARS` and the extensions to
-   `EXTENSION_LANGUAGE`.
-2. Add a normalizer in `ust/languages/` declaring which grammar node types
-   mean function, call, import, and so on.
-3. Register it in `ust/builder.NORMALIZERS`.
+## 6. Verification & Test Suite
 
-Nothing else changes: every engine, tag catalog and detector already works
-against the UST.
+The platform includes over **385 automated unit and integration tests** located in `tests/`:
+- UST normalization tests across all supported languages.
+- Fallback degradation tests (e.g., ensuring scans succeed when Tree-sitter grammars are missing).
+- Anti-hallucination & invalid evidence rejection tests.
+- Report formatting & SARIF schema validity tests.
+- RAG vector retrieval & threat intelligence cache tests.
 
-## Backward compatibility
-
-- `python main.py scan <path>` still works (delegates to the new CLI).
-- `Finding.to_dict()` keeps its existing keys; the provenance fields are
-  additive with inert defaults.
-- `report["risk"]` still carries the v1 CRS report; `report["unified_risk"]`
-  is the new one.
-- v1 detectors (Python AST taint pass, Java regex bridge, entropy secret
-  gate, JS/Rust patterns), the regex quantum engine, the requirement
-  alignment engine, threat intel and the RAG assistant are all retained and
-  still exercised by their original tests.
-
-## Testing
-
-385 tests. Beyond per-component coverage, the suite asserts the properties
-this design exists to guarantee: fabricated evidence is rejected, the
-prompt never grows past its budget, a missing API key changes nothing about
-deterministic output, an engine failure yields partial rather than absent
-results, and a repository with no Tree-sitter grammars still produces
-findings.
+Run tests using:
+```bash
+python -m pytest tests/ -q
+```

@@ -22,6 +22,7 @@ except ImportError:
 class ScanTable(SQLModel, table=True):
     """Represents a code repository scan execution."""
     __tablename__ = "scan_records"
+    __table_args__ = {'extend_existing': True}
 
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
     repo_path: str
@@ -35,6 +36,7 @@ class ScanTable(SQLModel, table=True):
 class FindingTable(SQLModel, table=True):
     """Represents a security finding or vulnerability detected during a scan."""
     __tablename__ = "finding_records"
+    __table_args__ = {'extend_existing': True}
 
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
     scan_id: Optional[uuid.UUID] = Field(default=None, foreign_key="scan_records.id")
@@ -49,6 +51,7 @@ class FindingTable(SQLModel, table=True):
 class EvidenceItemTable(SQLModel, table=True):
     """Represents deterministic evidence grounded in source code."""
     __tablename__ = "evidence_item_records"
+    __table_args__ = {'extend_existing': True}
 
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
     finding_id: Optional[uuid.UUID] = Field(default=None, foreign_key="finding_records.id")
@@ -70,6 +73,7 @@ class EvidenceItemTable(SQLModel, table=True):
 
 class KnowledgeEmbeddingTable(SQLModel, table=True):
     """Represents vector embeddings for security knowledge/rules (RAG)."""
+    __table_args__ = {'extend_existing': True}
 
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
     cwe_id: Optional[str] = None

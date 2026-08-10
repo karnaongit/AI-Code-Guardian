@@ -42,7 +42,7 @@ class AssistantConfig:
     # `cfg.chat_model` keep working; the real model name is NVIDIA_MODEL.
     chat_model: str = field(
         default_factory=lambda: os.getenv("NVIDIA_MODEL",
-                                          "nvidia/llama-3.3-nemotron-super-49b-v1")
+                                          "nvidia/nemotron-3-ultra-550b-a55b")
     )
     llm_stream: bool = True            # stream tokens to Streamlit
 

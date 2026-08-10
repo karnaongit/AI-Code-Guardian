@@ -1,0 +1,6302 @@
+{
+  "tool": {
+    "name": "AI Code Guardian",
+    "version": "2.1.0"
+  },
+  "repository": {
+    "root": "C:\\Users\\karan\\AppData\\Local\\Temp\\guardian_github_repos\\karnaongit_AI-Code-Guardian_default",
+    "primary_language": "Python",
+    "languages": {
+      "Python": 82.7,
+      "TypeScript": 15.5,
+      "JavaScript": 1.8
+    },
+    "frameworks": [
+      "FastAPI",
+      "Next.js",
+      "React"
+    ],
+    "build_tools": [
+      "Python (PEP 517)",
+      "npm/yarn",
+      "pip"
+    ],
+    "architecture": [
+      "full-stack",
+      "cloud-native",
+      "monorepo"
+    ],
+    "is_monorepo": true,
+    "has_api_spec": false,
+    "manifest_files": [
+      "C:\\Users\\karan\\AppData\\Local\\Temp\\guardian_github_repos\\karnaongit_AI-Code-Guardian_default\\karnaongit-AI-Code-Guardian-ff50c83\\pyproject.toml",
+      "C:\\Users\\karan\\AppData\\Local\\Temp\\guardian_github_repos\\karnaongit_AI-Code-Guardian_default\\karnaongit-AI-Code-Guardian-ff50c83\\requirements.txt",
+      "C:\\Users\\karan\\AppData\\Local\\Temp\\guardian_github_repos\\karnaongit_AI-Code-Guardian_default\\karnaongit-AI-Code-Guardian-ff50c83\\backend\\requirements.txt",
+      "C:\\Users\\karan\\AppData\\Local\\Temp\\guardian_github_repos\\karnaongit_AI-Code-Guardian_default\\karnaongit-AI-Code-Guardian-ff50c83\\frontend\\package.json"
+    ],
+    "total_files": 195,
+    "entry_points": [
+      "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\cli.py"
+    ],
+    "detected_endpoints": [
+      "/",
+      "/autofix",
+      "/completions",
+      "/content",
+      "/download",
+      "/summary",
+      "/tree",
+      "/{finding_id}",
+      "/{scan_id}"
+    ],
+    "security_markers": [
+      "CORS Policy",
+      "Encryption",
+      "JWT Auth"
+    ]
+  },
+  "scan": {
+    "target": "C:\\Users\\karan\\AppData\\Local\\Temp\\guardian_github_repos\\karnaongit_AI-Code-Guardian_default",
+    "scan_mode": "precision",
+    "files_scanned": 168,
+    "duration_seconds": 0.0,
+    "total_findings": 9,
+    "funnel_metrics": {
+      "total_alerts": 9,
+      "exploitable_count": 0,
+      "high_priority_count": 9,
+      "immediate_risk_count": 0
+    },
+    "by_severity": {
+      "Critical": 5,
+      "High": 4
+    },
+    "by_category": {
+      "Broken Authentication": 5,
+      "SQL Injection": 3,
+      "Sensitive Logging": 1
+    },
+    "findings": [
+      {
+        "category": "Broken Authentication",
+        "severity": "Critical",
+        "rule_id": "SEC-006",
+        "file": "karnaongit-AI-Code-Guardian-ff50c83\\backend\\app\\api\\v1\\findings.py",
+        "line": 82,
+        "snippet": "fixed_line = re.sub(r'_create_unverified_context', 'create_default_context', fixed_line)",
+        "recommendation": "Keep certificate and hostname verification enabled and require TLS 1.2+ (prefer TLS 1.3).",
+        "cwe": "CWE-295",
+        "owasp": "A07:2021",
+        "confidence": 0.8,
+        "tainted": false,
+        "language": "python",
+        "function": "autofix_finding",
+        "end_line": 82,
+        "column": 8,
+        "evidence_ids": [
+          "E20"
+        ],
+        "source": "DETERMINISTIC",
+        "reason": "TLS certificate/hostname verification appears disabled at fixed_line.",
+        "engine": "security",
+        "is_exploitable": false,
+        "exploitability_score": 0.0,
+        "exploit_scenario": "",
+        "business_impact": "",
+        "remediation_patch": "",
+        "finding_id": "852244b9fbf4a0fb"
+      },
+      {
+        "category": "SQL Injection",
+        "severity": "High",
+        "rule_id": "JS-SQL ",
+        "file": "karnaongit-AI-Code-Guardian-ff50c83\\frontend\\src\\app\\page.tsx",
+        "line": 160,
+        "snippet": "{ finding_id:\"e1a9b2c3\", category:\"SQL Injection\", severity:\"Critical\", cwe:\"CWE-89\", owasp:\"A03:2021\", file:\"services/payment_service.py\", line:42, snippet:`cursor.execute(\"SELECT * FROM users WHERE ",
+        "recommendation": "Mitigate SQL Injection using secure input validation, parameterization, and context-aware escaping.",
+        "cwe": null,
+        "owasp": null,
+        "confidence": 0.75,
+        "tainted": false,
+        "language": "javascript",
+        "function": "",
+        "end_line": 0,
+        "column": 0,
+        "evidence_ids": [],
+        "source": "DETERMINISTIC",
+        "reason": "",
+        "engine": "legacy:javascript",
+        "is_exploitable": false,
+        "exploitability_score": 0.0,
+        "exploit_scenario": "",
+        "business_impact": "",
+        "remediation_patch": "",
+        "finding_id": "a10493e9b4fb5cf3"
+      },
+      {
+        "category": "SQL Injection",
+        "severity": "High",
+        "rule_id": "JS-SQL ",
+        "file": "karnaongit-AI-Code-Guardian-ff50c83\\frontend\\src\\app\\page.tsx",
+        "line": 380,
+        "snippet": "code={selectedFinding?.snippet || \"cursor.execute('SELECT * FROM users WHERE id = ' + user_input)\"}",
+        "recommendation": "Mitigate SQL Injection using secure input validation, parameterization, and context-aware escaping.",
+        "cwe": null,
+        "owasp": null,
+        "confidence": 0.75,
+        "tainted": false,
+        "language": "javascript",
+        "function": "",
+        "end_line": 0,
+        "column": 0,
+        "evidence_ids": [],
+        "source": "DETERMINISTIC",
+        "reason": "",
+        "engine": "legacy:javascript",
+        "is_exploitable": false,
+        "exploitability_score": 0.0,
+        "exploit_scenario": "",
+        "business_impact": "",
+        "remediation_patch": "",
+        "finding_id": "c8f1c23597fd8c0f"
+      },
+      {
+        "category": "SQL Injection",
+        "severity": "High",
+        "rule_id": "JS-SQL ",
+        "file": "karnaongit-AI-Code-Guardian-ff50c83\\frontend\\src\\components\\mindmap\\defaultData.ts",
+        "line": 47,
+        "snippet": "codePreview: `def process_user_payment(user_id, amount):\\n    cursor.execute(\"SELECT * FROM accounts WHERE id = \" + user_id)`,",
+        "recommendation": "Mitigate SQL Injection using secure input validation, parameterization, and context-aware escaping.",
+        "cwe": null,
+        "owasp": null,
+        "confidence": 0.75,
+        "tainted": false,
+        "language": "javascript",
+        "function": "",
+        "end_line": 0,
+        "column": 0,
+        "evidence_ids": [],
+        "source": "DETERMINISTIC",
+        "reason": "",
+        "engine": "legacy:javascript",
+        "is_exploitable": false,
+        "exploitability_score": 0.0,
+        "exploit_scenario": "",
+        "business_impact": "",
+        "remediation_patch": "",
+        "finding_id": "03cdeb84bcce1374"
+      },
+      {
+        "category": "Broken Authentication",
+        "severity": "Critical",
+        "rule_id": "SEC-006",
+        "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\engines\\security.py",
+        "line": 103,
+        "snippet": "INSECURE_TRANSPORT = re.compile(",
+        "recommendation": "Keep certificate and hostname verification enabled and require TLS 1.2+ (prefer TLS 1.3).",
+        "cwe": "CWE-295",
+        "owasp": "A07:2021",
+        "confidence": 0.8,
+        "tainted": false,
+        "language": "python",
+        "function": "",
+        "end_line": 108,
+        "column": 0,
+        "evidence_ids": [
+          "E145"
+        ],
+        "source": "DETERMINISTIC",
+        "reason": "TLS certificate/hostname verification appears disabled at INSECURE_TRANSPORT.",
+        "engine": "security",
+        "is_exploitable": false,
+        "exploitability_score": 0.0,
+        "exploit_scenario": "",
+        "business_impact": "",
+        "remediation_patch": "",
+        "finding_id": "c7e2b3b4aa122424"
+      },
+      {
+        "category": "Broken Authentication",
+        "severity": "Critical",
+        "rule_id": "SEC-006",
+        "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\intent\\legacy\\matcher.py",
+        "line": 32,
+        "snippet": "_AUTH_BYPASS = re.compile(",
+        "recommendation": "Keep certificate and hostname verification enabled and require TLS 1.2+ (prefer TLS 1.3).",
+        "cwe": "CWE-295",
+        "owasp": "A07:2021",
+        "confidence": 0.8,
+        "tainted": false,
+        "language": "python",
+        "function": "",
+        "end_line": 35,
+        "column": 0,
+        "evidence_ids": [
+          "E154"
+        ],
+        "source": "DETERMINISTIC",
+        "reason": "TLS certificate/hostname verification appears disabled at _AUTH_BYPASS.",
+        "engine": "security",
+        "is_exploitable": false,
+        "exploitability_score": 0.0,
+        "exploit_scenario": "",
+        "business_impact": "",
+        "remediation_patch": "",
+        "finding_id": "e3345953ecf5a19c"
+      },
+      {
+        "category": "Broken Authentication",
+        "severity": "Critical",
+        "rule_id": "SEC-006",
+        "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\intent\\legacy\\models.py",
+        "line": 185,
+        "snippet": "steps.append(",
+        "recommendation": "Keep certificate and hostname verification enabled and require TLS 1.2+ (prefer TLS 1.3).",
+        "cwe": "CWE-295",
+        "owasp": "A07:2021",
+        "confidence": 0.8,
+        "tainted": false,
+        "language": "python",
+        "function": "_build_fix_steps",
+        "end_line": 188,
+        "column": 12,
+        "evidence_ids": [
+          "E171"
+        ],
+        "source": "DETERMINISTIC",
+        "reason": "TLS certificate/hostname verification appears disabled at steps.append.",
+        "engine": "security",
+        "is_exploitable": false,
+        "exploitability_score": 0.0,
+        "exploit_scenario": "",
+        "business_impact": "",
+        "remediation_patch": "",
+        "finding_id": "87fda15e99a98cc3"
+      },
+      {
+        "category": "Sensitive Logging",
+        "severity": "High",
+        "rule_id": "SEC-010",
+        "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\llm\\guardrails.py",
+        "line": 157,
+        "snippet": "log.warning(\"Redacted %d sensitive token(s) from outbound prompt\", redactions)",
+        "recommendation": "Redact or mask sensitive fields before logging; log identifiers rather than values.",
+        "cwe": "CWE-532",
+        "owasp": "A09:2021",
+        "confidence": 0.75,
+        "tainted": false,
+        "language": "python",
+        "function": "check_prompt",
+        "end_line": 157,
+        "column": 12,
+        "evidence_ids": [
+          "E172"
+        ],
+        "source": "DETERMINISTIC",
+        "reason": "'token' is passed to log.warning, so it can reach log storage and aggregation systems in clear text.",
+        "engine": "security",
+        "is_exploitable": false,
+        "exploitability_score": 0.0,
+        "exploit_scenario": "",
+        "business_impact": "",
+        "remediation_patch": "",
+        "finding_id": "9ce31ec4aca885e6"
+      },
+      {
+        "category": "Broken Authentication",
+        "severity": "Critical",
+        "rule_id": "SEC-006",
+        "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\ust\\tagging.py",
+        "line": 217,
+        "snippet": "CryptoSignature((\"danger_accept_invalid_certs\", \"danger_accept_invalid_hostnames\"),",
+        "recommendation": "Keep certificate and hostname verification enabled and require TLS 1.2+ (prefer TLS 1.3).",
+        "cwe": "CWE-295",
+        "owasp": "A07:2021",
+        "confidence": 0.8,
+        "tainted": false,
+        "language": "python",
+        "function": "",
+        "end_line": 218,
+        "column": 4,
+        "evidence_ids": [
+          "E198"
+        ],
+        "source": "DETERMINISTIC",
+        "reason": "TLS certificate/hostname verification appears disabled at CryptoSignature.",
+        "engine": "security",
+        "is_exploitable": false,
+        "exploitability_score": 0.0,
+        "exploit_scenario": "",
+        "business_impact": "",
+        "remediation_patch": "",
+        "finding_id": "5e13015a31b48850"
+      }
+    ]
+  },
+  "risk": {
+    "security_score": 29.3,
+    "alignment_score": 75.0,
+    "maintainability_score": 80.0,
+    "overall_risk_score": 53.15,
+    "pr_risk": 70.7,
+    "merge_decision": "Warn - Merge Allowed (developer acknowledgement)",
+    "findings": [
+      {
+        "finding_id": "852244b9fbf4a0fb",
+        "category": "Broken Authentication",
+        "severity": "Critical",
+        "crs": 71.7,
+        "cvss_base": 0.95,
+        "ml_confidence": 0.8,
+        "business_context_score": 0.5,
+        "reachability": 0.6,
+        "epss": 0.57
+      },
+      {
+        "finding_id": "a10493e9b4fb5cf3",
+        "category": "SQL Injection",
+        "severity": "High",
+        "crs": 65.3,
+        "cvss_base": 0.8,
+        "ml_confidence": 0.75,
+        "business_context_score": 0.5,
+        "reachability": 0.6,
+        "epss": 0.48
+      },
+      {
+        "finding_id": "c8f1c23597fd8c0f",
+        "category": "SQL Injection",
+        "severity": "High",
+        "crs": 65.3,
+        "cvss_base": 0.8,
+        "ml_confidence": 0.75,
+        "business_context_score": 0.5,
+        "reachability": 0.6,
+        "epss": 0.48
+      },
+      {
+        "finding_id": "03cdeb84bcce1374",
+        "category": "SQL Injection",
+        "severity": "High",
+        "crs": 65.3,
+        "cvss_base": 0.8,
+        "ml_confidence": 0.75,
+        "business_context_score": 0.5,
+        "reachability": 0.6,
+        "epss": 0.48
+      },
+      {
+        "finding_id": "c7e2b3b4aa122424",
+        "category": "Broken Authentication",
+        "severity": "Critical",
+        "crs": 71.7,
+        "cvss_base": 0.95,
+        "ml_confidence": 0.8,
+        "business_context_score": 0.5,
+        "reachability": 0.6,
+        "epss": 0.57
+      },
+      {
+        "finding_id": "e3345953ecf5a19c",
+        "category": "Broken Authentication",
+        "severity": "Critical",
+        "crs": 71.7,
+        "cvss_base": 0.95,
+        "ml_confidence": 0.8,
+        "business_context_score": 0.5,
+        "reachability": 0.6,
+        "epss": 0.57
+      },
+      {
+        "finding_id": "87fda15e99a98cc3",
+        "category": "Broken Authentication",
+        "severity": "Critical",
+        "crs": 71.7,
+        "cvss_base": 0.95,
+        "ml_confidence": 0.8,
+        "business_context_score": 0.5,
+        "reachability": 0.6,
+        "epss": 0.57
+      },
+      {
+        "finding_id": "9ce31ec4aca885e6",
+        "category": "Sensitive Logging",
+        "severity": "High",
+        "crs": 65.3,
+        "cvss_base": 0.8,
+        "ml_confidence": 0.75,
+        "business_context_score": 0.5,
+        "reachability": 0.6,
+        "epss": 0.48
+      },
+      {
+        "finding_id": "5e13015a31b48850",
+        "category": "Broken Authentication",
+        "severity": "Critical",
+        "crs": 71.7,
+        "cvss_base": 0.95,
+        "ml_confidence": 0.8,
+        "business_context_score": 0.5,
+        "reachability": 0.6,
+        "epss": 0.57
+      }
+    ]
+  },
+  "unified_risk": {
+    "security_score": 20.38,
+    "alignment_score": 75.0,
+    "maintainability_score": 80.0,
+    "quantum_readiness_score": 75.0,
+    "dependency_risk_score": 100.0,
+    "overall_risk_score": 56.4,
+    "pr_risk": 79.62,
+    "merge_decision": "Warn - Merge Allowed (developer acknowledgement)",
+    "dimensions": {
+      "security": 20.38,
+      "business_alignment": 75.0,
+      "maintainability": 80.0,
+      "dependency": 100.0,
+      "quantum_readiness": 75.0,
+      "weights": {
+        "security": 0.4,
+        "business_alignment": 0.25,
+        "maintainability": 0.15,
+        "dependency": 0.1,
+        "quantum_readiness": 0.1
+      },
+      "quantum_inventory_findings": 0
+    },
+    "ai_contribution": {
+      "ai_findings": 0,
+      "deterministic_findings": 9,
+      "max_ai_score": 0.0,
+      "note": "Contextual findings are damped and never set the final score; the weights above are fixed in the risk engine."
+    },
+    "findings": [
+      {
+        "finding_id": "852244b9fbf4a0fb",
+        "category": "Broken Authentication",
+        "severity": "Critical",
+        "source": "DETERMINISTIC",
+        "score": 81.95,
+        "severity_factor": 0.95,
+        "confidence_factor": 0.8,
+        "business_impact": 0.85,
+        "reachability": 0.7,
+        "exploit_likelihood": 0.57,
+        "source_multiplier": 1.0,
+        "evidence_count": 1,
+        "notes": [
+          "located inside a named function",
+          "repository classified as Cybersecurity"
+        ]
+      },
+      {
+        "finding_id": "87fda15e99a98cc3",
+        "category": "Broken Authentication",
+        "severity": "Critical",
+        "source": "DETERMINISTIC",
+        "score": 81.95,
+        "severity_factor": 0.95,
+        "confidence_factor": 0.8,
+        "business_impact": 0.85,
+        "reachability": 0.7,
+        "exploit_likelihood": 0.57,
+        "source_multiplier": 1.0,
+        "evidence_count": 1,
+        "notes": [
+          "located inside a named function",
+          "repository classified as Cybersecurity"
+        ]
+      },
+      {
+        "finding_id": "c7e2b3b4aa122424",
+        "category": "Broken Authentication",
+        "severity": "Critical",
+        "source": "DETERMINISTIC",
+        "score": 78.95,
+        "severity_factor": 0.95,
+        "confidence_factor": 0.8,
+        "business_impact": 0.85,
+        "reachability": 0.5,
+        "exploit_likelihood": 0.57,
+        "source_multiplier": 1.0,
+        "evidence_count": 1,
+        "notes": [
+          "repository classified as Cybersecurity"
+        ]
+      },
+      {
+        "finding_id": "e3345953ecf5a19c",
+        "category": "Broken Authentication",
+        "severity": "Critical",
+        "source": "DETERMINISTIC",
+        "score": 78.95,
+        "severity_factor": 0.95,
+        "confidence_factor": 0.8,
+        "business_impact": 0.85,
+        "reachability": 0.5,
+        "exploit_likelihood": 0.57,
+        "source_multiplier": 1.0,
+        "evidence_count": 1,
+        "notes": [
+          "repository classified as Cybersecurity"
+        ]
+      },
+      {
+        "finding_id": "5e13015a31b48850",
+        "category": "Broken Authentication",
+        "severity": "Critical",
+        "source": "DETERMINISTIC",
+        "score": 78.95,
+        "severity_factor": 0.95,
+        "confidence_factor": 0.8,
+        "business_impact": 0.85,
+        "reachability": 0.5,
+        "exploit_likelihood": 0.57,
+        "source_multiplier": 1.0,
+        "evidence_count": 1,
+        "notes": [
+          "repository classified as Cybersecurity"
+        ]
+      },
+      {
+        "finding_id": "9ce31ec4aca885e6",
+        "category": "Sensitive Logging",
+        "severity": "High",
+        "source": "DETERMINISTIC",
+        "score": 76.8,
+        "severity_factor": 0.8,
+        "confidence_factor": 0.75,
+        "business_impact": 0.9,
+        "reachability": 0.7,
+        "exploit_likelihood": 0.48,
+        "source_multiplier": 1.0,
+        "evidence_count": 1,
+        "notes": [
+          "located inside a named function",
+          "handles business-critical data (pii)"
+        ]
+      },
+      {
+        "finding_id": "a10493e9b4fb5cf3",
+        "category": "SQL Injection",
+        "severity": "High",
+        "source": "DETERMINISTIC",
+        "score": 67.55,
+        "severity_factor": 0.8,
+        "confidence_factor": 0.75,
+        "business_impact": 0.65,
+        "reachability": 0.5,
+        "exploit_likelihood": 0.48,
+        "source_multiplier": 1.0,
+        "evidence_count": 0,
+        "notes": [
+          "repository classified as Cybersecurity"
+        ]
+      },
+      {
+        "finding_id": "c8f1c23597fd8c0f",
+        "category": "SQL Injection",
+        "severity": "High",
+        "source": "DETERMINISTIC",
+        "score": 67.55,
+        "severity_factor": 0.8,
+        "confidence_factor": 0.75,
+        "business_impact": 0.65,
+        "reachability": 0.5,
+        "exploit_likelihood": 0.48,
+        "source_multiplier": 1.0,
+        "evidence_count": 0,
+        "notes": [
+          "repository classified as Cybersecurity"
+        ]
+      },
+      {
+        "finding_id": "03cdeb84bcce1374",
+        "category": "SQL Injection",
+        "severity": "High",
+        "source": "DETERMINISTIC",
+        "score": 67.55,
+        "severity_factor": 0.8,
+        "confidence_factor": 0.75,
+        "business_impact": 0.65,
+        "reachability": 0.5,
+        "exploit_likelihood": 0.48,
+        "source_multiplier": 1.0,
+        "evidence_count": 0,
+        "notes": [
+          "repository classified as Cybersecurity"
+        ]
+      }
+    ]
+  },
+  "ust": {
+    "files": 168,
+    "nodes": 15594,
+    "languages": {
+      "python": 139,
+      "typescript": 26,
+      "javascript": 3
+    },
+    "parsers": {
+      "tree-sitter": 168
+    },
+    "node_types": {
+      "import": 794,
+      "call": 6138,
+      "exception_handling": 389,
+      "assignment": 3869,
+      "annotation": 219,
+      "function": 998,
+      "conditional": 1412,
+      "return": 1264,
+      "class": 193,
+      "loop": 310,
+      "object_creation": 8
+    },
+    "parse_failures": 0
+  },
+  "evidence": {
+    "total": 217,
+    "by_type": {
+      "database_operation": 78,
+      "api_endpoint": 94,
+      "insecure_configuration": 5,
+      "authorization_check": 20,
+      "vulnerability_pattern": 1,
+      "crypto_dependency": 9,
+      "crypto_usage": 10
+    },
+    "by_source": {
+      "ust_security_engine": 198,
+      "ust_crypto_detector": 19
+    },
+    "files_with_evidence": 48
+  },
+  "evidence_items": [
+    {
+      "type": "database_operation",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\main.py",
+      "line": 7,
+      "end_line": 0,
+      "column": 0,
+      "language": "python",
+      "symbol": "sys.path.insert",
+      "operation": "database operation via sys.path.insert",
+      "description": "sys.path.insert performs a persistence operation.",
+      "snippet": "sys.path.insert(0, str(Path(__file__).resolve().parent))",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "eb565d46e599474e",
+      "tags": [
+        "database",
+        "database_operation"
+      ],
+      "metadata": {},
+      "id": "E1",
+      "fingerprint": "2d66352c51876cdf"
+    },
+    {
+      "type": "api_endpoint",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\backend\\app\\main.py",
+      "line": 71,
+      "end_line": 0,
+      "column": 0,
+      "language": "python",
+      "symbol": "app.include_router",
+      "operation": "HTTP route declared via app.include_router",
+      "description": "Route handler exposed by app.include_router",
+      "snippet": "app.include_router(scans_router, prefix=settings.API_V1_STR)",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "84ccb698c5185afb",
+      "tags": [
+        "endpoint",
+        "api_endpoint"
+      ],
+      "metadata": {
+        "route": ""
+      },
+      "id": "E2",
+      "fingerprint": "c1352be553771039"
+    },
+    {
+      "type": "api_endpoint",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\backend\\app\\main.py",
+      "line": 72,
+      "end_line": 0,
+      "column": 0,
+      "language": "python",
+      "symbol": "app.include_router",
+      "operation": "HTTP route declared via app.include_router",
+      "description": "Route handler exposed by app.include_router",
+      "snippet": "app.include_router(files_router, prefix=settings.API_V1_STR)",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "d1279dc1fb654bab",
+      "tags": [
+        "endpoint",
+        "api_endpoint"
+      ],
+      "metadata": {
+        "route": ""
+      },
+      "id": "E3",
+      "fingerprint": "9955bba6ec9e6e06"
+    },
+    {
+      "type": "api_endpoint",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\backend\\app\\main.py",
+      "line": 73,
+      "end_line": 0,
+      "column": 0,
+      "language": "python",
+      "symbol": "app.include_router",
+      "operation": "HTTP route declared via app.include_router",
+      "description": "Route handler exposed by app.include_router",
+      "snippet": "app.include_router(findings_router, prefix=settings.API_V1_STR)",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "027895b81d40aa38",
+      "tags": [
+        "endpoint",
+        "api_endpoint"
+      ],
+      "metadata": {
+        "route": ""
+      },
+      "id": "E4",
+      "fingerprint": "929cac985cf453c9"
+    },
+    {
+      "type": "api_endpoint",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\backend\\app\\main.py",
+      "line": 74,
+      "end_line": 0,
+      "column": 0,
+      "language": "python",
+      "symbol": "app.include_router",
+      "operation": "HTTP route declared via app.include_router",
+      "description": "Route handler exposed by app.include_router",
+      "snippet": "app.include_router(chat_router, prefix=settings.API_V1_STR)",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "34963ee1fdfefac3",
+      "tags": [
+        "endpoint",
+        "api_endpoint"
+      ],
+      "metadata": {
+        "route": ""
+      },
+      "id": "E5",
+      "fingerprint": "583ca3619edc7b3d"
+    },
+    {
+      "type": "api_endpoint",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\backend\\app\\main.py",
+      "line": 75,
+      "end_line": 0,
+      "column": 0,
+      "language": "python",
+      "symbol": "app.include_router",
+      "operation": "HTTP route declared via app.include_router",
+      "description": "Route handler exposed by app.include_router",
+      "snippet": "app.include_router(reports_router, prefix=settings.API_V1_STR)",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "24508153aee05432",
+      "tags": [
+        "endpoint",
+        "api_endpoint"
+      ],
+      "metadata": {
+        "route": ""
+      },
+      "id": "E6",
+      "fingerprint": "61838f4da9524281"
+    },
+    {
+      "type": "api_endpoint",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\backend\\app\\main.py",
+      "line": 78,
+      "end_line": 0,
+      "column": 0,
+      "language": "python",
+      "symbol": "app.get",
+      "operation": "HTTP route declared via app.get",
+      "description": "Route handler exposed by app.get",
+      "snippet": "@app.get(\"/\", tags=[\"health\"])",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "400b380d448be086",
+      "tags": [
+        "endpoint",
+        "api_endpoint"
+      ],
+      "metadata": {
+        "route": ""
+      },
+      "id": "E7",
+      "fingerprint": "69fa790508a1df45"
+    },
+    {
+      "type": "api_endpoint",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\backend\\app\\api\\v1\\chat.py",
+      "line": 23,
+      "end_line": 0,
+      "column": 0,
+      "language": "python",
+      "symbol": "router",
+      "operation": "HTTP route declared via router",
+      "description": "Route handler exposed by router",
+      "snippet": "router = APIRouter(prefix=\"/chat\", tags=[\"chat\"])",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "6881d457db6fc0ca",
+      "tags": [
+        "endpoint",
+        "api_endpoint"
+      ],
+      "metadata": {
+        "route": ""
+      },
+      "id": "E8",
+      "fingerprint": "66ffd8f0de69d37c"
+    },
+    {
+      "type": "api_endpoint",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\backend\\app\\api\\v1\\chat.py",
+      "line": 23,
+      "end_line": 0,
+      "column": 9,
+      "language": "python",
+      "symbol": "APIRouter",
+      "operation": "HTTP route declared via APIRouter",
+      "description": "Route handler exposed by APIRouter",
+      "snippet": "APIRouter(prefix=\"/chat\", tags=[\"chat\"])",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "1976c2385318533f",
+      "tags": [
+        "endpoint",
+        "api_endpoint"
+      ],
+      "metadata": {
+        "route": ""
+      },
+      "id": "E9",
+      "fingerprint": "a5d3fbd1d3048b52"
+    },
+    {
+      "type": "api_endpoint",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\backend\\app\\api\\v1\\chat.py",
+      "line": 43,
+      "end_line": 0,
+      "column": 0,
+      "language": "python",
+      "symbol": "router.post",
+      "operation": "HTTP route declared via router.post",
+      "description": "Route handler exposed by router.post",
+      "snippet": "@router.post(\"/completions\", response_model=ChatCompletionResponse)",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "4ee79b5d01a8c2ae",
+      "tags": [
+        "endpoint",
+        "api_endpoint"
+      ],
+      "metadata": {
+        "route": ""
+      },
+      "id": "E10",
+      "fingerprint": "9df498ca4cf8c624"
+    },
+    {
+      "type": "api_endpoint",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\backend\\app\\api\\v1\\files.py",
+      "line": 12,
+      "end_line": 0,
+      "column": 0,
+      "language": "python",
+      "symbol": "router",
+      "operation": "HTTP route declared via router",
+      "description": "Route handler exposed by router",
+      "snippet": "router = APIRouter(prefix=\"/files\", tags=[\"files\"])",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "a9dcdcd935db6f02",
+      "tags": [
+        "endpoint",
+        "api_endpoint"
+      ],
+      "metadata": {
+        "route": ""
+      },
+      "id": "E11",
+      "fingerprint": "934c117a1b3c6073"
+    },
+    {
+      "type": "api_endpoint",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\backend\\app\\api\\v1\\files.py",
+      "line": 12,
+      "end_line": 0,
+      "column": 9,
+      "language": "python",
+      "symbol": "APIRouter",
+      "operation": "HTTP route declared via APIRouter",
+      "description": "Route handler exposed by APIRouter",
+      "snippet": "APIRouter(prefix=\"/files\", tags=[\"files\"])",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "7e1b7e6dd2635b85",
+      "tags": [
+        "endpoint",
+        "api_endpoint"
+      ],
+      "metadata": {
+        "route": ""
+      },
+      "id": "E12",
+      "fingerprint": "77510df328024617"
+    },
+    {
+      "type": "api_endpoint",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\backend\\app\\api\\v1\\files.py",
+      "line": 76,
+      "end_line": 0,
+      "column": 0,
+      "language": "python",
+      "symbol": "router.get",
+      "operation": "HTTP route declared via router.get",
+      "description": "Route handler exposed by router.get",
+      "snippet": "@router.get(\"/tree\")",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "632688b734726c92",
+      "tags": [
+        "endpoint",
+        "api_endpoint"
+      ],
+      "metadata": {
+        "route": ""
+      },
+      "id": "E13",
+      "fingerprint": "faa30b9cd49e9aad"
+    },
+    {
+      "type": "api_endpoint",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\backend\\app\\api\\v1\\files.py",
+      "line": 92,
+      "end_line": 0,
+      "column": 0,
+      "language": "python",
+      "symbol": "router.get",
+      "operation": "HTTP route declared via router.get",
+      "description": "Route handler exposed by router.get",
+      "snippet": "@router.get(\"/content\")",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "2702528b5e74b307",
+      "tags": [
+        "endpoint",
+        "api_endpoint"
+      ],
+      "metadata": {
+        "route": ""
+      },
+      "id": "E14",
+      "fingerprint": "4bf75f073050101c"
+    },
+    {
+      "type": "api_endpoint",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\backend\\app\\api\\v1\\findings.py",
+      "line": 14,
+      "end_line": 0,
+      "column": 0,
+      "language": "python",
+      "symbol": "router",
+      "operation": "HTTP route declared via router",
+      "description": "Route handler exposed by router",
+      "snippet": "router = APIRouter(prefix=\"/findings\", tags=[\"findings\"])",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "db54e942adc7fcec",
+      "tags": [
+        "endpoint",
+        "api_endpoint"
+      ],
+      "metadata": {
+        "route": ""
+      },
+      "id": "E15",
+      "fingerprint": "e5a190a572384ffc"
+    },
+    {
+      "type": "api_endpoint",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\backend\\app\\api\\v1\\findings.py",
+      "line": 14,
+      "end_line": 0,
+      "column": 9,
+      "language": "python",
+      "symbol": "APIRouter",
+      "operation": "HTTP route declared via APIRouter",
+      "description": "Route handler exposed by APIRouter",
+      "snippet": "APIRouter(prefix=\"/findings\", tags=[\"findings\"])",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "a52eeb225b120c8e",
+      "tags": [
+        "endpoint",
+        "api_endpoint"
+      ],
+      "metadata": {
+        "route": ""
+      },
+      "id": "E16",
+      "fingerprint": "7dd795670ed5a5e6"
+    },
+    {
+      "type": "api_endpoint",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\backend\\app\\api\\v1\\findings.py",
+      "line": 26,
+      "end_line": 0,
+      "column": 0,
+      "language": "python",
+      "symbol": "router.get",
+      "operation": "HTTP route declared via router.get",
+      "description": "Route handler exposed by router.get",
+      "snippet": "@router.get(\"\", response_model=List[Dict[str, Any]])",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "0e3f3d44527da157",
+      "tags": [
+        "endpoint",
+        "api_endpoint"
+      ],
+      "metadata": {
+        "route": ""
+      },
+      "id": "E17",
+      "fingerprint": "f47c4a63b5cdeb5b"
+    },
+    {
+      "type": "api_endpoint",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\backend\\app\\api\\v1\\findings.py",
+      "line": 49,
+      "end_line": 0,
+      "column": 0,
+      "language": "python",
+      "symbol": "router.get",
+      "operation": "HTTP route declared via router.get",
+      "description": "Route handler exposed by router.get",
+      "snippet": "@router.get(\"/{finding_id}\", response_model=Dict[str, Any])",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "ea27267093092455",
+      "tags": [
+        "endpoint",
+        "api_endpoint"
+      ],
+      "metadata": {
+        "route": ""
+      },
+      "id": "E18",
+      "fingerprint": "28253f613613142f"
+    },
+    {
+      "type": "api_endpoint",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\backend\\app\\api\\v1\\findings.py",
+      "line": 57,
+      "end_line": 0,
+      "column": 0,
+      "language": "python",
+      "symbol": "router.post",
+      "operation": "HTTP route declared via router.post",
+      "description": "Route handler exposed by router.post",
+      "snippet": "@router.post(\"/autofix\", response_model=Dict[str, Any])",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "d5e26aac9c837d45",
+      "tags": [
+        "endpoint",
+        "api_endpoint"
+      ],
+      "metadata": {
+        "route": ""
+      },
+      "id": "E19",
+      "fingerprint": "9fcc5a56b6f2977c"
+    },
+    {
+      "type": "insecure_configuration",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\backend\\app\\api\\v1\\findings.py",
+      "line": 82,
+      "end_line": 0,
+      "column": 8,
+      "language": "python",
+      "symbol": "autofix_finding",
+      "operation": "insecure transport configuration",
+      "description": "TLS certificate/hostname verification appears disabled at fixed_line.",
+      "snippet": "fixed_line = re.sub(r'_create_unverified_context', 'create_default_context', fixed_line)",
+      "confidence": 0.8,
+      "severity_hint": "Critical",
+      "node_id": "d65a8d4e99d6b85f",
+      "tags": [
+        "tls",
+        "transport_security"
+      ],
+      "metadata": {
+        "api": "fixed_line",
+        "tls_version": ""
+      },
+      "id": "E20",
+      "fingerprint": "4b62a76ab1cfa9d5"
+    },
+    {
+      "type": "api_endpoint",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\backend\\app\\api\\v1\\reports.py",
+      "line": 20,
+      "end_line": 0,
+      "column": 0,
+      "language": "python",
+      "symbol": "router",
+      "operation": "HTTP route declared via router",
+      "description": "Route handler exposed by router",
+      "snippet": "router = APIRouter(prefix=\"/reports\", tags=[\"reports\"])",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "b480cf4106bb3c19",
+      "tags": [
+        "endpoint",
+        "api_endpoint"
+      ],
+      "metadata": {
+        "route": ""
+      },
+      "id": "E21",
+      "fingerprint": "3cb476cbb91cbabf"
+    },
+    {
+      "type": "api_endpoint",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\backend\\app\\api\\v1\\reports.py",
+      "line": 20,
+      "end_line": 0,
+      "column": 9,
+      "language": "python",
+      "symbol": "APIRouter",
+      "operation": "HTTP route declared via APIRouter",
+      "description": "Route handler exposed by APIRouter",
+      "snippet": "APIRouter(prefix=\"/reports\", tags=[\"reports\"])",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "69158a832bb02b93",
+      "tags": [
+        "endpoint",
+        "api_endpoint"
+      ],
+      "metadata": {
+        "route": ""
+      },
+      "id": "E22",
+      "fingerprint": "1fb52694ff9f78a1"
+    },
+    {
+      "type": "api_endpoint",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\backend\\app\\api\\v1\\reports.py",
+      "line": 83,
+      "end_line": 0,
+      "column": 0,
+      "language": "python",
+      "symbol": "router.get",
+      "operation": "HTTP route declared via router.get",
+      "description": "Route handler exposed by router.get",
+      "snippet": "@router.get(\"/summary\", response_model=Dict[str, Any])",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "2503dd1d722cf2bf",
+      "tags": [
+        "endpoint",
+        "api_endpoint"
+      ],
+      "metadata": {
+        "route": ""
+      },
+      "id": "E23",
+      "fingerprint": "5700fc30d709ab28"
+    },
+    {
+      "type": "api_endpoint",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\backend\\app\\api\\v1\\reports.py",
+      "line": 91,
+      "end_line": 0,
+      "column": 0,
+      "language": "python",
+      "symbol": "router.get",
+      "operation": "HTTP route declared via router.get",
+      "description": "Route handler exposed by router.get",
+      "snippet": "@router.get(\"/download\")",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "41d98ba6c16cd422",
+      "tags": [
+        "endpoint",
+        "api_endpoint"
+      ],
+      "metadata": {
+        "route": ""
+      },
+      "id": "E24",
+      "fingerprint": "8e45af5ecbb1afbc"
+    },
+    {
+      "type": "api_endpoint",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\backend\\app\\api\\v1\\scans.py",
+      "line": 20,
+      "end_line": 0,
+      "column": 0,
+      "language": "python",
+      "symbol": "router",
+      "operation": "HTTP route declared via router",
+      "description": "Route handler exposed by router",
+      "snippet": "router = APIRouter(prefix=\"/scans\", tags=[\"scans\"])",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "e6e4181606e789f9",
+      "tags": [
+        "endpoint",
+        "api_endpoint"
+      ],
+      "metadata": {
+        "route": ""
+      },
+      "id": "E25",
+      "fingerprint": "a1dfb1100986e29d"
+    },
+    {
+      "type": "api_endpoint",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\backend\\app\\api\\v1\\scans.py",
+      "line": 20,
+      "end_line": 0,
+      "column": 9,
+      "language": "python",
+      "symbol": "APIRouter",
+      "operation": "HTTP route declared via APIRouter",
+      "description": "Route handler exposed by APIRouter",
+      "snippet": "APIRouter(prefix=\"/scans\", tags=[\"scans\"])",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "fecf20fe1722467b",
+      "tags": [
+        "endpoint",
+        "api_endpoint"
+      ],
+      "metadata": {
+        "route": ""
+      },
+      "id": "E26",
+      "fingerprint": "b7bce785b89dbacb"
+    },
+    {
+      "type": "api_endpoint",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\backend\\app\\api\\v1\\scans.py",
+      "line": 50,
+      "end_line": 0,
+      "column": 0,
+      "language": "python",
+      "symbol": "router.post",
+      "operation": "HTTP route declared via router.post",
+      "description": "Route handler exposed by router.post",
+      "snippet": "@router.post(\"\", response_model=Dict[str, Any])",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "5788b632dbe90d14",
+      "tags": [
+        "endpoint",
+        "api_endpoint"
+      ],
+      "metadata": {
+        "route": ""
+      },
+      "id": "E27",
+      "fingerprint": "566c4d9946acc042"
+    },
+    {
+      "type": "api_endpoint",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\backend\\app\\api\\v1\\scans.py",
+      "line": 103,
+      "end_line": 0,
+      "column": 0,
+      "language": "python",
+      "symbol": "router.get",
+      "operation": "HTTP route declared via router.get",
+      "description": "Route handler exposed by router.get",
+      "snippet": "@router.get(\"\", response_model=List[Dict[str, Any]])",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "34b64bc45d64ce3c",
+      "tags": [
+        "endpoint",
+        "api_endpoint"
+      ],
+      "metadata": {
+        "route": ""
+      },
+      "id": "E28",
+      "fingerprint": "e9d2766001b8218b"
+    },
+    {
+      "type": "api_endpoint",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\backend\\app\\api\\v1\\scans.py",
+      "line": 108,
+      "end_line": 0,
+      "column": 0,
+      "language": "python",
+      "symbol": "router.get",
+      "operation": "HTTP route declared via router.get",
+      "description": "Route handler exposed by router.get",
+      "snippet": "@router.get(\"/{scan_id}\", response_model=Dict[str, Any])",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "5533758120e427c1",
+      "tags": [
+        "endpoint",
+        "api_endpoint"
+      ],
+      "metadata": {
+        "route": ""
+      },
+      "id": "E29",
+      "fingerprint": "11448055b66fb2d3"
+    },
+    {
+      "type": "api_endpoint",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\frontend\\src\\app\\page.tsx",
+      "line": 80,
+      "end_line": 0,
+      "column": 8,
+      "language": "typescript",
+      "symbol": "AppInner",
+      "operation": "HTTP route declared via router",
+      "description": "Route handler exposed by router",
+      "snippet": "router = useRouter()",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "181f7fec7d2a0474",
+      "tags": [
+        "endpoint",
+        "api_endpoint"
+      ],
+      "metadata": {
+        "route": ""
+      },
+      "id": "E30",
+      "fingerprint": "d0cb748c3b5aec7f"
+    },
+    {
+      "type": "api_endpoint",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\frontend\\src\\app\\page.tsx",
+      "line": 80,
+      "end_line": 0,
+      "column": 17,
+      "language": "typescript",
+      "symbol": "AppInner",
+      "operation": "HTTP route declared via useRouter",
+      "description": "Route handler exposed by useRouter",
+      "snippet": "useRouter()",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "85cbfe6c9bb24411",
+      "tags": [
+        "endpoint",
+        "api_endpoint"
+      ],
+      "metadata": {
+        "route": ""
+      },
+      "id": "E31",
+      "fingerprint": "85430b579a6245b1"
+    },
+    {
+      "type": "api_endpoint",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\frontend\\src\\app\\page.tsx",
+      "line": 107,
+      "end_line": 0,
+      "column": 6,
+      "language": "typescript",
+      "symbol": "AppInner",
+      "operation": "HTTP route declared via router.push",
+      "description": "Route handler exposed by router.push: ?${params.toString()}",
+      "snippet": "router.push(`?${params.toString()}`)",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "efedc6b5e6c8c99d",
+      "tags": [
+        "endpoint",
+        "api_endpoint"
+      ],
+      "metadata": {
+        "route": "?${params.toString()}"
+      },
+      "id": "E32",
+      "fingerprint": "4098e8f8eb5247aa"
+    },
+    {
+      "type": "database_operation",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\frontend\\src\\app\\page.tsx",
+      "line": 287,
+      "end_line": 0,
+      "column": 17,
+      "language": "typescript",
+      "symbol": "AppInner",
+      "operation": "database operation via TABS.find",
+      "description": "TABS.find performs a persistence operation.",
+      "snippet": "TABS.find(t => t.id === activeTab)",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "cb4bdb777c4e178b",
+      "tags": [
+        "database",
+        "database_operation"
+      ],
+      "metadata": {},
+      "id": "E33",
+      "fingerprint": "53738e0247c6f13e"
+    },
+    {
+      "type": "database_operation",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\frontend\\src\\app\\page.tsx",
+      "line": 372,
+      "end_line": 0,
+      "column": 57,
+      "language": "typescript",
+      "symbol": "AppInner",
+      "operation": "database operation via findings.find",
+      "description": "findings.find performs a persistence operation.",
+      "snippet": "findings.find((x:any) => (x.finding_id||x.id)===e.target.value)",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "bc1570ed4fd0bf25",
+      "tags": [
+        "database",
+        "database_operation"
+      ],
+      "metadata": {},
+      "id": "E34",
+      "fingerprint": "f9db30fbfd2dc177"
+    },
+    {
+      "type": "database_operation",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\cli.py",
+      "line": 71,
+      "end_line": 0,
+      "column": 18,
+      "language": "python",
+      "symbol": "main",
+      "operation": "database operation via GitHubService.fetch_repository",
+      "description": "GitHubService.fetch_repository performs a persistence operation.",
+      "snippet": "GitHubService().fetch_repository(args.path)",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "ce0357c1f2f35d9c",
+      "tags": [
+        "database",
+        "database_operation"
+      ],
+      "metadata": {},
+      "id": "E35",
+      "fingerprint": "665941e323c7caa9"
+    },
+    {
+      "type": "database_operation",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\cli.py",
+      "line": 78,
+      "end_line": 0,
+      "column": 18,
+      "language": "python",
+      "symbol": "main",
+      "operation": "database operation via RepositoryDetector.detect",
+      "description": "RepositoryDetector.detect performs a persistence operation.",
+      "snippet": "RepositoryDetector().detect(target_path, files)",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "077df855a60af025",
+      "tags": [
+        "database",
+        "database_operation"
+      ],
+      "metadata": {},
+      "id": "E36",
+      "fingerprint": "8af3644a003a7ddb"
+    },
+    {
+      "type": "database_operation",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\cli.py",
+      "line": 78,
+      "end_line": 0,
+      "column": 18,
+      "language": "python",
+      "symbol": "main",
+      "operation": "database operation via RepositoryDetector",
+      "description": "RepositoryDetector performs a persistence operation.",
+      "snippet": "RepositoryDetector()",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "894a33913913728f",
+      "tags": [
+        "database",
+        "database_operation"
+      ],
+      "metadata": {},
+      "id": "E37",
+      "fingerprint": "e7175f5640cb58be"
+    },
+    {
+      "type": "database_operation",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\config.py",
+      "line": 66,
+      "end_line": 0,
+      "column": 12,
+      "language": "python",
+      "symbol": "load",
+      "operation": "database operation via data.update",
+      "description": "data.update performs a persistence operation.",
+      "snippet": "data.update(loaded)",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "ec61a6b6255f4ede",
+      "tags": [
+        "database",
+        "database_operation"
+      ],
+      "metadata": {},
+      "id": "E38",
+      "fingerprint": "37e82fedda35cb2b"
+    },
+    {
+      "type": "database_operation",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\config.py",
+      "line": 67,
+      "end_line": 0,
+      "column": 8,
+      "language": "python",
+      "symbol": "load",
+      "operation": "database operation via data.update",
+      "description": "data.update performs a persistence operation.",
+      "snippet": "data.update({k: v for k, v in overrides.items() if v is not None})",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "ee2b764d1f1a1ada",
+      "tags": [
+        "database",
+        "database_operation"
+      ],
+      "metadata": {},
+      "id": "E39",
+      "fingerprint": "f51d3c835c7d995c"
+    },
+    {
+      "type": "database_operation",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\config.py",
+      "line": 75,
+      "end_line": 0,
+      "column": 8,
+      "language": "python",
+      "symbol": "load",
+      "operation": "database operation via cfg.extras.update",
+      "description": "cfg.extras.update performs a persistence operation.",
+      "snippet": "cfg.extras.update(extras)",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "56f12e82ef608c52",
+      "tags": [
+        "database",
+        "database_operation"
+      ],
+      "metadata": {},
+      "id": "E40",
+      "fingerprint": "1efd23c844d067ec"
+    },
+    {
+      "type": "database_operation",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\ai\\chatbot.py",
+      "line": 72,
+      "end_line": 0,
+      "column": 4,
+      "language": "python",
+      "symbol": "AISecurityCopilot.create",
+      "operation": "database operation via AISecurityCopilot.create",
+      "description": "AISecurityCopilot.create performs a persistence operation.",
+      "snippet": "def create(cls, config: Optional[AssistantConfig] = None) -> \"AISecurityCopilot\":",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "07202d802723551f",
+      "tags": [
+        "database",
+        "database_operation"
+      ],
+      "metadata": {},
+      "id": "E41",
+      "fingerprint": "1721049243597556"
+    },
+    {
+      "type": "api_endpoint",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\ai\\chatbot.py",
+      "line": 98,
+      "end_line": 0,
+      "column": 19,
+      "language": "python",
+      "symbol": "create",
+      "operation": "HTTP route declared via EmbeddingRouter",
+      "description": "Route handler exposed by EmbeddingRouter",
+      "snippet": "EmbeddingRouter(cfg, embedder_backend, codebert)",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "869cc5f43a900208",
+      "tags": [
+        "endpoint",
+        "api_endpoint"
+      ],
+      "metadata": {
+        "route": ""
+      },
+      "id": "E42",
+      "fingerprint": "bedfa76ede6191c2"
+    },
+    {
+      "type": "database_operation",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\ai\\code_indexer.py",
+      "line": 146,
+      "end_line": 0,
+      "column": 8,
+      "language": "python",
+      "symbol": "_embed_and_store",
+      "operation": "database operation via self._store.save",
+      "description": "self._store.save performs a persistence operation.",
+      "snippet": "self._store.save()",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "0c80f23477271607",
+      "tags": [
+        "database",
+        "database_operation"
+      ],
+      "metadata": {},
+      "id": "E43",
+      "fingerprint": "59480972bd739d56"
+    },
+    {
+      "type": "api_endpoint",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\ai\\embeddings.py",
+      "line": 36,
+      "end_line": 0,
+      "column": 4,
+      "language": "python",
+      "symbol": "EmbeddingRouter.__init__",
+      "operation": "HTTP route declared via EmbeddingRouter.__init__",
+      "description": "Route handler exposed by EmbeddingRouter.__init__",
+      "snippet": "def __init__(self, config: AssistantConfig, embedder, codebert=None):",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "fe9dcd6cf21525ff",
+      "tags": [
+        "endpoint",
+        "api_endpoint"
+      ],
+      "metadata": {
+        "route": ""
+      },
+      "id": "E44",
+      "fingerprint": "82920ce2898e4ef7"
+    },
+    {
+      "type": "api_endpoint",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\ai\\embeddings.py",
+      "line": 37,
+      "end_line": 0,
+      "column": 8,
+      "language": "python",
+      "symbol": "__init__",
+      "operation": "HTTP route declared via self._cfg",
+      "description": "Route handler exposed by self._cfg",
+      "snippet": "self._cfg          = config",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "2ed110028125b460",
+      "tags": [
+        "endpoint",
+        "api_endpoint"
+      ],
+      "metadata": {
+        "route": ""
+      },
+      "id": "E45",
+      "fingerprint": "3599ee5653d702a4"
+    },
+    {
+      "type": "api_endpoint",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\ai\\embeddings.py",
+      "line": 38,
+      "end_line": 0,
+      "column": 8,
+      "language": "python",
+      "symbol": "__init__",
+      "operation": "HTTP route declared via self._embedder",
+      "description": "Route handler exposed by self._embedder",
+      "snippet": "self._embedder     = embedder",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "9be5b00df874c4ba",
+      "tags": [
+        "endpoint",
+        "api_endpoint"
+      ],
+      "metadata": {
+        "route": ""
+      },
+      "id": "E46",
+      "fingerprint": "3a4bd12fccc03de5"
+    },
+    {
+      "type": "api_endpoint",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\ai\\embeddings.py",
+      "line": 39,
+      "end_line": 0,
+      "column": 8,
+      "language": "python",
+      "symbol": "__init__",
+      "operation": "HTTP route declared via self._codebert",
+      "description": "Route handler exposed by self._codebert",
+      "snippet": "self._codebert     = codebert",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "34fb596b7aa1a976",
+      "tags": [
+        "endpoint",
+        "api_endpoint"
+      ],
+      "metadata": {
+        "route": ""
+      },
+      "id": "E47",
+      "fingerprint": "22db53884b66968c"
+    },
+    {
+      "type": "api_endpoint",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\ai\\embeddings.py",
+      "line": 40,
+      "end_line": 0,
+      "column": 8,
+      "language": "python",
+      "symbol": "__init__",
+      "operation": "HTTP route declared via self._code_types",
+      "description": "Route handler exposed by self._code_types",
+      "snippet": "self._code_types   = {DocumentType.SOURCE_CODE}",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "13d71c18987ffbea",
+      "tags": [
+        "endpoint",
+        "api_endpoint"
+      ],
+      "metadata": {
+        "route": ""
+      },
+      "id": "E48",
+      "fingerprint": "87f9877e61ed721e"
+    },
+    {
+      "type": "api_endpoint",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\ai\\embeddings.py",
+      "line": 46,
+      "end_line": 0,
+      "column": 4,
+      "language": "python",
+      "symbol": "EmbeddingRouter.embed_document",
+      "operation": "HTTP route declared via EmbeddingRouter.embed_document",
+      "description": "Route handler exposed by EmbeddingRouter.embed_document",
+      "snippet": "def embed_document(self, doc: Document) -> np.ndarray:",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "328c414ac8e63fde",
+      "tags": [
+        "endpoint",
+        "api_endpoint"
+      ],
+      "metadata": {
+        "route": ""
+      },
+      "id": "E49",
+      "fingerprint": "e0624b12a6cc983f"
+    },
+    {
+      "type": "api_endpoint",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\ai\\embeddings.py",
+      "line": 49,
+      "end_line": 0,
+      "column": 12,
+      "language": "python",
+      "symbol": "embed_document",
+      "operation": "HTTP route declared via vec",
+      "description": "Route handler exposed by vec",
+      "snippet": "vec = self._codebert.embed(doc.content)",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "b4eed98ead80db69",
+      "tags": [
+        "endpoint",
+        "api_endpoint"
+      ],
+      "metadata": {
+        "route": ""
+      },
+      "id": "E50",
+      "fingerprint": "a7fbf8ce5ad4d2d7"
+    },
+    {
+      "type": "api_endpoint",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\ai\\embeddings.py",
+      "line": 49,
+      "end_line": 0,
+      "column": 18,
+      "language": "python",
+      "symbol": "embed_document",
+      "operation": "HTTP route declared via self._codebert.embed",
+      "description": "Route handler exposed by self._codebert.embed",
+      "snippet": "self._codebert.embed(doc.content)",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "d2dbcff6a0a714d4",
+      "tags": [
+        "endpoint",
+        "api_endpoint"
+      ],
+      "metadata": {
+        "route": ""
+      },
+      "id": "E51",
+      "fingerprint": "d5afcd38e3a55f68"
+    },
+    {
+      "type": "api_endpoint",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\ai\\embeddings.py",
+      "line": 51,
+      "end_line": 0,
+      "column": 12,
+      "language": "python",
+      "symbol": "embed_document",
+      "operation": "HTTP route declared via raw",
+      "description": "Route handler exposed by raw",
+      "snippet": "raw = self._safe_embed(doc.content)",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "d15ec254b56d84ed",
+      "tags": [
+        "endpoint",
+        "api_endpoint"
+      ],
+      "metadata": {
+        "route": ""
+      },
+      "id": "E52",
+      "fingerprint": "1535d8882bb82b41"
+    },
+    {
+      "type": "api_endpoint",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\ai\\embeddings.py",
+      "line": 51,
+      "end_line": 0,
+      "column": 18,
+      "language": "python",
+      "symbol": "embed_document",
+      "operation": "HTTP route declared via self._safe_embed",
+      "description": "Route handler exposed by self._safe_embed",
+      "snippet": "self._safe_embed(doc.content)",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "48fd31ddd0f21a5d",
+      "tags": [
+        "endpoint",
+        "api_endpoint"
+      ],
+      "metadata": {
+        "route": ""
+      },
+      "id": "E53",
+      "fingerprint": "31c2dbc88c3fc748"
+    },
+    {
+      "type": "api_endpoint",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\ai\\embeddings.py",
+      "line": 52,
+      "end_line": 0,
+      "column": 12,
+      "language": "python",
+      "symbol": "embed_document",
+      "operation": "HTTP route declared via vec",
+      "description": "Route handler exposed by vec",
+      "snippet": "vec = np.array(raw, dtype=np.float32)",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "5dedb2b4e7b81616",
+      "tags": [
+        "endpoint",
+        "api_endpoint"
+      ],
+      "metadata": {
+        "route": ""
+      },
+      "id": "E54",
+      "fingerprint": "fb7cab4b5b852fbd"
+    },
+    {
+      "type": "api_endpoint",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\ai\\embeddings.py",
+      "line": 52,
+      "end_line": 0,
+      "column": 18,
+      "language": "python",
+      "symbol": "embed_document",
+      "operation": "HTTP route declared via np.array",
+      "description": "Route handler exposed by np.array",
+      "snippet": "np.array(raw, dtype=np.float32)",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "a7b4789daf3dac39",
+      "tags": [
+        "endpoint",
+        "api_endpoint"
+      ],
+      "metadata": {
+        "route": ""
+      },
+      "id": "E55",
+      "fingerprint": "b934746b32d86ec8"
+    },
+    {
+      "type": "api_endpoint",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\ai\\embeddings.py",
+      "line": 53,
+      "end_line": 0,
+      "column": 15,
+      "language": "python",
+      "symbol": "embed_document",
+      "operation": "HTTP route declared via self._normalise",
+      "description": "Route handler exposed by self._normalise",
+      "snippet": "self._normalise(vec)",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "42bbde17fa539828",
+      "tags": [
+        "endpoint",
+        "api_endpoint"
+      ],
+      "metadata": {
+        "route": ""
+      },
+      "id": "E56",
+      "fingerprint": "059342308fb1170a"
+    },
+    {
+      "type": "api_endpoint",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\ai\\embeddings.py",
+      "line": 55,
+      "end_line": 0,
+      "column": 4,
+      "language": "python",
+      "symbol": "EmbeddingRouter.embed_documents",
+      "operation": "HTTP route declared via EmbeddingRouter.embed_documents",
+      "description": "Route handler exposed by EmbeddingRouter.embed_documents",
+      "snippet": "def embed_documents(",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "301013ba54bcfb34",
+      "tags": [
+        "endpoint",
+        "api_endpoint"
+      ],
+      "metadata": {
+        "route": ""
+      },
+      "id": "E57",
+      "fingerprint": "4d324434b3b994eb"
+    },
+    {
+      "type": "api_endpoint",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\ai\\embeddings.py",
+      "line": 65,
+      "end_line": 0,
+      "column": 19,
+      "language": "python",
+      "symbol": "embed_documents",
+      "operation": "HTTP route declared via np.zeros",
+      "description": "Route handler exposed by np.zeros",
+      "snippet": "np.zeros((0, self._cfg.embed_dim), dtype=np.float32)",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "23d30a25e3adb821",
+      "tags": [
+        "endpoint",
+        "api_endpoint"
+      ],
+      "metadata": {
+        "route": ""
+      },
+      "id": "E58",
+      "fingerprint": "b504fe8d50643602"
+    },
+    {
+      "type": "api_endpoint",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\ai\\embeddings.py",
+      "line": 67,
+      "end_line": 0,
+      "column": 8,
+      "language": "python",
+      "symbol": "embed_documents",
+      "operation": "HTTP route declared via code_indices",
+      "description": "Route handler exposed by code_indices",
+      "snippet": "code_indices = [i for i, d in enumerate(docs) if d.doc_type in self._code_types]",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "712d1d12875f409b",
+      "tags": [
+        "endpoint",
+        "api_endpoint"
+      ],
+      "metadata": {
+        "route": ""
+      },
+      "id": "E59",
+      "fingerprint": "6cb95a314f35c23e"
+    },
+    {
+      "type": "api_endpoint",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\ai\\embeddings.py",
+      "line": 67,
+      "end_line": 0,
+      "column": 38,
+      "language": "python",
+      "symbol": "embed_documents",
+      "operation": "HTTP route declared via enumerate",
+      "description": "Route handler exposed by enumerate",
+      "snippet": "enumerate(docs)",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "3c3369350e89073c",
+      "tags": [
+        "endpoint",
+        "api_endpoint"
+      ],
+      "metadata": {
+        "route": ""
+      },
+      "id": "E60",
+      "fingerprint": "c118ee9291df348b"
+    },
+    {
+      "type": "api_endpoint",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\ai\\embeddings.py",
+      "line": 68,
+      "end_line": 0,
+      "column": 8,
+      "language": "python",
+      "symbol": "embed_documents",
+      "operation": "HTTP route declared via text_indices",
+      "description": "Route handler exposed by text_indices",
+      "snippet": "text_indices = [i for i, d in enumerate(docs) if d.doc_type not in self._code_types]",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "a39867fd3ba55068",
+      "tags": [
+        "endpoint",
+        "api_endpoint"
+      ],
+      "metadata": {
+        "route": ""
+      },
+      "id": "E61",
+      "fingerprint": "b4a90c32aa05428e"
+    },
+    {
+      "type": "api_endpoint",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\ai\\embeddings.py",
+      "line": 68,
+      "end_line": 0,
+      "column": 38,
+      "language": "python",
+      "symbol": "embed_documents",
+      "operation": "HTTP route declared via enumerate",
+      "description": "Route handler exposed by enumerate",
+      "snippet": "enumerate(docs)",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "b54fd2ea595ec0f9",
+      "tags": [
+        "endpoint",
+        "api_endpoint"
+      ],
+      "metadata": {
+        "route": ""
+      },
+      "id": "E62",
+      "fingerprint": "7ab0e3c90924e241"
+    },
+    {
+      "type": "api_endpoint",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\ai\\embeddings.py",
+      "line": 70,
+      "end_line": 0,
+      "column": 8,
+      "language": "python",
+      "symbol": "embed_documents",
+      "operation": "HTTP route declared via result",
+      "description": "Route handler exposed by result",
+      "snippet": "result = np.zeros((len(docs), self._cfg.embed_dim), dtype=np.float32)",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "a7b0a5bd38759958",
+      "tags": [
+        "endpoint",
+        "api_endpoint"
+      ],
+      "metadata": {
+        "route": ""
+      },
+      "id": "E63",
+      "fingerprint": "ebe4e8dcc5fb7329"
+    },
+    {
+      "type": "api_endpoint",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\ai\\embeddings.py",
+      "line": 70,
+      "end_line": 0,
+      "column": 17,
+      "language": "python",
+      "symbol": "embed_documents",
+      "operation": "HTTP route declared via np.zeros",
+      "description": "Route handler exposed by np.zeros",
+      "snippet": "np.zeros((len(docs), self._cfg.embed_dim), dtype=np.float32)",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "07de35e3be1d60aa",
+      "tags": [
+        "endpoint",
+        "api_endpoint"
+      ],
+      "metadata": {
+        "route": ""
+      },
+      "id": "E64",
+      "fingerprint": "0ca3678704363056"
+    },
+    {
+      "type": "api_endpoint",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\ai\\embeddings.py",
+      "line": 70,
+      "end_line": 0,
+      "column": 27,
+      "language": "python",
+      "symbol": "embed_documents",
+      "operation": "HTTP route declared via len",
+      "description": "Route handler exposed by len",
+      "snippet": "len(docs)",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "7d462518d1d811bf",
+      "tags": [
+        "endpoint",
+        "api_endpoint"
+      ],
+      "metadata": {
+        "route": ""
+      },
+      "id": "E65",
+      "fingerprint": "69f046376b4376ec"
+    },
+    {
+      "type": "api_endpoint",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\ai\\embeddings.py",
+      "line": 74,
+      "end_line": 0,
+      "column": 12,
+      "language": "python",
+      "symbol": "embed_documents",
+      "operation": "HTTP route declared via snippets",
+      "description": "Route handler exposed by snippets",
+      "snippet": "snippets = [docs[i].content for i in code_indices]",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "abb1cb302667b934",
+      "tags": [
+        "endpoint",
+        "api_endpoint"
+      ],
+      "metadata": {
+        "route": ""
+      },
+      "id": "E66",
+      "fingerprint": "acd622b133ca7a0f"
+    },
+    {
+      "type": "api_endpoint",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\ai\\embeddings.py",
+      "line": 75,
+      "end_line": 0,
+      "column": 12,
+      "language": "python",
+      "symbol": "embed_documents",
+      "operation": "HTTP route declared via vecs",
+      "description": "Route handler exposed by vecs",
+      "snippet": "vecs = self._codebert.embed_batch(snippets)",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "a87a320f98c4ebc1",
+      "tags": [
+        "endpoint",
+        "api_endpoint"
+      ],
+      "metadata": {
+        "route": ""
+      },
+      "id": "E67",
+      "fingerprint": "db1f322f43e8a5c8"
+    },
+    {
+      "type": "api_endpoint",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\ai\\embeddings.py",
+      "line": 75,
+      "end_line": 0,
+      "column": 19,
+      "language": "python",
+      "symbol": "embed_documents",
+      "operation": "HTTP route declared via self._codebert.embed_batch",
+      "description": "Route handler exposed by self._codebert.embed_batch",
+      "snippet": "self._codebert.embed_batch(snippets)",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "32a991f8292c2a80",
+      "tags": [
+        "endpoint",
+        "api_endpoint"
+      ],
+      "metadata": {
+        "route": ""
+      },
+      "id": "E68",
+      "fingerprint": "39e89e32f07337bd"
+    },
+    {
+      "type": "api_endpoint",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\ai\\embeddings.py",
+      "line": 76,
+      "end_line": 0,
+      "column": 31,
+      "language": "python",
+      "symbol": "embed_documents",
+      "operation": "HTTP route declared via enumerate",
+      "description": "Route handler exposed by enumerate",
+      "snippet": "enumerate(code_indices)",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "2b4029027f98d9e8",
+      "tags": [
+        "endpoint",
+        "api_endpoint"
+      ],
+      "metadata": {
+        "route": ""
+      },
+      "id": "E69",
+      "fingerprint": "fce9e31287da3967"
+    },
+    {
+      "type": "api_endpoint",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\ai\\embeddings.py",
+      "line": 77,
+      "end_line": 0,
+      "column": 16,
+      "language": "python",
+      "symbol": "embed_documents",
+      "operation": "HTTP route declared via result[global_i]",
+      "description": "Route handler exposed by result[global_i]",
+      "snippet": "result[global_i] = self._normalise(vecs[j])",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "fe2d11b4918959c5",
+      "tags": [
+        "endpoint",
+        "api_endpoint"
+      ],
+      "metadata": {
+        "route": ""
+      },
+      "id": "E70",
+      "fingerprint": "41bc7757158ec36f"
+    },
+    {
+      "type": "api_endpoint",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\ai\\embeddings.py",
+      "line": 77,
+      "end_line": 0,
+      "column": 35,
+      "language": "python",
+      "symbol": "embed_documents",
+      "operation": "HTTP route declared via self._normalise",
+      "description": "Route handler exposed by self._normalise",
+      "snippet": "self._normalise(vecs[j])",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "3ce8827525c520d0",
+      "tags": [
+        "endpoint",
+        "api_endpoint"
+      ],
+      "metadata": {
+        "route": ""
+      },
+      "id": "E71",
+      "fingerprint": "e3045ffe099c50b3"
+    },
+    {
+      "type": "api_endpoint",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\ai\\embeddings.py",
+      "line": 79,
+      "end_line": 0,
+      "column": 16,
+      "language": "python",
+      "symbol": "embed_documents",
+      "operation": "HTTP route declared via logger.info",
+      "description": "Route handler exposed by logger.info: CodeBERT embedded %d code chunks",
+      "snippet": "logger.info(\"CodeBERT embedded %d code chunks\", len(code_indices))",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "daa5712a914a4406",
+      "tags": [
+        "endpoint",
+        "api_endpoint"
+      ],
+      "metadata": {
+        "route": "CodeBERT embedded %d code chunks"
+      },
+      "id": "E72",
+      "fingerprint": "3389fbd29bf71094"
+    },
+    {
+      "type": "api_endpoint",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\ai\\embeddings.py",
+      "line": 79,
+      "end_line": 0,
+      "column": 64,
+      "language": "python",
+      "symbol": "embed_documents",
+      "operation": "HTTP route declared via len",
+      "description": "Route handler exposed by len",
+      "snippet": "len(code_indices)",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "a1ca40adabd0e89c",
+      "tags": [
+        "endpoint",
+        "api_endpoint"
+      ],
+      "metadata": {
+        "route": ""
+      },
+      "id": "E73",
+      "fingerprint": "d0fba1fce4c58fa1"
+    },
+    {
+      "type": "api_endpoint",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\ai\\embeddings.py",
+      "line": 82,
+      "end_line": 0,
+      "column": 8,
+      "language": "python",
+      "symbol": "embed_documents",
+      "operation": "HTTP route declared via code_without_bert",
+      "description": "Route handler exposed by code_without_bert",
+      "snippet": "code_without_bert = code_indices if not self._codebert else []",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "38f1c2b7f74c18eb",
+      "tags": [
+        "endpoint",
+        "api_endpoint"
+      ],
+      "metadata": {
+        "route": ""
+      },
+      "id": "E74",
+      "fingerprint": "284cd1a7967a88a3"
+    },
+    {
+      "type": "api_endpoint",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\ai\\embeddings.py",
+      "line": 85,
+      "end_line": 0,
+      "column": 8,
+      "language": "python",
+      "symbol": "embed_documents",
+      "operation": "HTTP route declared via embed_indices",
+      "description": "Route handler exposed by embed_indices",
+      "snippet": "embed_indices = text_indices + code_without_bert",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "1d4520f45eee1ce0",
+      "tags": [
+        "endpoint",
+        "api_endpoint"
+      ],
+      "metadata": {
+        "route": ""
+      },
+      "id": "E75",
+      "fingerprint": "697c94900a091961"
+    },
+    {
+      "type": "api_endpoint",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\ai\\embeddings.py",
+      "line": 87,
+      "end_line": 0,
+      "column": 31,
+      "language": "python",
+      "symbol": "embed_documents",
+      "operation": "HTTP route declared via enumerate",
+      "description": "Route handler exposed by enumerate",
+      "snippet": "enumerate(embed_indices)",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "259f150e17181623",
+      "tags": [
+        "endpoint",
+        "api_endpoint"
+      ],
+      "metadata": {
+        "route": ""
+      },
+      "id": "E76",
+      "fingerprint": "2d96d7efd2d788c6"
+    },
+    {
+      "type": "api_endpoint",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\ai\\embeddings.py",
+      "line": 88,
+      "end_line": 0,
+      "column": 16,
+      "language": "python",
+      "symbol": "embed_documents",
+      "operation": "HTTP route declared via raw",
+      "description": "Route handler exposed by raw",
+      "snippet": "raw = self._safe_embed(docs[global_i].content)",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "f9b829f6dcc47e67",
+      "tags": [
+        "endpoint",
+        "api_endpoint"
+      ],
+      "metadata": {
+        "route": ""
+      },
+      "id": "E77",
+      "fingerprint": "74838025a195c2b3"
+    },
+    {
+      "type": "api_endpoint",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\ai\\embeddings.py",
+      "line": 88,
+      "end_line": 0,
+      "column": 22,
+      "language": "python",
+      "symbol": "embed_documents",
+      "operation": "HTTP route declared via self._safe_embed",
+      "description": "Route handler exposed by self._safe_embed",
+      "snippet": "self._safe_embed(docs[global_i].content)",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "742b0fd5183425be",
+      "tags": [
+        "endpoint",
+        "api_endpoint"
+      ],
+      "metadata": {
+        "route": ""
+      },
+      "id": "E78",
+      "fingerprint": "53a9daef10b2c0c9"
+    },
+    {
+      "type": "api_endpoint",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\ai\\embeddings.py",
+      "line": 89,
+      "end_line": 0,
+      "column": 16,
+      "language": "python",
+      "symbol": "embed_documents",
+      "operation": "HTTP route declared via result[global_i]",
+      "description": "Route handler exposed by result[global_i]",
+      "snippet": "result[global_i] = self._normalise(np.array(raw, dtype=np.float32))",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "e8b1ad0c581868aa",
+      "tags": [
+        "endpoint",
+        "api_endpoint"
+      ],
+      "metadata": {
+        "route": ""
+      },
+      "id": "E79",
+      "fingerprint": "fcab5f0b3ce3778a"
+    },
+    {
+      "type": "api_endpoint",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\ai\\embeddings.py",
+      "line": 89,
+      "end_line": 0,
+      "column": 35,
+      "language": "python",
+      "symbol": "embed_documents",
+      "operation": "HTTP route declared via self._normalise",
+      "description": "Route handler exposed by self._normalise",
+      "snippet": "self._normalise(np.array(raw, dtype=np.float32))",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "728fe7dc0f21729c",
+      "tags": [
+        "endpoint",
+        "api_endpoint"
+      ],
+      "metadata": {
+        "route": ""
+      },
+      "id": "E80",
+      "fingerprint": "3407d57c3b0adea7"
+    },
+    {
+      "type": "api_endpoint",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\ai\\embeddings.py",
+      "line": 89,
+      "end_line": 0,
+      "column": 51,
+      "language": "python",
+      "symbol": "embed_documents",
+      "operation": "HTTP route declared via np.array",
+      "description": "Route handler exposed by np.array",
+      "snippet": "np.array(raw, dtype=np.float32)",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "8fb11fc1e7087190",
+      "tags": [
+        "endpoint",
+        "api_endpoint"
+      ],
+      "metadata": {
+        "route": ""
+      },
+      "id": "E81",
+      "fingerprint": "c7d02156ddbc1fec"
+    },
+    {
+      "type": "api_endpoint",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\ai\\embeddings.py",
+      "line": 91,
+      "end_line": 0,
+      "column": 20,
+      "language": "python",
+      "symbol": "embed_documents",
+      "operation": "HTTP route declared via logger.info",
+      "description": "Route handler exposed by logger.info: Locally embedded %d/%d text chunks",
+      "snippet": "logger.info(",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "dce01aa2d973e8f3",
+      "tags": [
+        "endpoint",
+        "api_endpoint"
+      ],
+      "metadata": {
+        "route": "Locally embedded %d/%d text chunks"
+      },
+      "id": "E82",
+      "fingerprint": "e6f9875dcac8de17"
+    },
+    {
+      "type": "api_endpoint",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\ai\\embeddings.py",
+      "line": 93,
+      "end_line": 0,
+      "column": 31,
+      "language": "python",
+      "symbol": "embed_documents",
+      "operation": "HTTP route declared via len",
+      "description": "Route handler exposed by len",
+      "snippet": "len(embed_indices)",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "759b1b3a17a8ee1f",
+      "tags": [
+        "endpoint",
+        "api_endpoint"
+      ],
+      "metadata": {
+        "route": ""
+      },
+      "id": "E83",
+      "fingerprint": "dc194590b02cc244"
+    },
+    {
+      "type": "api_endpoint",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\ai\\embeddings.py",
+      "line": 98,
+      "end_line": 0,
+      "column": 4,
+      "language": "python",
+      "symbol": "EmbeddingRouter.embed_query",
+      "operation": "HTTP route declared via EmbeddingRouter.embed_query",
+      "description": "Route handler exposed by EmbeddingRouter.embed_query",
+      "snippet": "def embed_query(self, query: str, prefer_code: bool = False) -> np.ndarray:",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "feb4ae13ce00c4fc",
+      "tags": [
+        "endpoint",
+        "api_endpoint"
+      ],
+      "metadata": {
+        "route": ""
+      },
+      "id": "E84",
+      "fingerprint": "e3733a71fa6e8f04"
+    },
+    {
+      "type": "api_endpoint",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\ai\\embeddings.py",
+      "line": 104,
+      "end_line": 0,
+      "column": 8,
+      "language": "python",
+      "symbol": "embed_query",
+      "operation": "HTTP route declared via looks_like_code",
+      "description": "Route handler exposed by looks_like_code",
+      "snippet": "looks_like_code = prefer_code or self._looks_like_code(query)",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "51311ecafa07902d",
+      "tags": [
+        "endpoint",
+        "api_endpoint"
+      ],
+      "metadata": {
+        "route": ""
+      },
+      "id": "E85",
+      "fingerprint": "38ef75d6d35a850e"
+    },
+    {
+      "type": "api_endpoint",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\ai\\embeddings.py",
+      "line": 104,
+      "end_line": 0,
+      "column": 41,
+      "language": "python",
+      "symbol": "embed_query",
+      "operation": "HTTP route declared via self._looks_like_code",
+      "description": "Route handler exposed by self._looks_like_code",
+      "snippet": "self._looks_like_code(query)",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "d2d172aab3f235e9",
+      "tags": [
+        "endpoint",
+        "api_endpoint"
+      ],
+      "metadata": {
+        "route": ""
+      },
+      "id": "E86",
+      "fingerprint": "fcc2ffe88aa1171b"
+    },
+    {
+      "type": "api_endpoint",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\ai\\embeddings.py",
+      "line": 106,
+      "end_line": 0,
+      "column": 12,
+      "language": "python",
+      "symbol": "embed_query",
+      "operation": "HTTP route declared via vec",
+      "description": "Route handler exposed by vec",
+      "snippet": "vec = self._codebert.embed(query)",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "c5ac11239ab0be7d",
+      "tags": [
+        "endpoint",
+        "api_endpoint"
+      ],
+      "metadata": {
+        "route": ""
+      },
+      "id": "E87",
+      "fingerprint": "d02cab7e11652d87"
+    },
+    {
+      "type": "api_endpoint",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\ai\\embeddings.py",
+      "line": 106,
+      "end_line": 0,
+      "column": 18,
+      "language": "python",
+      "symbol": "embed_query",
+      "operation": "HTTP route declared via self._codebert.embed",
+      "description": "Route handler exposed by self._codebert.embed",
+      "snippet": "self._codebert.embed(query)",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "b8014c51e55448d8",
+      "tags": [
+        "endpoint",
+        "api_endpoint"
+      ],
+      "metadata": {
+        "route": ""
+      },
+      "id": "E88",
+      "fingerprint": "62a4f90eee9772d9"
+    },
+    {
+      "type": "api_endpoint",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\ai\\embeddings.py",
+      "line": 108,
+      "end_line": 0,
+      "column": 12,
+      "language": "python",
+      "symbol": "embed_query",
+      "operation": "HTTP route declared via raw",
+      "description": "Route handler exposed by raw",
+      "snippet": "raw = self._safe_embed(query)",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "763d7f0ce949064d",
+      "tags": [
+        "endpoint",
+        "api_endpoint"
+      ],
+      "metadata": {
+        "route": ""
+      },
+      "id": "E89",
+      "fingerprint": "8f79eff3b202b7be"
+    },
+    {
+      "type": "api_endpoint",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\ai\\embeddings.py",
+      "line": 108,
+      "end_line": 0,
+      "column": 18,
+      "language": "python",
+      "symbol": "embed_query",
+      "operation": "HTTP route declared via self._safe_embed",
+      "description": "Route handler exposed by self._safe_embed",
+      "snippet": "self._safe_embed(query)",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "248ae44378f29116",
+      "tags": [
+        "endpoint",
+        "api_endpoint"
+      ],
+      "metadata": {
+        "route": ""
+      },
+      "id": "E90",
+      "fingerprint": "f50f132ce900ab80"
+    },
+    {
+      "type": "api_endpoint",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\ai\\embeddings.py",
+      "line": 109,
+      "end_line": 0,
+      "column": 12,
+      "language": "python",
+      "symbol": "embed_query",
+      "operation": "HTTP route declared via vec",
+      "description": "Route handler exposed by vec",
+      "snippet": "vec = np.array(raw, dtype=np.float32)",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "f9d27f3fc2a7879c",
+      "tags": [
+        "endpoint",
+        "api_endpoint"
+      ],
+      "metadata": {
+        "route": ""
+      },
+      "id": "E91",
+      "fingerprint": "6e4c0dde29303a91"
+    },
+    {
+      "type": "api_endpoint",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\ai\\embeddings.py",
+      "line": 109,
+      "end_line": 0,
+      "column": 18,
+      "language": "python",
+      "symbol": "embed_query",
+      "operation": "HTTP route declared via np.array",
+      "description": "Route handler exposed by np.array",
+      "snippet": "np.array(raw, dtype=np.float32)",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "13b8240dac394de8",
+      "tags": [
+        "endpoint",
+        "api_endpoint"
+      ],
+      "metadata": {
+        "route": ""
+      },
+      "id": "E92",
+      "fingerprint": "48384b2e20bf0876"
+    },
+    {
+      "type": "api_endpoint",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\ai\\embeddings.py",
+      "line": 110,
+      "end_line": 0,
+      "column": 15,
+      "language": "python",
+      "symbol": "embed_query",
+      "operation": "HTTP route declared via self._normalise",
+      "description": "Route handler exposed by self._normalise",
+      "snippet": "self._normalise(vec)",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "35f4ea4bb41ca612",
+      "tags": [
+        "endpoint",
+        "api_endpoint"
+      ],
+      "metadata": {
+        "route": ""
+      },
+      "id": "E93",
+      "fingerprint": "5e3b0f2385eb59b7"
+    },
+    {
+      "type": "api_endpoint",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\ai\\embeddings.py",
+      "line": 116,
+      "end_line": 0,
+      "column": 4,
+      "language": "python",
+      "symbol": "EmbeddingRouter._safe_embed",
+      "operation": "HTTP route declared via EmbeddingRouter._safe_embed",
+      "description": "Route handler exposed by EmbeddingRouter._safe_embed",
+      "snippet": "def _safe_embed(self, text: str) -> list[float]:",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "9b4618d643c1ecac",
+      "tags": [
+        "endpoint",
+        "api_endpoint"
+      ],
+      "metadata": {
+        "route": ""
+      },
+      "id": "E94",
+      "fingerprint": "8781bf7497051392"
+    },
+    {
+      "type": "api_endpoint",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\ai\\embeddings.py",
+      "line": 119,
+      "end_line": 0,
+      "column": 19,
+      "language": "python",
+      "symbol": "_safe_embed",
+      "operation": "HTTP route declared via self._embedder.embed",
+      "description": "Route handler exposed by self._embedder.embed",
+      "snippet": "self._embedder.embed(text)",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "7a6b2aa37d631f36",
+      "tags": [
+        "endpoint",
+        "api_endpoint"
+      ],
+      "metadata": {
+        "route": ""
+      },
+      "id": "E95",
+      "fingerprint": "f14f75992cca219d"
+    },
+    {
+      "type": "api_endpoint",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\ai\\embeddings.py",
+      "line": 121,
+      "end_line": 0,
+      "column": 12,
+      "language": "python",
+      "symbol": "_safe_embed",
+      "operation": "HTTP route declared via logger.warning",
+      "description": "Route handler exposed by logger.warning: local embed failed, returning zero vector: %s",
+      "snippet": "logger.warning(\"local embed failed, returning zero vector: %s\", exc)",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "e9d82688873c450e",
+      "tags": [
+        "endpoint",
+        "api_endpoint"
+      ],
+      "metadata": {
+        "route": "local embed failed, returning zero vector: %s"
+      },
+      "id": "E96",
+      "fingerprint": "ce7f34c3604567cc"
+    },
+    {
+      "type": "api_endpoint",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\ai\\embeddings.py",
+      "line": 124,
+      "end_line": 0,
+      "column": 4,
+      "language": "python",
+      "symbol": "staticmethod",
+      "operation": "HTTP route declared via staticmethod",
+      "description": "Route handler exposed by staticmethod",
+      "snippet": "@staticmethod",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "5336bb23ea7295b8",
+      "tags": [
+        "endpoint",
+        "api_endpoint"
+      ],
+      "metadata": {
+        "route": ""
+      },
+      "id": "E97",
+      "fingerprint": "a0528b6d68aff04a"
+    },
+    {
+      "type": "api_endpoint",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\ai\\embeddings.py",
+      "line": 125,
+      "end_line": 0,
+      "column": 4,
+      "language": "python",
+      "symbol": "EmbeddingRouter._normalise",
+      "operation": "HTTP route declared via EmbeddingRouter._normalise",
+      "description": "Route handler exposed by EmbeddingRouter._normalise",
+      "snippet": "def _normalise(vec: np.ndarray) -> np.ndarray:",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "98e79a5b9f9a6857",
+      "tags": [
+        "endpoint",
+        "api_endpoint"
+      ],
+      "metadata": {
+        "route": ""
+      },
+      "id": "E98",
+      "fingerprint": "63e495496bf1d855"
+    },
+    {
+      "type": "api_endpoint",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\ai\\embeddings.py",
+      "line": 126,
+      "end_line": 0,
+      "column": 8,
+      "language": "python",
+      "symbol": "_normalise",
+      "operation": "HTTP route declared via norm",
+      "description": "Route handler exposed by norm",
+      "snippet": "norm = np.linalg.norm(vec)",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "279da0cd39083672",
+      "tags": [
+        "endpoint",
+        "api_endpoint"
+      ],
+      "metadata": {
+        "route": ""
+      },
+      "id": "E99",
+      "fingerprint": "b4718f84b9bf7783"
+    },
+    {
+      "type": "api_endpoint",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\ai\\embeddings.py",
+      "line": 126,
+      "end_line": 0,
+      "column": 15,
+      "language": "python",
+      "symbol": "_normalise",
+      "operation": "HTTP route declared via np.linalg.norm",
+      "description": "Route handler exposed by np.linalg.norm",
+      "snippet": "np.linalg.norm(vec)",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "3329dccdd881f90c",
+      "tags": [
+        "endpoint",
+        "api_endpoint"
+      ],
+      "metadata": {
+        "route": ""
+      },
+      "id": "E100",
+      "fingerprint": "833d784ad9b1fe0d"
+    },
+    {
+      "type": "api_endpoint",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\ai\\embeddings.py",
+      "line": 128,
+      "end_line": 0,
+      "column": 19,
+      "language": "python",
+      "symbol": "_normalise",
+      "operation": "HTTP route declared via astype",
+      "description": "Route handler exposed by astype",
+      "snippet": "(vec / norm).astype(np.float32)",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "3b3cadd49d3462b5",
+      "tags": [
+        "endpoint",
+        "api_endpoint"
+      ],
+      "metadata": {
+        "route": ""
+      },
+      "id": "E101",
+      "fingerprint": "0576ec476c945697"
+    },
+    {
+      "type": "api_endpoint",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\ai\\embeddings.py",
+      "line": 129,
+      "end_line": 0,
+      "column": 15,
+      "language": "python",
+      "symbol": "_normalise",
+      "operation": "HTTP route declared via vec.astype",
+      "description": "Route handler exposed by vec.astype",
+      "snippet": "vec.astype(np.float32)",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "3e37ffdb0183f3bf",
+      "tags": [
+        "endpoint",
+        "api_endpoint"
+      ],
+      "metadata": {
+        "route": ""
+      },
+      "id": "E102",
+      "fingerprint": "1566e1bdfd9ed70d"
+    },
+    {
+      "type": "api_endpoint",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\ai\\embeddings.py",
+      "line": 131,
+      "end_line": 0,
+      "column": 4,
+      "language": "python",
+      "symbol": "staticmethod",
+      "operation": "HTTP route declared via staticmethod",
+      "description": "Route handler exposed by staticmethod",
+      "snippet": "@staticmethod",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "b516d6062daa17ad",
+      "tags": [
+        "endpoint",
+        "api_endpoint"
+      ],
+      "metadata": {
+        "route": ""
+      },
+      "id": "E103",
+      "fingerprint": "692a38413d4ae9df"
+    },
+    {
+      "type": "api_endpoint",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\ai\\embeddings.py",
+      "line": 132,
+      "end_line": 0,
+      "column": 4,
+      "language": "python",
+      "symbol": "EmbeddingRouter._looks_like_code",
+      "operation": "HTTP route declared via EmbeddingRouter._looks_like_code",
+      "description": "Route handler exposed by EmbeddingRouter._looks_like_code",
+      "snippet": "def _looks_like_code(text: str) -> bool:",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "3767e0ac9999defa",
+      "tags": [
+        "endpoint",
+        "api_endpoint"
+      ],
+      "metadata": {
+        "route": ""
+      },
+      "id": "E104",
+      "fingerprint": "1f964b5205974b0c"
+    },
+    {
+      "type": "api_endpoint",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\ai\\embeddings.py",
+      "line": 134,
+      "end_line": 0,
+      "column": 8,
+      "language": "python",
+      "symbol": "_looks_like_code",
+      "operation": "HTTP route declared via code_signals",
+      "description": "Route handler exposed by code_signals",
+      "snippet": "code_signals = [",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "e91d947b833de6b4",
+      "tags": [
+        "endpoint",
+        "api_endpoint"
+      ],
+      "metadata": {
+        "route": ""
+      },
+      "id": "E105",
+      "fingerprint": "ed7db0a099ce0d82"
+    },
+    {
+      "type": "api_endpoint",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\ai\\embeddings.py",
+      "line": 139,
+      "end_line": 0,
+      "column": 15,
+      "language": "python",
+      "symbol": "_looks_like_code",
+      "operation": "HTTP route declared via sum",
+      "description": "Route handler exposed by sum",
+      "snippet": "sum(1 for sig in code_signals if sig in text)",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "8d916f93cef4a7df",
+      "tags": [
+        "endpoint",
+        "api_endpoint"
+      ],
+      "metadata": {
+        "route": ""
+      },
+      "id": "E106",
+      "fingerprint": "d18709bb2b02c823"
+    },
+    {
+      "type": "database_operation",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\ai\\rag_pipeline.py",
+      "line": 139,
+      "end_line": 0,
+      "column": 12,
+      "language": "python",
+      "symbol": "ask",
+      "operation": "database operation via rag_result.merged_context",
+      "description": "rag_result.merged_context performs a persistence operation.",
+      "snippet": "rag_result.merged_context = exact_ctx + \"\\n\\n\" + rag_result.merged_context",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "075d8012a3c02ac8",
+      "tags": [
+        "database",
+        "database_operation"
+      ],
+      "metadata": {},
+      "id": "E107",
+      "fingerprint": "b83889c95e9aac86"
+    },
+    {
+      "type": "database_operation",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\ai\\scan_context.py",
+      "line": 87,
+      "end_line": 0,
+      "column": 35,
+      "language": "python",
+      "symbol": "exact_match_context",
+      "operation": "database operation via _TOKEN.findall",
+      "description": "_TOKEN.findall performs a persistence operation.",
+      "snippet": "_TOKEN.findall(question)",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "67fffb30680a9e14",
+      "tags": [
+        "database",
+        "database_operation"
+      ],
+      "metadata": {},
+      "id": "E108",
+      "fingerprint": "95c7b748161a56ae"
+    },
+    {
+      "type": "database_operation",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\ai\\validator.py",
+      "line": 78,
+      "end_line": 0,
+      "column": 17,
+      "language": "python",
+      "symbol": "validate",
+      "operation": "database operation via _FILE_REF.finditer",
+      "description": "_FILE_REF.finditer performs a persistence operation.",
+      "snippet": "_FILE_REF.finditer(answer)",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "eec0e3983bfc6b21",
+      "tags": [
+        "database",
+        "database_operation"
+      ],
+      "metadata": {},
+      "id": "E109",
+      "fingerprint": "7f1da7cd1213c113"
+    },
+    {
+      "type": "database_operation",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\ai\\validator.py",
+      "line": 95,
+      "end_line": 0,
+      "column": 17,
+      "language": "python",
+      "symbol": "validate",
+      "operation": "database operation via _LINE_PHRASE.finditer",
+      "description": "_LINE_PHRASE.finditer performs a persistence operation.",
+      "snippet": "_LINE_PHRASE.finditer(answer)",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "191ffb5f00eb2b3b",
+      "tags": [
+        "database",
+        "database_operation"
+      ],
+      "metadata": {},
+      "id": "E110",
+      "fingerprint": "7c1cba5614d481b4"
+    },
+    {
+      "type": "database_operation",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\ai\\validator.py",
+      "line": 109,
+      "end_line": 0,
+      "column": 21,
+      "language": "python",
+      "symbol": "validate",
+      "operation": "database operation via _RULE_REF.finditer",
+      "description": "_RULE_REF.finditer performs a persistence operation.",
+      "snippet": "_RULE_REF.finditer(answer)",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "84a0a1c5c5b3ecdd",
+      "tags": [
+        "database",
+        "database_operation"
+      ],
+      "metadata": {},
+      "id": "E111",
+      "fingerprint": "23a702bb4b5fd7a1"
+    },
+    {
+      "type": "database_operation",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\ai\\vector_store.py",
+      "line": 182,
+      "end_line": 0,
+      "column": 4,
+      "language": "python",
+      "symbol": "FAISSVectorStore.save",
+      "operation": "database operation via FAISSVectorStore.save",
+      "description": "FAISSVectorStore.save performs a persistence operation.",
+      "snippet": "def save(self) -> None:",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "b476a30403c94423",
+      "tags": [
+        "database",
+        "database_operation"
+      ],
+      "metadata": {},
+      "id": "E112",
+      "fingerprint": "88f5c0b05c700316"
+    },
+    {
+      "type": "database_operation",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\core\\context.py",
+      "line": 42,
+      "end_line": 0,
+      "column": 4,
+      "language": "python",
+      "symbol": "RepositoryContext.all_files",
+      "operation": "database operation via RepositoryContext.all_files",
+      "description": "RepositoryContext.all_files performs a persistence operation.",
+      "snippet": "def all_files(self) -> list[Path]:",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "dad206fefefb891b",
+      "tags": [
+        "database",
+        "database_operation"
+      ],
+      "metadata": {},
+      "id": "E113",
+      "fingerprint": "234c516b17e17365"
+    },
+    {
+      "type": "database_operation",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\core\\context.py",
+      "line": 46,
+      "end_line": 0,
+      "column": 4,
+      "language": "python",
+      "symbol": "RepositoryContext.relative",
+      "operation": "database operation via RepositoryContext.relative",
+      "description": "RepositoryContext.relative performs a persistence operation.",
+      "snippet": "def relative(self, path: Path | str) -> str:",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "6d6ce5fddf7eb932",
+      "tags": [
+        "database",
+        "database_operation"
+      ],
+      "metadata": {},
+      "id": "E114",
+      "fingerprint": "62a68db4756560e5"
+    },
+    {
+      "type": "database_operation",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\core\\context.py",
+      "line": 57,
+      "end_line": 0,
+      "column": 4,
+      "language": "python",
+      "symbol": "RepositoryContext.read",
+      "operation": "database operation via RepositoryContext.read",
+      "description": "RepositoryContext.read performs a persistence operation.",
+      "snippet": "def read(self, path: Path | str) -> str:",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "4dac5fe38775baaf",
+      "tags": [
+        "database",
+        "database_operation"
+      ],
+      "metadata": {},
+      "id": "E115",
+      "fingerprint": "a01485e0cbdd266b"
+    },
+    {
+      "type": "database_operation",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\core\\context.py",
+      "line": 64,
+      "end_line": 0,
+      "column": 4,
+      "language": "python",
+      "symbol": "RepositoryContext.primary_language",
+      "operation": "database operation via RepositoryContext.primary_language",
+      "description": "RepositoryContext.primary_language performs a persistence operation.",
+      "snippet": "def primary_language(self) -> str:",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "4e2d4b83b7eb332d",
+      "tags": [
+        "database",
+        "database_operation"
+      ],
+      "metadata": {},
+      "id": "E116",
+      "fingerprint": "c305bfafb7fade30"
+    },
+    {
+      "type": "database_operation",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\core\\context.py",
+      "line": 67,
+      "end_line": 0,
+      "column": 4,
+      "language": "python",
+      "symbol": "RepositoryContext.to_dict",
+      "operation": "database operation via RepositoryContext.to_dict",
+      "description": "RepositoryContext.to_dict performs a persistence operation.",
+      "snippet": "def to_dict(self) -> dict:",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "25aed08ec64fe544",
+      "tags": [
+        "database",
+        "database_operation"
+      ],
+      "metadata": {},
+      "id": "E117",
+      "fingerprint": "441dd21b0fd7861c"
+    },
+    {
+      "type": "database_operation",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\core\\context.py",
+      "line": 82,
+      "end_line": 0,
+      "column": 4,
+      "language": "python",
+      "symbol": "repository",
+      "operation": "database operation via repository",
+      "description": "repository performs a persistence operation.",
+      "snippet": "repository: RepositoryContext",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "cf53aa3e0e8f645c",
+      "tags": [
+        "database",
+        "database_operation"
+      ],
+      "metadata": {},
+      "id": "E118",
+      "fingerprint": "d2666800f89e73a5"
+    },
+    {
+      "type": "database_operation",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\core\\context.py",
+      "line": 99,
+      "end_line": 0,
+      "column": 8,
+      "language": "python",
+      "symbol": "add_findings",
+      "operation": "database operation via self.findings.extend",
+      "description": "self.findings.extend performs a persistence operation.",
+      "snippet": "self.findings.extend(findings)",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "88cdb03393a600e4",
+      "tags": [
+        "database",
+        "database_operation"
+      ],
+      "metadata": {},
+      "id": "E119",
+      "fingerprint": "7c0a5857986a57ec"
+    },
+    {
+      "type": "database_operation",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\core\\context.py",
+      "line": 115,
+      "end_line": 0,
+      "column": 17,
+      "language": "python",
+      "symbol": "known_files",
+      "operation": "database operation via self.repository.relative",
+      "description": "self.repository.relative performs a persistence operation.",
+      "snippet": "self.repository.relative(p)",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "0b34b0dda64e393c",
+      "tags": [
+        "database",
+        "database_operation"
+      ],
+      "metadata": {},
+      "id": "E120",
+      "fingerprint": "e5f52f170bf310e7"
+    },
+    {
+      "type": "database_operation",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\core\\context.py",
+      "line": 131,
+      "end_line": 0,
+      "column": 26,
+      "language": "python",
+      "symbol": "to_dict",
+      "operation": "database operation via self.repository.to_dict",
+      "description": "self.repository.to_dict performs a persistence operation.",
+      "snippet": "self.repository.to_dict()",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "d80863c148c761a1",
+      "tags": [
+        "database",
+        "database_operation"
+      ],
+      "metadata": {},
+      "id": "E121",
+      "fingerprint": "26237cc29ba79222"
+    },
+    {
+      "type": "database_operation",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\core\\models.py",
+      "line": 84,
+      "end_line": 0,
+      "column": 8,
+      "language": "python",
+      "symbol": "__post_init__",
+      "operation": "database operation via self.finding_id",
+      "description": "self.finding_id performs a persistence operation.",
+      "snippet": "self.finding_id = hashlib.sha256(basis.encode()).hexdigest()[:16]",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "0f43305cc7814133",
+      "tags": [
+        "database",
+        "database_operation"
+      ],
+      "metadata": {},
+      "id": "E122",
+      "fingerprint": "46ad1465234464ec"
+    },
+    {
+      "type": "database_operation",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\core\\pipeline.py",
+      "line": 85,
+      "end_line": 0,
+      "column": 37,
+      "language": "python",
+      "symbol": "scan",
+      "operation": "database operation via RepositoryDetector.detect",
+      "description": "RepositoryDetector.detect performs a persistence operation.",
+      "snippet": "RepositoryDetector().detect(",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "df53c20a6b7f7bdc",
+      "tags": [
+        "database",
+        "database_operation"
+      ],
+      "metadata": {},
+      "id": "E123",
+      "fingerprint": "084a201f62f80e99"
+    },
+    {
+      "type": "database_operation",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\core\\pipeline.py",
+      "line": 85,
+      "end_line": 0,
+      "column": 37,
+      "language": "python",
+      "symbol": "scan",
+      "operation": "database operation via RepositoryDetector",
+      "description": "RepositoryDetector performs a persistence operation.",
+      "snippet": "RepositoryDetector()",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "590ead7c30e60a9a",
+      "tags": [
+        "database",
+        "database_operation"
+      ],
+      "metadata": {},
+      "id": "E124",
+      "fingerprint": "ea027a59a00ac591"
+    },
+    {
+      "type": "database_operation",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\core\\pipeline.py",
+      "line": 88,
+      "end_line": 0,
+      "column": 8,
+      "language": "python",
+      "symbol": "scan",
+      "operation": "database operation via repository",
+      "description": "repository performs a persistence operation.",
+      "snippet": "repository = RepositoryContext(",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "e9c7a211ee1712ed",
+      "tags": [
+        "database",
+        "database_operation"
+      ],
+      "metadata": {},
+      "id": "E125",
+      "fingerprint": "cdf28f3f2a1dd8f8"
+    },
+    {
+      "type": "database_operation",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\core\\pipeline.py",
+      "line": 88,
+      "end_line": 0,
+      "column": 21,
+      "language": "python",
+      "symbol": "scan",
+      "operation": "database operation via RepositoryContext",
+      "description": "RepositoryContext performs a persistence operation.",
+      "snippet": "RepositoryContext(",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "62c1845d153881f5",
+      "tags": [
+        "database",
+        "database_operation"
+      ],
+      "metadata": {},
+      "id": "E126",
+      "fingerprint": "1e0bba30921a545c"
+    },
+    {
+      "type": "database_operation",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\core\\pipeline.py",
+      "line": 103,
+      "end_line": 0,
+      "column": 26,
+      "language": "python",
+      "symbol": "scan",
+      "operation": "database operation via USTBuilder.build_repository",
+      "description": "USTBuilder.build_repository performs a persistence operation.",
+      "snippet": "USTBuilder().build_repository(repo_root, discovered.source)",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "c77b7bb0ed8f7335",
+      "tags": [
+        "database",
+        "database_operation"
+      ],
+      "metadata": {},
+      "id": "E127",
+      "fingerprint": "17bb20a005d31ccf"
+    },
+    {
+      "type": "database_operation",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\core\\pipeline.py",
+      "line": 131,
+      "end_line": 0,
+      "column": 8,
+      "language": "python",
+      "symbol": "scan",
+      "operation": "database operation via context.findings",
+      "description": "context.findings performs a persistence operation.",
+      "snippet": "context.findings = _merge_findings(context.findings)",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "fc2ae232fd781aed",
+      "tags": [
+        "database",
+        "database_operation"
+      ],
+      "metadata": {},
+      "id": "E128",
+      "fingerprint": "6ee05e60eff159b6"
+    },
+    {
+      "type": "database_operation",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\core\\pipeline.py",
+      "line": 206,
+      "end_line": 0,
+      "column": 19,
+      "language": "python",
+      "symbol": "_resolve_target",
+      "operation": "database operation via GitHubService.fetch_repository",
+      "description": "GitHubService.fetch_repository performs a persistence operation.",
+      "snippet": "GitHubService().fetch_repository(target)",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "20f4e315dcfccfd9",
+      "tags": [
+        "database",
+        "database_operation"
+      ],
+      "metadata": {},
+      "id": "E129",
+      "fingerprint": "c516360fe7d211a2"
+    },
+    {
+      "type": "database_operation",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\core\\pipeline.py",
+      "line": 255,
+      "end_line": 0,
+      "column": 19,
+      "language": "python",
+      "symbol": "_run_legacy_plugins",
+      "operation": "database operation via context.repository.read",
+      "description": "context.repository.read performs a persistence operation.",
+      "snippet": "context.repository.read(fp)",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "3880e94e53f3497d",
+      "tags": [
+        "database",
+        "database_operation"
+      ],
+      "metadata": {},
+      "id": "E130",
+      "fingerprint": "5aba5ae735519fab"
+    },
+    {
+      "type": "database_operation",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\core\\pipeline.py",
+      "line": 258,
+      "end_line": 0,
+      "column": 20,
+      "language": "python",
+      "symbol": "_run_legacy_plugins",
+      "operation": "database operation via context.repository.relative",
+      "description": "context.repository.relative performs a persistence operation.",
+      "snippet": "context.repository.relative(fp)",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "25ecb2ea0536f268",
+      "tags": [
+        "database",
+        "database_operation"
+      ],
+      "metadata": {},
+      "id": "E131",
+      "fingerprint": "b67c25e653269168"
+    },
+    {
+      "type": "database_operation",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\dependencies\\parsers.py",
+      "line": 74,
+      "end_line": 0,
+      "column": 14,
+      "language": "python",
+      "symbol": "parse_pom_xml",
+      "operation": "database operation via dep.findtext",
+      "description": "dep.findtext performs a persistence operation.",
+      "snippet": "dep.findtext(q(\"groupId\"), default=\"\", namespaces=ns)",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "f94b4fdfce80d5b9",
+      "tags": [
+        "database",
+        "database_operation"
+      ],
+      "metadata": {},
+      "id": "E132",
+      "fingerprint": "98cd5477cf857e3a"
+    },
+    {
+      "type": "database_operation",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\dependencies\\parsers.py",
+      "line": 75,
+      "end_line": 0,
+      "column": 14,
+      "language": "python",
+      "symbol": "parse_pom_xml",
+      "operation": "database operation via dep.findtext",
+      "description": "dep.findtext performs a persistence operation.",
+      "snippet": "dep.findtext(q(\"artifactId\"), default=\"\", namespaces=ns)",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "5a429b9b06430278",
+      "tags": [
+        "database",
+        "database_operation"
+      ],
+      "metadata": {},
+      "id": "E133",
+      "fingerprint": "f4443f2d773ae887"
+    },
+    {
+      "type": "database_operation",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\dependencies\\parsers.py",
+      "line": 76,
+      "end_line": 0,
+      "column": 14,
+      "language": "python",
+      "symbol": "parse_pom_xml",
+      "operation": "database operation via dep.findtext",
+      "description": "dep.findtext performs a persistence operation.",
+      "snippet": "dep.findtext(q(\"version\"), default=None, namespaces=ns)",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "4c972b97de4b4f45",
+      "tags": [
+        "database",
+        "database_operation"
+      ],
+      "metadata": {},
+      "id": "E134",
+      "fingerprint": "967dcfd9157f8ada"
+    },
+    {
+      "type": "database_operation",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\discovery\\github_service.py",
+      "line": 64,
+      "end_line": 0,
+      "column": 4,
+      "language": "python",
+      "symbol": "GitHubService.fetch_repository",
+      "operation": "database operation via GitHubService.fetch_repository",
+      "description": "GitHubService.fetch_repository performs a persistence operation.",
+      "snippet": "def fetch_repository(self, target: str, token: Optional[str] = None) -> Path:",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "c774ba482daf63ca",
+      "tags": [
+        "database",
+        "database_operation"
+      ],
+      "metadata": {},
+      "id": "E135",
+      "fingerprint": "6a964eb9a10eebc6"
+    },
+    {
+      "type": "database_operation",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\discovery\\repo_detector.py",
+      "line": 89,
+      "end_line": 0,
+      "column": 4,
+      "language": "python",
+      "symbol": "RepositoryProfile.to_dict",
+      "operation": "database operation via RepositoryProfile.to_dict",
+      "description": "RepositoryProfile.to_dict performs a persistence operation.",
+      "snippet": "def to_dict(self) -> dict:",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "9316d5e3600f862f",
+      "tags": [
+        "database",
+        "database_operation"
+      ],
+      "metadata": {},
+      "id": "E136",
+      "fingerprint": "47ccd740ea9b51ae"
+    },
+    {
+      "type": "database_operation",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\discovery\\repo_detector.py",
+      "line": 107,
+      "end_line": 0,
+      "column": 4,
+      "language": "python",
+      "symbol": "RepositoryDetector.detect",
+      "operation": "database operation via RepositoryDetector.detect",
+      "description": "RepositoryDetector.detect performs a persistence operation.",
+      "snippet": "def detect(self, repo_root: Path, files: Iterable[Path]) -> RepositoryProfile:",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "6cf19651388b87f9",
+      "tags": [
+        "database",
+        "database_operation"
+      ],
+      "metadata": {},
+      "id": "E137",
+      "fingerprint": "9d2e9fc1fa4cdf38"
+    },
+    {
+      "type": "database_operation",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\discovery\\repo_detector.py",
+      "line": 109,
+      "end_line": 0,
+      "column": 18,
+      "language": "python",
+      "symbol": "detect",
+      "operation": "database operation via RepositoryProfile",
+      "description": "RepositoryProfile performs a persistence operation.",
+      "snippet": "RepositoryProfile(root=str(repo_root), total_files=len(files))",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "5b8bd4539e117934",
+      "tags": [
+        "database",
+        "database_operation"
+      ],
+      "metadata": {},
+      "id": "E138",
+      "fingerprint": "7fdaff62b4e2711c"
+    },
+    {
+      "type": "database_operation",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\engines\\base.py",
+      "line": 102,
+      "end_line": 0,
+      "column": 15,
+      "language": "python",
+      "symbol": "_rel",
+      "operation": "database operation via context.repository.relative",
+      "description": "context.repository.relative performs a persistence operation.",
+      "snippet": "context.repository.relative(path)",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "53aa9dff413bada9",
+      "tags": [
+        "database",
+        "database_operation"
+      ],
+      "metadata": {},
+      "id": "E139",
+      "fingerprint": "302bc6a51d756dc5"
+    },
+    {
+      "type": "authorization_check",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\engines\\business_intent.py",
+      "line": 87,
+      "end_line": 0,
+      "column": 4,
+      "language": "python",
+      "symbol": "authorization_checks",
+      "operation": "authorization check via authorization_checks",
+      "description": "authorization_checks performs an access-control check.",
+      "snippet": "authorization_checks: list[str] = field(default_factory=list)",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "fcc7a27e4ca7a216",
+      "tags": [
+        "authorization",
+        "authorization_check"
+      ],
+      "metadata": {},
+      "id": "E140",
+      "fingerprint": "f54531bc94e39d6a"
+    },
+    {
+      "type": "authorization_check",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\engines\\business_intent.py",
+      "line": 251,
+      "end_line": 0,
+      "column": 20,
+      "language": "python",
+      "symbol": "_profile",
+      "operation": "authorization check via profile.authorization_checks.append",
+      "description": "profile.authorization_checks.append performs an access-control check.",
+      "snippet": "profile.authorization_checks.append(symbol)",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "7948bf863608a781",
+      "tags": [
+        "authorization",
+        "authorization_check"
+      ],
+      "metadata": {},
+      "id": "E141",
+      "fingerprint": "f67af9c2f7033cc8"
+    },
+    {
+      "type": "authorization_check",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\engines\\business_intent.py",
+      "line": 271,
+      "end_line": 0,
+      "column": 16,
+      "language": "python",
+      "symbol": "_profile",
+      "operation": "authorization check via profile.authorization_checks.append",
+      "description": "profile.authorization_checks.append performs an access-control check.",
+      "snippet": "profile.authorization_checks.append(f\"@{node.name}\")",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "2744766adb6402a5",
+      "tags": [
+        "authorization",
+        "authorization_check"
+      ],
+      "metadata": {},
+      "id": "E142",
+      "fingerprint": "a617ef74386c77ca"
+    },
+    {
+      "type": "database_operation",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\engines\\business_intent.py",
+      "line": 578,
+      "end_line": 0,
+      "column": 17,
+      "language": "python",
+      "symbol": "_match_score",
+      "operation": "database operation via re.findall",
+      "description": "re.findall performs a persistence operation.",
+      "snippet": "re.findall(r\"[a-z0-9]+\", re.sub(r\"(?<=[a-z0-9])(?=[A-Z])\", \"_\",",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "0060db7fe921332f",
+      "tags": [
+        "database",
+        "database_operation"
+      ],
+      "metadata": {},
+      "id": "E143",
+      "fingerprint": "416a96240a1c358a"
+    },
+    {
+      "type": "database_operation",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\engines\\business_intent.py",
+      "line": 580,
+      "end_line": 0,
+      "column": 18,
+      "language": "python",
+      "symbol": "_match_score",
+      "operation": "database operation via re.findall",
+      "description": "re.findall performs a persistence operation.",
+      "snippet": "re.findall(r\"[a-z0-9]+\", (function.enclosing_class or \"\").lower())",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "ef514f0f49d65120",
+      "tags": [
+        "database",
+        "database_operation"
+      ],
+      "metadata": {},
+      "id": "E144",
+      "fingerprint": "7c183d6eba74f631"
+    },
+    {
+      "type": "insecure_configuration",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\engines\\security.py",
+      "line": 103,
+      "end_line": 0,
+      "column": 0,
+      "language": "python",
+      "symbol": "INSECURE_TRANSPORT",
+      "operation": "insecure transport configuration",
+      "description": "TLS certificate/hostname verification appears disabled at INSECURE_TRANSPORT.",
+      "snippet": "INSECURE_TRANSPORT = re.compile(",
+      "confidence": 0.8,
+      "severity_hint": "Critical",
+      "node_id": "a4d9fb4f979c123f",
+      "tags": [
+        "tls",
+        "transport_security"
+      ],
+      "metadata": {
+        "api": "INSECURE_TRANSPORT",
+        "tls_version": ""
+      },
+      "id": "E145",
+      "fingerprint": "55992e02af615c58"
+    },
+    {
+      "type": "database_operation",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\engines\\security.py",
+      "line": 512,
+      "end_line": 0,
+      "column": 17,
+      "language": "python",
+      "symbol": "_secret_scan",
+      "operation": "database operation via context.repository.read",
+      "description": "context.repository.read performs a persistence operation.",
+      "snippet": "context.repository.read(Path(context.repository.root) / ust_file.path)",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "9b8ca2b0750cf614",
+      "tags": [
+        "database",
+        "database_operation"
+      ],
+      "metadata": {},
+      "id": "E146",
+      "fingerprint": "13e24738bc37eeb8"
+    },
+    {
+      "type": "authorization_check",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\evidence\\models.py",
+      "line": 52,
+      "end_line": 0,
+      "column": 4,
+      "language": "python",
+      "symbol": "AUTHORIZATION_CHECK",
+      "operation": "authorization check via AUTHORIZATION_CHECK",
+      "description": "AUTHORIZATION_CHECK performs an access-control check.",
+      "snippet": "AUTHORIZATION_CHECK = \"authorization_check\"",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "af95dbdff0dcb609",
+      "tags": [
+        "authorization",
+        "authorization_check"
+      ],
+      "metadata": {},
+      "id": "E147",
+      "fingerprint": "e81bfca9e9ff05b7"
+    },
+    {
+      "type": "database_operation",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\evidence\\store.py",
+      "line": 66,
+      "end_line": 0,
+      "column": 20,
+      "language": "python",
+      "symbol": "_save",
+      "operation": "database operation via session.add",
+      "description": "session.add performs a persistence operation.",
+      "snippet": "session.add(db_item)",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "c5b6c705db63844e",
+      "tags": [
+        "database",
+        "database_operation",
+        "auth"
+      ],
+      "metadata": {},
+      "id": "E148",
+      "fingerprint": "993d395c253f8a3c"
+    },
+    {
+      "type": "database_operation",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\evidence\\store.py",
+      "line": 67,
+      "end_line": 0,
+      "column": 26,
+      "language": "python",
+      "symbol": "_save",
+      "operation": "database operation via session.commit",
+      "description": "session.commit performs a persistence operation.",
+      "snippet": "session.commit()",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "5b84bdaa2ab47869",
+      "tags": [
+        "database",
+        "database_operation",
+        "auth"
+      ],
+      "metadata": {},
+      "id": "E149",
+      "fingerprint": "8063fed1e811ba28"
+    },
+    {
+      "type": "database_operation",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\evidence\\store.py",
+      "line": 176,
+      "end_line": 0,
+      "column": 4,
+      "language": "python",
+      "symbol": "EvidenceStore.query",
+      "operation": "database operation via EvidenceStore.query",
+      "description": "EvidenceStore.query performs a persistence operation.",
+      "snippet": "def query(self, **kwargs) -> list[Evidence]:",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "64e771aae0b4e1c2",
+      "tags": [
+        "database",
+        "database_operation"
+      ],
+      "metadata": {},
+      "id": "E150",
+      "fingerprint": "eca0910611b91033"
+    },
+    {
+      "type": "database_operation",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\intent\\classifier.py",
+      "line": 70,
+      "end_line": 0,
+      "column": 23,
+      "language": "python",
+      "symbol": "classify",
+      "operation": "database operation via _WORD.findall",
+      "description": "_WORD.findall performs a persistence operation.",
+      "snippet": "_WORD.findall(rel)",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "905f184da01121b2",
+      "tags": [
+        "database",
+        "database_operation"
+      ],
+      "metadata": {},
+      "id": "E151",
+      "fingerprint": "11c8d2b17fa28530"
+    },
+    {
+      "type": "database_operation",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\intent\\classifier.py",
+      "line": 86,
+      "end_line": 0,
+      "column": 25,
+      "language": "python",
+      "symbol": "classify",
+      "operation": "database operation via re.findall",
+      "description": "re.findall performs a persistence operation.",
+      "snippet": "re.findall(r\"\\b(?:class|def|interface|func)\\s+(\\w+)\", text)",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "01947cb3665a5344",
+      "tags": [
+        "database",
+        "database_operation"
+      ],
+      "metadata": {},
+      "id": "E152",
+      "fingerprint": "a570e07689642720"
+    },
+    {
+      "type": "database_operation",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\intent\\classifier.py",
+      "line": 201,
+      "end_line": 0,
+      "column": 19,
+      "language": "python",
+      "symbol": "_ingest_text",
+      "operation": "database operation via _WORD.findall",
+      "description": "_WORD.findall performs a persistence operation.",
+      "snippet": "_WORD.findall(text.lower())",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "1c39c115be2b3627",
+      "tags": [
+        "database",
+        "database_operation"
+      ],
+      "metadata": {},
+      "id": "E153",
+      "fingerprint": "de3c4883af5edd6b"
+    },
+    {
+      "type": "insecure_configuration",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\intent\\legacy\\matcher.py",
+      "line": 32,
+      "end_line": 0,
+      "column": 0,
+      "language": "python",
+      "symbol": "_AUTH_BYPASS",
+      "operation": "insecure transport configuration",
+      "description": "TLS certificate/hostname verification appears disabled at _AUTH_BYPASS.",
+      "snippet": "_AUTH_BYPASS = re.compile(",
+      "confidence": 0.8,
+      "severity_hint": "Critical",
+      "node_id": "9d7d786e524e7fa2",
+      "tags": [
+        "tls",
+        "transport_security"
+      ],
+      "metadata": {
+        "api": "_AUTH_BYPASS",
+        "tls_version": ""
+      },
+      "id": "E154",
+      "fingerprint": "503b7294c1ff4f9d"
+    },
+    {
+      "type": "database_operation",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\intent\\legacy\\matcher.py",
+      "line": 66,
+      "end_line": 0,
+      "column": 14,
+      "language": "python",
+      "symbol": "_source_tokens",
+      "operation": "database operation via re.findall",
+      "description": "re.findall performs a persistence operation.",
+      "snippet": "re.findall(r\"[a-zA-Z][a-z]+|[A-Z]+(?=[A-Z][a-z])|[A-Z][a-z]+\", source)",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "fc58a0a55dfbde51",
+      "tags": [
+        "database",
+        "database_operation"
+      ],
+      "metadata": {},
+      "id": "E155",
+      "fingerprint": "b14debd2fd9bcd91"
+    },
+    {
+      "type": "database_operation",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\intent\\legacy\\matcher.py",
+      "line": 67,
+      "end_line": 0,
+      "column": 15,
+      "language": "python",
+      "symbol": "_source_tokens",
+      "operation": "database operation via re.findall",
+      "description": "re.findall performs a persistence operation.",
+      "snippet": "re.findall(r\"\\b\\w+\\b\", source.lower())",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "8bfd53e87226b108",
+      "tags": [
+        "database",
+        "database_operation"
+      ],
+      "metadata": {},
+      "id": "E156",
+      "fingerprint": "aa9750ee7b3ca00f"
+    },
+    {
+      "type": "authorization_check",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\intent\\legacy\\matcher.py",
+      "line": 73,
+      "end_line": 0,
+      "column": 0,
+      "language": "python",
+      "symbol": "_check_authorization",
+      "operation": "authorization check via _check_authorization",
+      "description": "_check_authorization performs an access-control check.",
+      "snippet": "def _check_authorization(rule: BusinessRule, source: str) -> tuple[MatchStatus, float, str]:",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "e497a755942a9f08",
+      "tags": [
+        "authorization",
+        "authorization_check"
+      ],
+      "metadata": {},
+      "id": "E157",
+      "fingerprint": "4f11c74ea346462f"
+    },
+    {
+      "type": "authorization_check",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\intent\\legacy\\matcher.py",
+      "line": 74,
+      "end_line": 0,
+      "column": 7,
+      "language": "python",
+      "symbol": "_check_authorization",
+      "operation": "authorization check via _AUTH_BYPASS.search",
+      "description": "_AUTH_BYPASS.search performs an access-control check.",
+      "snippet": "_AUTH_BYPASS.search(source)",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "c7b06c43ca290f01",
+      "tags": [
+        "authorization",
+        "authorization_check"
+      ],
+      "metadata": {},
+      "id": "E158",
+      "fingerprint": "6ae002072a7228b7"
+    },
+    {
+      "type": "authorization_check",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\intent\\legacy\\matcher.py",
+      "line": 75,
+      "end_line": 0,
+      "column": 8,
+      "language": "python",
+      "symbol": "_check_authorization",
+      "operation": "authorization check via m",
+      "description": "m performs an access-control check.",
+      "snippet": "m = _AUTH_BYPASS.search(source)",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "a268efb6e0f687af",
+      "tags": [
+        "authorization",
+        "authorization_check"
+      ],
+      "metadata": {},
+      "id": "E159",
+      "fingerprint": "33c7a1a4ce1c0235"
+    },
+    {
+      "type": "authorization_check",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\intent\\legacy\\matcher.py",
+      "line": 75,
+      "end_line": 0,
+      "column": 12,
+      "language": "python",
+      "symbol": "_check_authorization",
+      "operation": "authorization check via _AUTH_BYPASS.search",
+      "description": "_AUTH_BYPASS.search performs an access-control check.",
+      "snippet": "_AUTH_BYPASS.search(source)",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "7b9a831bfda96457",
+      "tags": [
+        "authorization",
+        "authorization_check"
+      ],
+      "metadata": {},
+      "id": "E160",
+      "fingerprint": "b7709ac43d986afb"
+    },
+    {
+      "type": "authorization_check",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\intent\\legacy\\matcher.py",
+      "line": 78,
+      "end_line": 0,
+      "column": 35,
+      "language": "python",
+      "symbol": "_check_authorization",
+      "operation": "authorization check via m.group.strip",
+      "description": "m.group.strip performs an access-control check.",
+      "snippet": "m.group(0).strip()",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "bf5bb04b03c35389",
+      "tags": [
+        "authorization",
+        "authorization_check"
+      ],
+      "metadata": {},
+      "id": "E161",
+      "fingerprint": "f725e09c465bc432"
+    },
+    {
+      "type": "authorization_check",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\intent\\legacy\\matcher.py",
+      "line": 78,
+      "end_line": 0,
+      "column": 35,
+      "language": "python",
+      "symbol": "_check_authorization",
+      "operation": "authorization check via m.group",
+      "description": "m.group performs an access-control check.",
+      "snippet": "m.group(0)",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "a8058c0e83b36a2a",
+      "tags": [
+        "authorization",
+        "authorization_check"
+      ],
+      "metadata": {},
+      "id": "E162",
+      "fingerprint": "34875079f7dd1f31"
+    },
+    {
+      "type": "authorization_check",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\intent\\legacy\\matcher.py",
+      "line": 80,
+      "end_line": 0,
+      "column": 4,
+      "language": "python",
+      "symbol": "_check_authorization",
+      "operation": "authorization check via m",
+      "description": "m performs an access-control check.",
+      "snippet": "m = _ROLE_CHECK.search(source)",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "5a67915c40385990",
+      "tags": [
+        "authorization",
+        "authorization_check"
+      ],
+      "metadata": {},
+      "id": "E163",
+      "fingerprint": "600fade669360311"
+    },
+    {
+      "type": "authorization_check",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\intent\\legacy\\matcher.py",
+      "line": 80,
+      "end_line": 0,
+      "column": 8,
+      "language": "python",
+      "symbol": "_check_authorization",
+      "operation": "authorization check via _ROLE_CHECK.search",
+      "description": "_ROLE_CHECK.search performs an access-control check.",
+      "snippet": "_ROLE_CHECK.search(source)",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "0d92c63378476556",
+      "tags": [
+        "authorization",
+        "authorization_check"
+      ],
+      "metadata": {},
+      "id": "E164",
+      "fingerprint": "9b8dca0e4aedaf77"
+    },
+    {
+      "type": "authorization_check",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\intent\\legacy\\matcher.py",
+      "line": 84,
+      "end_line": 0,
+      "column": 45,
+      "language": "python",
+      "symbol": "_check_authorization",
+      "operation": "authorization check via m.group.strip",
+      "description": "m.group.strip performs an access-control check.",
+      "snippet": "m.group(0).strip()",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "e6199e5ad11a70a6",
+      "tags": [
+        "authorization",
+        "authorization_check"
+      ],
+      "metadata": {},
+      "id": "E165",
+      "fingerprint": "db9eddf4598dd171"
+    },
+    {
+      "type": "authorization_check",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\intent\\legacy\\matcher.py",
+      "line": 84,
+      "end_line": 0,
+      "column": 45,
+      "language": "python",
+      "symbol": "_check_authorization",
+      "operation": "authorization check via m.group",
+      "description": "m.group performs an access-control check.",
+      "snippet": "m.group(0)",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "228381556e3b0554",
+      "tags": [
+        "authorization",
+        "authorization_check"
+      ],
+      "metadata": {},
+      "id": "E166",
+      "fingerprint": "3a975f47ff5cef3f"
+    },
+    {
+      "type": "authorization_check",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\intent\\legacy\\matcher.py",
+      "line": 86,
+      "end_line": 0,
+      "column": 4,
+      "language": "python",
+      "symbol": "_check_authorization",
+      "operation": "authorization check via actor_present",
+      "description": "actor_present performs an access-control check.",
+      "snippet": "actor_present = rule.actor.lower() in source.lower()",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "5de6425f9a662a58",
+      "tags": [
+        "authorization",
+        "authorization_check"
+      ],
+      "metadata": {},
+      "id": "E167",
+      "fingerprint": "99cc29305501e01f"
+    },
+    {
+      "type": "authorization_check",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\intent\\legacy\\matcher.py",
+      "line": 86,
+      "end_line": 0,
+      "column": 20,
+      "language": "python",
+      "symbol": "_check_authorization",
+      "operation": "authorization check via rule.actor.lower",
+      "description": "rule.actor.lower performs an access-control check.",
+      "snippet": "rule.actor.lower()",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "35a75e18a1c9ba15",
+      "tags": [
+        "authorization",
+        "authorization_check"
+      ],
+      "metadata": {},
+      "id": "E168",
+      "fingerprint": "299ea9ffd4dc8954"
+    },
+    {
+      "type": "authorization_check",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\intent\\legacy\\matcher.py",
+      "line": 86,
+      "end_line": 0,
+      "column": 42,
+      "language": "python",
+      "symbol": "_check_authorization",
+      "operation": "authorization check via source.lower",
+      "description": "source.lower performs an access-control check.",
+      "snippet": "source.lower()",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "1bdeb9d77018eeaf",
+      "tags": [
+        "authorization",
+        "authorization_check"
+      ],
+      "metadata": {},
+      "id": "E169",
+      "fingerprint": "90eca21228023fb7"
+    },
+    {
+      "type": "authorization_check",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\intent\\legacy\\models.py",
+      "line": 27,
+      "end_line": 0,
+      "column": 4,
+      "language": "python",
+      "symbol": "AUTHORIZATION",
+      "operation": "authorization check via AUTHORIZATION",
+      "description": "AUTHORIZATION performs an access-control check.",
+      "snippet": "AUTHORIZATION  = \"Authorization\"",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "b55a18405e847876",
+      "tags": [
+        "authorization",
+        "authorization_check"
+      ],
+      "metadata": {},
+      "id": "E170",
+      "fingerprint": "9a606861f7676a2f"
+    },
+    {
+      "type": "insecure_configuration",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\intent\\legacy\\models.py",
+      "line": 185,
+      "end_line": 0,
+      "column": 12,
+      "language": "python",
+      "symbol": "_build_fix_steps",
+      "operation": "insecure transport configuration",
+      "description": "TLS certificate/hostname verification appears disabled at steps.append.",
+      "snippet": "steps.append(",
+      "confidence": 0.8,
+      "severity_hint": "Critical",
+      "node_id": "199bfd950ef1bbe1",
+      "tags": [
+        "tls",
+        "transport_security"
+      ],
+      "metadata": {
+        "api": "steps.append",
+        "tls_version": ""
+      },
+      "id": "E171",
+      "fingerprint": "01dab49a8acc5511"
+    },
+    {
+      "type": "vulnerability_pattern",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\llm\\guardrails.py",
+      "line": 157,
+      "end_line": 0,
+      "column": 12,
+      "language": "python",
+      "symbol": "check_prompt",
+      "operation": "sensitive value passed to a logging call",
+      "description": "log.warning receives 'token'.",
+      "snippet": "log.warning(\"Redacted %d sensitive token(s) from outbound prompt\", redactions)",
+      "confidence": 0.75,
+      "severity_hint": "High",
+      "node_id": "b3d36c192140cb22",
+      "tags": [
+        "logging",
+        "pii",
+        "secret"
+      ],
+      "metadata": {
+        "api": "log.warning",
+        "matched_term": "token"
+      },
+      "id": "E172",
+      "fingerprint": "413b3fe24ebe7cc2"
+    },
+    {
+      "type": "database_operation",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\llm\\guardrails.py",
+      "line": 229,
+      "end_line": 0,
+      "column": 37,
+      "language": "python",
+      "symbol": "_in_scope",
+      "operation": "database operation via re.findall",
+      "description": "re.findall performs a persistence operation.",
+      "snippet": "re.findall(r\"[A-Za-z][A-Za-z\\-_]{2,}\", question)",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "ffdff1ba2448ce2e",
+      "tags": [
+        "database",
+        "database_operation"
+      ],
+      "metadata": {},
+      "id": "E173",
+      "fingerprint": "85dcebbfc2f01e96"
+    },
+    {
+      "type": "database_operation",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\llm\\nemotron.py",
+      "line": 203,
+      "end_line": 0,
+      "column": 25,
+      "language": "python",
+      "symbol": "_request_sdk",
+      "operation": "database operation via self._sdk.chat.completions.create",
+      "description": "self._sdk.chat.completions.create performs a persistence operation.",
+      "snippet": "self._sdk.chat.completions.create(**payload)",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "545dc2f06fe9a588",
+      "tags": [
+        "database",
+        "database_operation"
+      ],
+      "metadata": {},
+      "id": "E174",
+      "fingerprint": "d8f1955d2949c1f6"
+    },
+    {
+      "type": "database_operation",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\llm\\nemotron.py",
+      "line": 235,
+      "end_line": 0,
+      "column": 25,
+      "language": "python",
+      "symbol": "_stream_sdk",
+      "operation": "database operation via self._sdk.chat.completions.create",
+      "description": "self._sdk.chat.completions.create performs a persistence operation.",
+      "snippet": "self._sdk.chat.completions.create(**payload)",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "f16e78657dc034a1",
+      "tags": [
+        "database",
+        "database_operation"
+      ],
+      "metadata": {},
+      "id": "E175",
+      "fingerprint": "0f19aad352f81648"
+    },
+    {
+      "type": "database_operation",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\llm\\parser.py",
+      "line": 121,
+      "end_line": 0,
+      "column": 47,
+      "language": "python",
+      "symbol": "_candidates",
+      "operation": "database operation via _ANY_FENCE.finditer",
+      "description": "_ANY_FENCE.finditer performs a persistence operation.",
+      "snippet": "_ANY_FENCE.finditer(text)",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "9d9e05c4a11a9d24",
+      "tags": [
+        "database",
+        "database_operation"
+      ],
+      "metadata": {},
+      "id": "E176",
+      "fingerprint": "8de79c376d3d2526"
+    },
+    {
+      "type": "database_operation",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\llm\\parser.py",
+      "line": 129,
+      "end_line": 0,
+      "column": 16,
+      "language": "python",
+      "symbol": "_balanced_object",
+      "operation": "database operation via text.find",
+      "description": "text.find performs a persistence operation.",
+      "snippet": "text.find(\"{\")",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "79731221e73338a6",
+      "tags": [
+        "database",
+        "database_operation"
+      ],
+      "metadata": {},
+      "id": "E177",
+      "fingerprint": "a63815f5881b7778"
+    },
+    {
+      "type": "database_operation",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\policy\\extractor.py",
+      "line": 331,
+      "end_line": 0,
+      "column": 21,
+      "language": "python",
+      "symbol": "_extract_subject",
+      "operation": "database operation via _SUBJECT_PATTERN.finditer",
+      "description": "_SUBJECT_PATTERN.finditer performs a persistence operation.",
+      "snippet": "_SUBJECT_PATTERN.finditer(text)",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "1a1384bf140dfc26",
+      "tags": [
+        "database",
+        "database_operation"
+      ],
+      "metadata": {},
+      "id": "E178",
+      "fingerprint": "d0d2baa4a5303fad"
+    },
+    {
+      "type": "database_operation",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\policy\\extractor.py",
+      "line": 570,
+      "end_line": 0,
+      "column": 16,
+      "language": "python",
+      "symbol": "_leading_noun",
+      "operation": "database operation via re.findall",
+      "description": "re.findall performs a persistence operation.",
+      "snippet": "re.findall(r\"[A-Za-z]{3,}\", text)",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "d34d879f94ad2d90",
+      "tags": [
+        "database",
+        "database_operation"
+      ],
+      "metadata": {},
+      "id": "E179",
+      "fingerprint": "a003ceb4be24e7de"
+    },
+    {
+      "type": "database_operation",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\policy\\extractor.py",
+      "line": 601,
+      "end_line": 0,
+      "column": 16,
+      "language": "python",
+      "symbol": "_keywords",
+      "operation": "database operation via re.findall",
+      "description": "re.findall performs a persistence operation.",
+      "snippet": "re.findall(r\"[A-Za-z]{4,}\", control_detail or \"\")",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "c7e1c1b73ead3d81",
+      "tags": [
+        "database",
+        "database_operation"
+      ],
+      "metadata": {},
+      "id": "E180",
+      "fingerprint": "1de6a5274eedd119"
+    },
+    {
+      "type": "authorization_check",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\policy\\models.py",
+      "line": 39,
+      "end_line": 0,
+      "column": 4,
+      "language": "python",
+      "symbol": "AUTHORIZATION",
+      "operation": "authorization check via AUTHORIZATION",
+      "description": "AUTHORIZATION performs an access-control check.",
+      "snippet": "AUTHORIZATION = \"authorization\"",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "2adefa4dbc919c48",
+      "tags": [
+        "authorization",
+        "authorization_check"
+      ],
+      "metadata": {},
+      "id": "E181",
+      "fingerprint": "ce8f767755656742"
+    },
+    {
+      "type": "database_operation",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\reasoning\\context.py",
+      "line": 173,
+      "end_line": 0,
+      "column": 11,
+      "language": "python",
+      "symbol": "render_snippet",
+      "operation": "database operation via context.repository.read",
+      "description": "context.repository.read performs a persistence operation.",
+      "snippet": "context.repository.read(path)",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "e58b2c6e23becb6a",
+      "tags": [
+        "database",
+        "database_operation"
+      ],
+      "metadata": {},
+      "id": "E182",
+      "fingerprint": "a1288fff52272342"
+    },
+    {
+      "type": "database_operation",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\reasoning\\gateway.py",
+      "line": 108,
+      "end_line": 0,
+      "column": 4,
+      "language": "python",
+      "symbol": "ReasoningResult.findings",
+      "operation": "database operation via ReasoningResult.findings",
+      "description": "ReasoningResult.findings performs a persistence operation.",
+      "snippet": "def findings(self):",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "31682e0a8a0fa2fd",
+      "tags": [
+        "database",
+        "database_operation"
+      ],
+      "metadata": {},
+      "id": "E183",
+      "fingerprint": "e173a03e9e6b9b7e"
+    },
+    {
+      "type": "database_operation",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\reasoning\\schemas.py",
+      "line": 142,
+      "end_line": 0,
+      "column": 50,
+      "language": "python",
+      "symbol": "extract_json",
+      "operation": "database operation via _FENCE.finditer",
+      "description": "_FENCE.finditer performs a persistence operation.",
+      "snippet": "_FENCE.finditer(text)",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "ebacc342dbff267c",
+      "tags": [
+        "database",
+        "database_operation"
+      ],
+      "metadata": {},
+      "id": "E184",
+      "fingerprint": "272e1e18e6b9c850"
+    },
+    {
+      "type": "database_operation",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\reasoning\\schemas.py",
+      "line": 161,
+      "end_line": 0,
+      "column": 12,
+      "language": "python",
+      "symbol": "_balanced_object",
+      "operation": "database operation via text.find",
+      "description": "text.find performs a persistence operation.",
+      "snippet": "text.find(\"{\")",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "62253ec105ebabee",
+      "tags": [
+        "database",
+        "database_operation"
+      ],
+      "metadata": {},
+      "id": "E185",
+      "fingerprint": "6d9a4486c5302e25"
+    },
+    {
+      "type": "database_operation",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\scanner\\_engine.py",
+      "line": 141,
+      "end_line": 0,
+      "column": 8,
+      "language": "python",
+      "symbol": "__init__",
+      "operation": "database operation via self.findings",
+      "description": "self.findings performs a persistence operation.",
+      "snippet": "self.findings: list[Finding] = []",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "430bbceef7d11676",
+      "tags": [
+        "database",
+        "database_operation"
+      ],
+      "metadata": {},
+      "id": "E186",
+      "fingerprint": "94201cd37eb059c8"
+    },
+    {
+      "type": "database_operation",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\scanner\\_engine.py",
+      "line": 220,
+      "end_line": 0,
+      "column": 8,
+      "language": "python",
+      "symbol": "_emit",
+      "operation": "database operation via self.findings.append",
+      "description": "self.findings.append performs a persistence operation.",
+      "snippet": "self.findings.append(Finding(",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "9299416dfe9d9260",
+      "tags": [
+        "database",
+        "database_operation"
+      ],
+      "metadata": {},
+      "id": "E187",
+      "fingerprint": "c8393889c4c6d6d6"
+    },
+    {
+      "type": "database_operation",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\scanner\\common\\treesitter_engine.py",
+      "line": 35,
+      "end_line": 0,
+      "column": 8,
+      "language": "python",
+      "symbol": "__init__",
+      "operation": "database operation via self.findings",
+      "description": "self.findings performs a persistence operation.",
+      "snippet": "self.findings: List[Tuple[str, str, int, str, str]] = []",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "b925f90de9d2291d",
+      "tags": [
+        "database",
+        "database_operation"
+      ],
+      "metadata": {},
+      "id": "E188",
+      "fingerprint": "0cda3cf283b49fa5"
+    },
+    {
+      "type": "database_operation",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\scanner\\common\\treesitter_engine.py",
+      "line": 93,
+      "end_line": 0,
+      "column": 16,
+      "language": "python",
+      "symbol": "visit_Call",
+      "operation": "database operation via self.findings.append",
+      "description": "self.findings.append performs a persistence operation.",
+      "snippet": "self.findings.append((",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "c9e107cdca6f8f2b",
+      "tags": [
+        "database",
+        "database_operation"
+      ],
+      "metadata": {},
+      "id": "E189",
+      "fingerprint": "cbaa356eb7752eb4"
+    },
+    {
+      "type": "database_operation",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\scanner\\common\\treesitter_engine.py",
+      "line": 102,
+      "end_line": 0,
+      "column": 16,
+      "language": "python",
+      "symbol": "visit_Call",
+      "operation": "database operation via self.findings.append",
+      "description": "self.findings.append performs a persistence operation.",
+      "snippet": "self.findings.append((",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "6faca1bc82e8c432",
+      "tags": [
+        "database",
+        "database_operation"
+      ],
+      "metadata": {},
+      "id": "E190",
+      "fingerprint": "c05747146c903c0f"
+    },
+    {
+      "type": "database_operation",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\ust\\builder.py",
+      "line": 113,
+      "end_line": 0,
+      "column": 4,
+      "language": "python",
+      "symbol": "USTBuilder.build_repository",
+      "operation": "database operation via USTBuilder.build_repository",
+      "description": "USTBuilder.build_repository performs a persistence operation.",
+      "snippet": "def build_repository(self, root: Path | str, files: Iterable[Path],",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "4356d29ab519d56f",
+      "tags": [
+        "database",
+        "database_operation"
+      ],
+      "metadata": {},
+      "id": "E191",
+      "fingerprint": "1f3d3c67e617b219"
+    },
+    {
+      "type": "database_operation",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\ust\\dataflow.py",
+      "line": 152,
+      "end_line": 0,
+      "column": 16,
+      "language": "python",
+      "symbol": "analyze_file",
+      "operation": "database operation via node.data_flow.update",
+      "description": "node.data_flow.update performs a persistence operation.",
+      "snippet": "node.data_flow.update({",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "b91dbc2146f6f149",
+      "tags": [
+        "database",
+        "database_operation"
+      ],
+      "metadata": {},
+      "id": "E192",
+      "fingerprint": "0a2e34bf1d2390a2"
+    },
+    {
+      "type": "database_operation",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\ust\\dataflow.py",
+      "line": 159,
+      "end_line": 0,
+      "column": 16,
+      "language": "python",
+      "symbol": "analyze_file",
+      "operation": "database operation via node.data_flow.update",
+      "description": "node.data_flow.update performs a persistence operation.",
+      "snippet": "node.data_flow.update({",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "b3ecd43fcc116784",
+      "tags": [
+        "database",
+        "database_operation"
+      ],
+      "metadata": {},
+      "id": "E193",
+      "fingerprint": "6b9d809ff5f2167f"
+    },
+    {
+      "type": "database_operation",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\ust\\fallback.py",
+      "line": 276,
+      "end_line": 0,
+      "column": 17,
+      "language": "python",
+      "symbol": "regex_ust",
+      "operation": "database operation via _CALL_PATTERN.finditer",
+      "description": "_CALL_PATTERN.finditer performs a persistence operation.",
+      "snippet": "_CALL_PATTERN.finditer(line, declaration_end)",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "2b5615e50dc61589",
+      "tags": [
+        "database",
+        "database_operation"
+      ],
+      "metadata": {},
+      "id": "E194",
+      "fingerprint": "ad09ffee4527a7be"
+    },
+    {
+      "type": "database_operation",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\ust\\fallback.py",
+      "line": 281,
+      "end_line": 0,
+      "column": 23,
+      "language": "python",
+      "symbol": "regex_ust",
+      "operation": "database operation via re.findall",
+      "description": "re.findall performs a persistence operation.",
+      "snippet": "re.findall(r'[\"\\']([^\"\\']{1,120})[\"\\']', args_text)",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "9e6921946b349ab6",
+      "tags": [
+        "database",
+        "database_operation"
+      ],
+      "metadata": {},
+      "id": "E195",
+      "fingerprint": "aace50ef85b8d18f"
+    },
+    {
+      "type": "database_operation",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\ust\\models.py",
+      "line": 36,
+      "end_line": 0,
+      "column": 4,
+      "language": "python",
+      "symbol": "REPOSITORY",
+      "operation": "database operation via REPOSITORY",
+      "description": "REPOSITORY performs a persistence operation.",
+      "snippet": "REPOSITORY = \"repository\"",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "3201dfa54ec72157",
+      "tags": [
+        "database",
+        "database_operation"
+      ],
+      "metadata": {},
+      "id": "E196",
+      "fingerprint": "813d305aefb301a1"
+    },
+    {
+      "type": "authorization_check",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\ust\\models.py",
+      "line": 57,
+      "end_line": 0,
+      "column": 4,
+      "language": "python",
+      "symbol": "AUTHORIZATION_CHECK",
+      "operation": "authorization check via AUTHORIZATION_CHECK",
+      "description": "AUTHORIZATION_CHECK performs an access-control check.",
+      "snippet": "AUTHORIZATION_CHECK = \"authorization_check\"",
+      "confidence": 1.0,
+      "severity_hint": "",
+      "node_id": "784bdae169db18e8",
+      "tags": [
+        "authorization",
+        "authorization_check"
+      ],
+      "metadata": {},
+      "id": "E197",
+      "fingerprint": "79d4dc2070bdb8b3"
+    },
+    {
+      "type": "insecure_configuration",
+      "source": "ust_security_engine",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\ust\\tagging.py",
+      "line": 217,
+      "end_line": 0,
+      "column": 4,
+      "language": "python",
+      "symbol": "CryptoSignature",
+      "operation": "insecure transport configuration",
+      "description": "TLS certificate/hostname verification appears disabled at CryptoSignature.",
+      "snippet": "CryptoSignature((\"danger_accept_invalid_certs\", \"danger_accept_invalid_hostnames\"),",
+      "confidence": 0.8,
+      "severity_hint": "Critical",
+      "node_id": "28afed112249b0f0",
+      "tags": [
+        "tls",
+        "transport_security"
+      ],
+      "metadata": {
+        "api": "CryptoSignature",
+        "tls_version": ""
+      },
+      "id": "E198",
+      "fingerprint": "380912b6229288f3"
+    },
+    {
+      "type": "crypto_dependency",
+      "source": "ust_crypto_detector",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\ai\\document_loader.py",
+      "line": 16,
+      "end_line": 0,
+      "column": 0,
+      "language": "python",
+      "symbol": "hashlib",
+      "operation": "cryptographic library import: hashlib",
+      "description": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\ai\\document_loader.py imports the cryptographic module 'hashlib'.",
+      "snippet": "import hashlib",
+      "confidence": 0.9,
+      "severity_hint": "",
+      "node_id": "bdb58a36ae66df25",
+      "tags": [
+        "crypto",
+        "crypto_import"
+      ],
+      "metadata": {
+        "module": "hashlib",
+        "algorithm": "",
+        "status": ""
+      },
+      "id": "E199",
+      "fingerprint": "70d1682f1ed247be"
+    },
+    {
+      "type": "crypto_usage",
+      "source": "ust_crypto_detector",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\ai\\document_loader.py",
+      "line": 108,
+      "end_line": 108,
+      "column": 11,
+      "language": "python",
+      "symbol": "_make_doc_id",
+      "operation": "SHA-256 hashing",
+      "description": "hashlib.sha256 performs hashing using SHA-256.",
+      "snippet": "hashlib.sha256(basis.encode())",
+      "confidence": 1.0,
+      "severity_hint": "Low",
+      "node_id": "c52951378fed8c90",
+      "tags": [
+        "crypto",
+        "algorithm:SHA-256",
+        "status:quantum_weakened"
+      ],
+      "metadata": {
+        "algorithm": "SHA-256",
+        "operation": "hashing",
+        "mode": "",
+        "api": "hashlib.sha256",
+        "status": "quantum_weakened",
+        "enclosing_function": "_make_doc_id",
+        "enclosing_class": "",
+        "business_tags": [],
+        "arguments": [
+          "basis.encode()"
+        ],
+        "resolved": true
+      },
+      "id": "E200",
+      "fingerprint": "38f2a0bcbbe7fa5f"
+    },
+    {
+      "type": "crypto_dependency",
+      "source": "ust_crypto_detector",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\ai\\scan_context.py",
+      "line": 23,
+      "end_line": 0,
+      "column": 0,
+      "language": "python",
+      "symbol": "hashlib",
+      "operation": "cryptographic library import: hashlib",
+      "description": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\ai\\scan_context.py imports the cryptographic module 'hashlib'.",
+      "snippet": "import hashlib",
+      "confidence": 0.9,
+      "severity_hint": "",
+      "node_id": "57c64ae8bebd7065",
+      "tags": [
+        "crypto",
+        "crypto_import"
+      ],
+      "metadata": {
+        "module": "hashlib",
+        "algorithm": "",
+        "status": ""
+      },
+      "id": "E201",
+      "fingerprint": "829303c73cf09358"
+    },
+    {
+      "type": "crypto_usage",
+      "source": "ust_crypto_detector",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\ai\\scan_context.py",
+      "line": 48,
+      "end_line": 48,
+      "column": 19,
+      "language": "python",
+      "symbol": "findings_to_documents",
+      "operation": "SHA-256 hashing",
+      "description": "hashlib.sha256 performs hashing using SHA-256.",
+      "snippet": "hashlib.sha256(text.encode())",
+      "confidence": 1.0,
+      "severity_hint": "Low",
+      "node_id": "af62717eadf7a9b2",
+      "tags": [
+        "crypto",
+        "algorithm:SHA-256",
+        "status:quantum_weakened"
+      ],
+      "metadata": {
+        "algorithm": "SHA-256",
+        "operation": "hashing",
+        "mode": "",
+        "api": "hashlib.sha256",
+        "status": "quantum_weakened",
+        "enclosing_function": "findings_to_documents",
+        "enclosing_class": "",
+        "business_tags": [],
+        "arguments": [
+          "text.encode()"
+        ],
+        "resolved": true
+      },
+      "id": "E202",
+      "fingerprint": "7a327d5b9268ba78"
+    },
+    {
+      "type": "crypto_usage",
+      "source": "ust_crypto_detector",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\ai\\scan_context.py",
+      "line": 69,
+      "end_line": 69,
+      "column": 15,
+      "language": "python",
+      "symbol": "findings_to_documents",
+      "operation": "SHA-256 hashing",
+      "description": "hashlib.sha256 performs hashing using SHA-256.",
+      "snippet": "hashlib.sha256(summary_content.encode())",
+      "confidence": 1.0,
+      "severity_hint": "Low",
+      "node_id": "310a922eee238a8d",
+      "tags": [
+        "crypto",
+        "algorithm:SHA-256",
+        "status:quantum_weakened"
+      ],
+      "metadata": {
+        "algorithm": "SHA-256",
+        "operation": "hashing",
+        "mode": "",
+        "api": "hashlib.sha256",
+        "status": "quantum_weakened",
+        "enclosing_function": "findings_to_documents",
+        "enclosing_class": "",
+        "business_tags": [],
+        "arguments": [
+          "summary_content.encode()"
+        ],
+        "resolved": true
+      },
+      "id": "E203",
+      "fingerprint": "7081563365299ad2"
+    },
+    {
+      "type": "crypto_dependency",
+      "source": "ust_crypto_detector",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\core\\models.py",
+      "line": 8,
+      "end_line": 0,
+      "column": 0,
+      "language": "python",
+      "symbol": "hashlib",
+      "operation": "cryptographic library import: hashlib",
+      "description": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\core\\models.py imports the cryptographic module 'hashlib'.",
+      "snippet": "import hashlib",
+      "confidence": 0.9,
+      "severity_hint": "",
+      "node_id": "49232e461f14a33d",
+      "tags": [
+        "crypto",
+        "crypto_import"
+      ],
+      "metadata": {
+        "module": "hashlib",
+        "algorithm": "",
+        "status": ""
+      },
+      "id": "E204",
+      "fingerprint": "56e675bcd463ee9d"
+    },
+    {
+      "type": "crypto_usage",
+      "source": "ust_crypto_detector",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\core\\models.py",
+      "line": 84,
+      "end_line": 84,
+      "column": 26,
+      "language": "python",
+      "symbol": "__post_init__",
+      "operation": "SHA-256 hashing",
+      "description": "hashlib.sha256 performs hashing using SHA-256.",
+      "snippet": "hashlib.sha256(basis.encode())",
+      "confidence": 1.0,
+      "severity_hint": "Low",
+      "node_id": "77a5bac9318b0966",
+      "tags": [
+        "crypto",
+        "algorithm:SHA-256",
+        "status:quantum_weakened"
+      ],
+      "metadata": {
+        "algorithm": "SHA-256",
+        "operation": "hashing",
+        "mode": "",
+        "api": "hashlib.sha256",
+        "status": "quantum_weakened",
+        "enclosing_function": "__post_init__",
+        "enclosing_class": "Finding",
+        "business_tags": [],
+        "arguments": [
+          "basis.encode()"
+        ],
+        "resolved": true
+      },
+      "id": "E205",
+      "fingerprint": "b3d9b645ee9eb145"
+    },
+    {
+      "type": "crypto_dependency",
+      "source": "ust_crypto_detector",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\evidence\\models.py",
+      "line": 21,
+      "end_line": 0,
+      "column": 0,
+      "language": "python",
+      "symbol": "hashlib",
+      "operation": "cryptographic library import: hashlib",
+      "description": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\evidence\\models.py imports the cryptographic module 'hashlib'.",
+      "snippet": "import hashlib",
+      "confidence": 0.9,
+      "severity_hint": "",
+      "node_id": "0b86a5f35d562109",
+      "tags": [
+        "crypto",
+        "crypto_import"
+      ],
+      "metadata": {
+        "module": "hashlib",
+        "algorithm": "",
+        "status": ""
+      },
+      "id": "E206",
+      "fingerprint": "cb0e8edf7c28e389"
+    },
+    {
+      "type": "crypto_usage",
+      "source": "ust_crypto_detector",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\evidence\\models.py",
+      "line": 104,
+      "end_line": 104,
+      "column": 27,
+      "language": "python",
+      "symbol": "__post_init__",
+      "operation": "SHA-256 hashing",
+      "description": "hashlib.sha256 performs hashing using SHA-256.",
+      "snippet": "hashlib.sha256(basis.encode())",
+      "confidence": 1.0,
+      "severity_hint": "Low",
+      "node_id": "5b24e45fcac4072b",
+      "tags": [
+        "crypto",
+        "algorithm:SHA-256",
+        "status:quantum_weakened"
+      ],
+      "metadata": {
+        "algorithm": "SHA-256",
+        "operation": "hashing",
+        "mode": "",
+        "api": "hashlib.sha256",
+        "status": "quantum_weakened",
+        "enclosing_function": "__post_init__",
+        "enclosing_class": "Evidence",
+        "business_tags": [],
+        "arguments": [
+          "basis.encode()"
+        ],
+        "resolved": true
+      },
+      "id": "E207",
+      "fingerprint": "7b9556b1711721dc"
+    },
+    {
+      "type": "crypto_dependency",
+      "source": "ust_crypto_detector",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\intent\\legacy\\models.py",
+      "line": 13,
+      "end_line": 0,
+      "column": 0,
+      "language": "python",
+      "symbol": "hashlib",
+      "operation": "cryptographic library import: hashlib",
+      "description": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\intent\\legacy\\models.py imports the cryptographic module 'hashlib'.",
+      "snippet": "import hashlib",
+      "confidence": 0.9,
+      "severity_hint": "",
+      "node_id": "1abf5085beff70a8",
+      "tags": [
+        "crypto",
+        "crypto_import"
+      ],
+      "metadata": {
+        "module": "hashlib",
+        "algorithm": "",
+        "status": ""
+      },
+      "id": "E208",
+      "fingerprint": "40a85ba877908a5e"
+    },
+    {
+      "type": "crypto_usage",
+      "source": "ust_crypto_detector",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\intent\\legacy\\models.py",
+      "line": 61,
+      "end_line": 61,
+      "column": 23,
+      "language": "python",
+      "symbol": "__post_init__",
+      "operation": "SHA-256 hashing",
+      "description": "hashlib.sha256 performs hashing using SHA-256.",
+      "snippet": "hashlib.sha256(basis.encode())",
+      "confidence": 1.0,
+      "severity_hint": "Low",
+      "node_id": "660fd5682970fc79",
+      "tags": [
+        "crypto",
+        "algorithm:SHA-256",
+        "status:quantum_weakened"
+      ],
+      "metadata": {
+        "algorithm": "SHA-256",
+        "operation": "hashing",
+        "mode": "",
+        "api": "hashlib.sha256",
+        "status": "quantum_weakened",
+        "enclosing_function": "__post_init__",
+        "enclosing_class": "BusinessRule",
+        "business_tags": [],
+        "arguments": [
+          "basis.encode()"
+        ],
+        "resolved": true
+      },
+      "id": "E209",
+      "fingerprint": "6c40aaf5405b30a8"
+    },
+    {
+      "type": "crypto_dependency",
+      "source": "ust_crypto_detector",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\policy\\models.py",
+      "line": 30,
+      "end_line": 0,
+      "column": 0,
+      "language": "python",
+      "symbol": "hashlib",
+      "operation": "cryptographic library import: hashlib",
+      "description": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\policy\\models.py imports the cryptographic module 'hashlib'.",
+      "snippet": "import hashlib",
+      "confidence": 0.9,
+      "severity_hint": "",
+      "node_id": "007c24d3cd9628c1",
+      "tags": [
+        "crypto",
+        "crypto_import"
+      ],
+      "metadata": {
+        "module": "hashlib",
+        "algorithm": "",
+        "status": ""
+      },
+      "id": "E210",
+      "fingerprint": "d58239c55c3a2b7c"
+    },
+    {
+      "type": "crypto_usage",
+      "source": "ust_crypto_detector",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\policy\\models.py",
+      "line": 116,
+      "end_line": 116,
+      "column": 31,
+      "language": "python",
+      "symbol": "__post_init__",
+      "operation": "SHA-256 hashing",
+      "description": "hashlib.sha256 performs hashing using SHA-256.",
+      "snippet": "hashlib.sha256(basis.encode())",
+      "confidence": 1.0,
+      "severity_hint": "Low",
+      "node_id": "87081e4938dff007",
+      "tags": [
+        "crypto",
+        "algorithm:SHA-256",
+        "status:quantum_weakened"
+      ],
+      "metadata": {
+        "algorithm": "SHA-256",
+        "operation": "hashing",
+        "mode": "",
+        "api": "hashlib.sha256",
+        "status": "quantum_weakened",
+        "enclosing_function": "__post_init__",
+        "enclosing_class": "BusinessPolicy",
+        "business_tags": [],
+        "arguments": [
+          "basis.encode()"
+        ],
+        "resolved": true
+      },
+      "id": "E211",
+      "fingerprint": "1914a2429c5a5216"
+    },
+    {
+      "type": "crypto_dependency",
+      "source": "ust_crypto_detector",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\quantum\\models.py",
+      "line": 10,
+      "end_line": 0,
+      "column": 0,
+      "language": "python",
+      "symbol": "hashlib",
+      "operation": "cryptographic library import: hashlib",
+      "description": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\quantum\\models.py imports the cryptographic module 'hashlib'.",
+      "snippet": "import hashlib",
+      "confidence": 0.9,
+      "severity_hint": "",
+      "node_id": "b464e810292c5b9b",
+      "tags": [
+        "crypto",
+        "crypto_import"
+      ],
+      "metadata": {
+        "module": "hashlib",
+        "algorithm": "",
+        "status": ""
+      },
+      "id": "E212",
+      "fingerprint": "010b58ecf1c4a2d5"
+    },
+    {
+      "type": "crypto_usage",
+      "source": "ust_crypto_detector",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\quantum\\models.py",
+      "line": 54,
+      "end_line": 54,
+      "column": 24,
+      "language": "python",
+      "symbol": "__post_init__",
+      "operation": "SHA-256 hashing",
+      "description": "hashlib.sha256 performs hashing using SHA-256.",
+      "snippet": "hashlib.sha256(basis.encode())",
+      "confidence": 1.0,
+      "severity_hint": "Low",
+      "node_id": "6d9f175b83b32e85",
+      "tags": [
+        "crypto",
+        "algorithm:SHA-256",
+        "status:quantum_weakened"
+      ],
+      "metadata": {
+        "algorithm": "SHA-256",
+        "operation": "hashing",
+        "mode": "",
+        "api": "hashlib.sha256",
+        "status": "quantum_weakened",
+        "enclosing_function": "__post_init__",
+        "enclosing_class": "CryptoUsage",
+        "business_tags": [],
+        "arguments": [
+          "basis.encode()"
+        ],
+        "resolved": true
+      },
+      "id": "E213",
+      "fingerprint": "4b6ee0e93cb9a419"
+    },
+    {
+      "type": "crypto_dependency",
+      "source": "ust_crypto_detector",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\reasoning\\gateway.py",
+      "line": 32,
+      "end_line": 0,
+      "column": 0,
+      "language": "python",
+      "symbol": "hashlib",
+      "operation": "cryptographic library import: hashlib",
+      "description": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\reasoning\\gateway.py imports the cryptographic module 'hashlib'.",
+      "snippet": "import hashlib",
+      "confidence": 0.9,
+      "severity_hint": "",
+      "node_id": "d0df5a782be89c12",
+      "tags": [
+        "crypto",
+        "crypto_import"
+      ],
+      "metadata": {
+        "module": "hashlib",
+        "algorithm": "",
+        "status": ""
+      },
+      "id": "E214",
+      "fingerprint": "3dc2e007a73a4dad"
+    },
+    {
+      "type": "crypto_usage",
+      "source": "ust_crypto_detector",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\reasoning\\gateway.py",
+      "line": 91,
+      "end_line": 91,
+      "column": 15,
+      "language": "python",
+      "symbol": "cache_key",
+      "operation": "SHA-256 hashing",
+      "description": "hashlib.sha256 performs hashing using SHA-256.",
+      "snippet": "hashlib.sha256(basis.encode(\"utf-8\", errors=\"ignore\"))",
+      "confidence": 1.0,
+      "severity_hint": "Low",
+      "node_id": "74cb2a5ed62f6e1f",
+      "tags": [
+        "crypto",
+        "algorithm:SHA-256",
+        "status:quantum_weakened"
+      ],
+      "metadata": {
+        "algorithm": "SHA-256",
+        "operation": "hashing",
+        "mode": "",
+        "api": "hashlib.sha256",
+        "status": "quantum_weakened",
+        "enclosing_function": "cache_key",
+        "enclosing_class": "ReasoningRequest",
+        "business_tags": [],
+        "arguments": [
+          "basis.encode(\"utf-8\", errors=\"ignore\")"
+        ],
+        "resolved": true
+      },
+      "id": "E215",
+      "fingerprint": "037551b993bcd10a"
+    },
+    {
+      "type": "crypto_dependency",
+      "source": "ust_crypto_detector",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\ust\\models.py",
+      "line": 22,
+      "end_line": 0,
+      "column": 0,
+      "language": "python",
+      "symbol": "hashlib",
+      "operation": "cryptographic library import: hashlib",
+      "description": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\ust\\models.py imports the cryptographic module 'hashlib'.",
+      "snippet": "import hashlib",
+      "confidence": 0.9,
+      "severity_hint": "",
+      "node_id": "33e3e1c62caf133b",
+      "tags": [
+        "crypto",
+        "crypto_import"
+      ],
+      "metadata": {
+        "module": "hashlib",
+        "algorithm": "",
+        "status": ""
+      },
+      "id": "E216",
+      "fingerprint": "8200ef659fbc8ad8"
+    },
+    {
+      "type": "crypto_usage",
+      "source": "ust_crypto_detector",
+      "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\ust\\models.py",
+      "line": 123,
+      "end_line": 123,
+      "column": 23,
+      "language": "python",
+      "symbol": "__post_init__",
+      "operation": "SHA-256 hashing",
+      "description": "hashlib.sha256 performs hashing using SHA-256.",
+      "snippet": "hashlib.sha256(basis.encode())",
+      "confidence": 1.0,
+      "severity_hint": "Low",
+      "node_id": "fac0d2cca182279a",
+      "tags": [
+        "crypto",
+        "algorithm:SHA-256",
+        "status:quantum_weakened"
+      ],
+      "metadata": {
+        "algorithm": "SHA-256",
+        "operation": "hashing",
+        "mode": "",
+        "api": "hashlib.sha256",
+        "status": "quantum_weakened",
+        "enclosing_function": "__post_init__",
+        "enclosing_class": "USTNode",
+        "business_tags": [],
+        "arguments": [
+          "basis.encode()"
+        ],
+        "resolved": true
+      },
+      "id": "E217",
+      "fingerprint": "fd8622c63822bb0a"
+    }
+  ],
+  "engines": {
+    "security": {
+      "findings": 6,
+      "evidence": 210,
+      "duration_seconds": 15.849,
+      "error": ""
+    },
+    "quantum": {
+      "findings": 0,
+      "evidence": 19,
+      "duration_seconds": 1.382,
+      "error": ""
+    },
+    "business_intent": {
+      "findings": 0,
+      "evidence": 0,
+      "duration_seconds": 0.0,
+      "error": ""
+    }
+  },
+  "analyzers": {
+    "dependencies": 0,
+    "infrastructure": 0
+  },
+  "quantum": {
+    "target": "C:\\Users\\karan\\AppData\\Local\\Temp\\guardian_github_repos\\karnaongit_AI-Code-Guardian_default",
+    "files_analyzed": 168,
+    "readiness_score": 75.0,
+    "total_algorithms": 1,
+    "total_occurrences": 10,
+    "unresolved_call_sites": 0,
+    "crypto_dependencies": [
+      {
+        "name": "hashlib",
+        "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\ai\\document_loader.py",
+        "line": 16,
+        "language": "python",
+        "algorithm": "",
+        "evidence_id": "E199"
+      },
+      {
+        "name": "hashlib",
+        "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\ai\\scan_context.py",
+        "line": 23,
+        "language": "python",
+        "algorithm": "",
+        "evidence_id": "E201"
+      },
+      {
+        "name": "hashlib",
+        "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\core\\models.py",
+        "line": 8,
+        "language": "python",
+        "algorithm": "",
+        "evidence_id": "E204"
+      },
+      {
+        "name": "hashlib",
+        "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\evidence\\models.py",
+        "line": 21,
+        "language": "python",
+        "algorithm": "",
+        "evidence_id": "E206"
+      },
+      {
+        "name": "hashlib",
+        "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\intent\\legacy\\models.py",
+        "line": 13,
+        "language": "python",
+        "algorithm": "",
+        "evidence_id": "E208"
+      },
+      {
+        "name": "hashlib",
+        "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\policy\\models.py",
+        "line": 30,
+        "language": "python",
+        "algorithm": "",
+        "evidence_id": "E210"
+      },
+      {
+        "name": "hashlib",
+        "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\quantum\\models.py",
+        "line": 10,
+        "language": "python",
+        "algorithm": "",
+        "evidence_id": "E212"
+      },
+      {
+        "name": "hashlib",
+        "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\reasoning\\gateway.py",
+        "line": 32,
+        "language": "python",
+        "algorithm": "",
+        "evidence_id": "E214"
+      },
+      {
+        "name": "hashlib",
+        "file": "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\ust\\models.py",
+        "line": 22,
+        "language": "python",
+        "algorithm": "",
+        "evidence_id": "E216"
+      }
+    ],
+    "contextual_analysis": {
+      "status": "no_candidates"
+    },
+    "by_status": {
+      "quantum_weakened": 1
+    },
+    "entries": [
+      {
+        "algorithm": "SHA-256",
+        "occurrences": 10,
+        "files": [
+          "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\ai\\document_loader.py",
+          "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\ai\\scan_context.py",
+          "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\core\\models.py",
+          "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\evidence\\models.py",
+          "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\intent\\legacy\\models.py",
+          "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\policy\\models.py",
+          "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\quantum\\models.py",
+          "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\reasoning\\gateway.py",
+          "karnaongit-AI-Code-Guardian-ff50c83\\guardian\\ust\\models.py"
+        ],
+        "operations": [
+          "hashing"
+        ],
+        "languages": [
+          "python"
+        ],
+        "evidence_ids": [
+          "E200",
+          "E202",
+          "E203",
+          "E205",
+          "E207",
+          "E209",
+          "E211",
+          "E213",
+          "E215",
+          "E217"
+        ],
+        "status": "quantum_weakened",
+        "family": "SHA",
+        "threat": "Low",
+        "rationale": "Grover reduces preimage resistance to ~128 bits \u2014 still adequate for most uses; SHA-384 gives a larger margin for long-lived data.",
+        "migration_target": "SHA-384 or SHA3-256",
+        "nist_standard": "NIST SP 800-107r1",
+        "classical_strength_bits": 256,
+        "post_quantum_strength_bits": 128
+      }
+    ]
+  },
+  "quantum_summary": {
+    "target": "C:\\Users\\karan\\AppData\\Local\\Temp\\guardian_github_repos\\karnaongit_AI-Code-Guardian_default",
+    "readiness_score": 75.0,
+    "total_crypto_usages": 10,
+    "by_family": {
+      "SHA": 10
+    },
+    "by_threat": {
+      "Low": 10
+    },
+    "quantum_vulnerable_algorithms": [],
+    "post_quantum_algorithms": [],
+    "unresolved_call_sites": 0
+  },
+  "business_intent": {
+    "status": "no_requirements",
+    "message": "No business requirement documents supplied. Business-intent analysis needs requirements to compare the code against.",
+    "policies": [],
+    "verdicts": []
+  },
+  "business_domain": {
+    "domain": "Cybersecurity",
+    "confidence": 0.488,
+    "alternatives": [
+      [
+        "Insurance",
+        0.193
+      ],
+      [
+        "Retail / E-commerce",
+        0.104
+      ],
+      [
+        "Gaming",
+        0.07
+      ]
+    ],
+    "evidence": {
+      "Cybersecurity": [
+        "scanner",
+        "vulnerability",
+        "threat",
+        "owasp",
+        "cve",
+        "exploit",
+        "siem",
+        "malware"
+      ]
+    },
+    "reasoning": "Top evidence terms ['scanner', 'vulnerability', 'threat', 'owasp', 'cve'] matched the 'Cybersecurity' vocabulary across docs, paths, and identifiers, outscoring 10 alternative domains."
+  },
+  "knowledge": {
+    "enabled": false
+  },
+  "ai": {
+    "configured": true,
+    "model": "nvidia/nemotron-3-ultra-550b-a55b",
+    "calls": 0,
+    "cache_hits": 0,
+    "failures": 0,
+    "context_budget": 12000,
+    "unavailable_reason": "",
+    "enabled": true,
+    "knowledge": {
+      "vector_enabled": false,
+      "vector_failed": false,
+      "builtin_entries": 18
+    }
+  },
+  "discovery": {
+    "source_files": 168,
+    "manifest_files": 5,
+    "infrastructure_files": 1,
+    "doc_files": 9,
+    "truncated": false,
+    "parsers": {
+      "java": true,
+      "javascript": true,
+      "python": true,
+      "rust": true,
+      "tsx": true,
+      "typescript": true
+    }
+  },
+  "errors": [],
+  "sandbox": {
+    "enabled": false
+  },
+  "duration_seconds": 23.313,
+  "scan_mode": "precision",
+  "target": "C:\\Users\\karan\\AppData\\Local\\Temp\\guardian_github_repos\\karnaongit_AI-Code-Guardian_default"
+}

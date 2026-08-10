@@ -115,6 +115,20 @@ class USTBuilder:
         """Build the repository-level UST. Per-file failures are recorded
         on the USTFile, never propagated — a partial UST is still useful."""
         root_path = Path(root)
+        
+        from guardian.cache.redis_manager import RedisManager
+        redis_mgr = RedisManager()
+        repo_hash = redis_mgr.generate_repo_hash(root_path)
+        cache_key = f"ust:cache:{repo_hash}"
+        cached_data = redis_mgr.get_json(cache_key)
+        
+        if cached_data:
+            log.info("UST Cache hit for %s", repo_hash)
+            try:
+                return UST.from_cache_dict(cached_data)
+            except Exception as e:
+                log.warning("Failed to deserialize cached UST: %s", e)
+
         ust = UST(root=str(root_path))
         for fp in files:
             language = parsers.language_for_path(fp)
@@ -132,6 +146,10 @@ class USTBuilder:
                 log.warning("UST build failed for %s: %s", label, exc)
                 ust.add(USTFile(path=label, language=language, parser="none",
                                 parse_error=str(exc)))
+                                
+        if redis_mgr.enabled:
+            redis_mgr.set_json(cache_key, ust.to_cache_dict(), ttl=86400)
+            
         return ust
 
     # ------------------------------------------------------------------

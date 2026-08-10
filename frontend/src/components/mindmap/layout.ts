@@ -1,5 +1,5 @@
 import dagre from "dagre";
-import { Node, Edge } from "@xyflow/react";
+import { Node, Edge, Position } from "@xyflow/react";
 
 const NODE_WIDTH = 220;
 const NODE_HEIGHT = 90;
@@ -33,8 +33,8 @@ export const getLayoutedElements = (
     const nodeWithPosition = dagreGraph.node(node.id);
     return {
       ...node,
-      targetPosition: isHorizontal ? ("left" as const) : ("top" as const),
-      sourcePosition: isHorizontal ? ("right" as const) : ("bottom" as const),
+      targetPosition: isHorizontal ? Position.Left : Position.Top,
+      sourcePosition: isHorizontal ? Position.Right : Position.Bottom,
       position: {
         x: nodeWithPosition.x - NODE_WIDTH / 2,
         y: nodeWithPosition.y - NODE_HEIGHT / 2,

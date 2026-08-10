@@ -44,8 +44,8 @@ from guardian.core.context import AnalysisContext
 from guardian.core.models import Finding, Severity
 from guardian.engines.base import BaseEngine, EngineResult
 from guardian.evidence.models import Evidence, EvidenceType, FindingSource
-from guardian.policy.extractor import PolicyExtractor
-from guardian.policy.models import BusinessPolicy, ControlType, PolicySet
+from guardian.policies.extractor import PolicyExtractor
+from guardian.policies.models import BusinessPolicy, ControlType, PolicySet
 from guardian.reasoning.context import render_evidence, render_ust_context
 from guardian.reasoning.gateway import ReasoningRequest
 from guardian.reasoning.schemas import (
@@ -154,7 +154,33 @@ class BusinessIntentEngine(BaseEngine):
     # ------------------------------------------------------------------
     def analyze(self, context: AnalysisContext) -> EngineResult:
         sources = list(context.business_requirements)
-        if not sources:
+        policy_set = None
+        if sources:
+            policy_set = self.extractor.extract_from_sources(sources)
+
+        if not policy_set or not policy_set.checkable:
+            if not sources:
+                auto_docs = [
+                    p for p in context.repository.doc_files
+                    if re.search(r"(?i)(requirement|spec|business|policy|rule|brd|prd)", p.name)
+                ]
+                if auto_docs:
+                    sources = auto_docs
+                    policy_set = self.extractor.extract_from_sources(sources)
+
+            if (not policy_set or not policy_set.checkable) and context.repository.source_files and len(context.repository.source_files) > 1:
+                from guardian.intent.classifier import DomainClassifier
+                from guardian.policies.domain_defaults import get_domain_default_policy_set
+
+                domain_verdict = DomainClassifier().classify(
+                    context.repository.root, context.repository.source_files
+                )
+                domain_name = domain_verdict.domain if domain_verdict else "General"
+                if domain_name and domain_name != "Unclassified":
+                    policy_set = get_domain_default_policy_set(domain_name)
+                    log.info("business intent: using domain-default policies for domain '%s'", domain_name)
+
+        if not policy_set or not policy_set.checkable:
             return EngineResult(output={
                 "status": "no_requirements",
                 "message": ("No business requirement documents supplied. "
@@ -162,14 +188,13 @@ class BusinessIntentEngine(BaseEngine):
                             "the code against."),
                 "policies": [], "verdicts": []})
 
-        policy_set = self.extractor.extract_from_sources(sources)
         evidence: list[Evidence] = []
         findings: list[Finding] = []
         verdicts: list[dict] = []
 
         checkable = policy_set.checkable
         log.info("business intent: %d policies (%d checkable) from %d document(s)",
-                 len(policy_set), len(checkable), len(sources))
+                 len(policy_set), len(checkable), len(sources) if sources else len(policy_set.documents))
 
         for policy in checkable:
             implementations = self._find_implementations(context, policy)

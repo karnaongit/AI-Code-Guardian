@@ -54,6 +54,8 @@ pip install -e ".[ust]"        # core + Tree-sitter grammars (recommended)
 
 python -m guardian scan /path/to/repo --format json sarif html --out-dir reports/
 python -m guardian scan /path/to/repo --requirements docs/requirements.md
+python -m guardian scan /path/to/repo --sandbox       # scan an isolated workspace copy
+python -m guardian scan /path/to/repo --knowledge     # include graph/vector knowledge summary
 python -m guardian parsers                # show grammar coverage
 python -m guardian detect /path/to/repo   # repository profile only
 python -m guardian intent  /path/to/repo  # business-domain verdict only

@@ -165,6 +165,29 @@ class USTNode:
         fn = f" in {self.enclosing_function}()" if self.enclosing_function else ""
         return f"[{self.type.value}] {what}{args}{fn} @ {where}"
 
+    def to_cache_dict(self) -> dict:
+        d = asdict(self)
+        d["type"] = self.type.value if isinstance(self.type, USTNodeType) else self.type
+        d["span"] = self.span.to_dict()
+        return d
+
+    @classmethod
+    def from_cache_dict(cls, data: dict) -> 'USTNode':
+        d = dict(data)
+        if "type" in d and not isinstance(d["type"], USTNodeType):
+            try:
+                d["type"] = USTNodeType(d["type"])
+            except ValueError:
+                d["type"] = USTNodeType.UNKNOWN
+        if "span" in d and isinstance(d["span"], dict):
+            d["span"] = SourceSpan(**d["span"])
+        
+        # Remove init=False fields if they snuck in
+        if "node_id" in d:
+            del d["node_id"]
+            
+        return cls(**d)
+
 
 @dataclass
 class USTFile:
@@ -211,6 +234,17 @@ class USTFile:
             "imports": self.imports,
             "node_count": len(self.nodes),
         }
+
+    def to_cache_dict(self) -> dict:
+        d = asdict(self)
+        d["nodes"] = [n.to_cache_dict() for n in self.nodes]
+        return d
+
+    @classmethod
+    def from_cache_dict(cls, data: dict) -> 'USTFile':
+        if "nodes" in data:
+            data["nodes"] = [USTNode.from_cache_dict(n) for n in data["nodes"]]
+        return cls(**data)
 
 
 @dataclass
@@ -267,3 +301,15 @@ class UST:
             "node_types": node_types,
             "parse_failures": len(self.failed_files()),
         }
+
+    def to_cache_dict(self) -> dict:
+        return {
+            "root": self.root,
+            "files": {k: v.to_cache_dict() for k, v in self.files.items()}
+        }
+
+    @classmethod
+    def from_cache_dict(cls, data: dict) -> 'UST':
+        files_data = data.get("files", {})
+        files = {k: USTFile.from_cache_dict(v) for k, v in files_data.items()}
+        return cls(root=data.get("root", ""), files=files)

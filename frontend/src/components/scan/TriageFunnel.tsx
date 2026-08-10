@@ -13,80 +13,75 @@ export interface FunnelMetrics {
 interface TriageFunnelProps {
   metrics: FunnelMetrics;
   onFilterClick?: (filterType: string) => void;
+  compact?: boolean;
 }
 
 export const TriageFunnel: React.FC<TriageFunnelProps> = ({ metrics, onFilterClick }) => {
   const funnelSteps = [
     {
       id: "total",
-      label: "TOTAL SCAN ALERTS",
+      label: "TOTAL ALERTS",
       count: metrics.total_alerts,
       icon: AlertTriangle,
-      accent: "border-white/10 text-[#f4f4f8]",
+      badge: "bg-white/10 text-[#f4f4f8]",
       iconColor: "text-[#8e8e9a]",
-      description: "Raw detections across static & UST engines",
     },
     {
       id: "exploitable",
-      label: "REACHABLE & EXPLOITABLE",
+      label: "EXPLOITABLE",
       count: metrics.exploitable_count,
       icon: ShieldAlert,
-      accent: "border-[#ff5400]/20 text-[#f4f4f8]",
+      badge: "bg-[#ff5400]/15 text-[#ff5400] border border-[#ff5400]/30",
       iconColor: "text-[#ff5400]",
-      description: "Confirmed taint flows reaching sinks",
     },
     {
       id: "high_priority",
       label: "HIGH PRIORITY",
       count: metrics.high_priority_count,
       icon: Zap,
-      accent: "border-orange-500/20 text-[#f4f4f8]",
+      badge: "bg-orange-500/15 text-orange-400 border border-orange-500/30",
       iconColor: "text-orange-400",
-      description: "Critical & High severity findings",
     },
     {
       id: "immediate_risk",
       label: "IMMEDIATE RISK",
       count: metrics.immediate_risk_count,
       icon: Flame,
-      accent: "border-red-500/20 text-[#f4f4f8]",
+      badge: "bg-red-500/15 text-red-400 border border-red-500/30",
       iconColor: "text-red-400",
-      description: "Reachable Critical/High vulnerabilities",
     },
   ];
 
   return (
-    <div className="w-full my-4">
-      <div className="text-[10px] font-mono font-semibold uppercase tracking-[0.2em] text-[#8e8e9a] mb-3 flex items-center gap-2">
-        <span className="w-2 h-2 rounded-full bg-[#ff5400] animate-pulse" />
-        TRIAGE FUNNEL & RISK PRIORITIZATION
+    <div className="w-full bg-[#12131a] border border-white/8 rounded-xl px-4 py-2 flex flex-wrap items-center justify-between gap-3 shrink-0 shadow-sm">
+      {/* Title */}
+      <div className="flex items-center gap-2 text-[10px] font-mono font-bold tracking-widest text-[#8e8e9a]">
+        <span className="w-2 h-2 rounded-full bg-[#ff5400] animate-pulse shrink-0" />
+        <span className="text-[#f4f4f8]">TRIAGE FUNNEL & RISK PRIORITIZATION</span>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
+
+      {/* Metrics Row (Single Line) */}
+      <div className="flex items-center gap-2 sm:gap-3 overflow-x-auto py-0.5">
         {funnelSteps.map((step, index) => {
           const Icon = step.icon;
           return (
-            <div
-              key={step.id}
-              onClick={() => onFilterClick && onFilterClick(step.id)}
-              className={`relative flex flex-col justify-between p-4 rounded-xl bg-[#12131a] border ${step.accent} cursor-pointer transition-all duration-200 hover:border-[#ff5400]/30 hover:bg-[#1a1b24] group`}
-            >
-              <div className="flex items-center justify-between mb-3">
-                <span className="text-[10px] font-mono font-semibold tracking-wider text-[#8e8e9a] group-hover:text-[#f4f4f8] transition-colors">
+            <React.Fragment key={step.id}>
+              <button
+                onClick={() => onFilterClick && onFilterClick(step.id)}
+                className="flex items-center gap-2 px-2.5 py-1 rounded-lg bg-white/4 hover:bg-white/8 border border-white/6 transition-all duration-150 group cursor-pointer shrink-0"
+              >
+                <Icon className={`w-3.5 h-3.5 ${step.iconColor} shrink-0`} />
+                <span className="text-[10px] font-mono font-medium text-[#8e8e9a] group-hover:text-[#f4f4f8] transition-colors">
                   {step.label}
                 </span>
-                <Icon className={`w-4 h-4 ${step.iconColor} opacity-70`} />
-              </div>
-              <div className="my-1">
-                <span className="text-3xl font-bold tracking-tight font-mono">{step.count}</span>
-              </div>
-              <p className="text-[10px] font-mono text-[#8e8e9a] truncate mt-1">{step.description}</p>
-
+                <span className={`text-[11px] font-mono font-bold px-2 py-0.5 rounded ${step.badge}`}>
+                  {step.count}
+                </span>
+              </button>
               {index < funnelSteps.length - 1 && (
-                <div className="hidden md:block absolute -right-3.5 top-1/2 -translate-y-1/2 z-10 text-[#8e8e9a]">
-                  <ArrowRight className="w-3.5 h-3.5" />
-                </div>
+                <ArrowRight className="w-3 h-3 text-[#8e8e9a]/40 shrink-0 hidden sm:block" />
               )}
-            </div>
+            </React.Fragment>
           );
         })}
       </div>
@@ -95,3 +90,4 @@ export const TriageFunnel: React.FC<TriageFunnelProps> = ({ metrics, onFilterCli
 };
 
 export default TriageFunnel;
+

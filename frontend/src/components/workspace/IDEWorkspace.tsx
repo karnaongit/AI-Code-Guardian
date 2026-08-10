@@ -1,19 +1,20 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import RepoInput from "./RepoInput";
+import RepoInput, { ScanOptions } from "./RepoInput";
 import FileTreeSidebar, { FileNode } from "./FileTreeSidebar";
 import CodeViewer from "./CodeViewer";
 import VulnerabilityPanel from "./VulnerabilityPanel";
-import { Loader2 } from "lucide-react";
+import { Loader2, RotateCcw, CheckCircle2 } from "lucide-react";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
 interface IDEWorkspaceProps {
   onScanComplete?: (scanResult: any) => void;
+  onUpdateFindings?: (updatedFindings: any[]) => void;
 }
 
-export default function IDEWorkspace({ onScanComplete }: IDEWorkspaceProps) {
+export default function IDEWorkspace({ onScanComplete, onUpdateFindings }: IDEWorkspaceProps) {
   const [isScanning, setIsScanning] = useState(false);
   const [scanId, setScanId] = useState<string | null>(null);
   const [fileTree, setFileTree] = useState<FileNode | null>(null);
@@ -21,6 +22,10 @@ export default function IDEWorkspace({ onScanComplete }: IDEWorkspaceProps) {
   const [fileContent, setFileContent] = useState<string>("// Select a file from the explorer to view its content.");
   const [findings, setFindings] = useState<any[]>([]);
   const [scanFindingsMap, setScanFindingsMap] = useState<Record<string, any[]>>({});
+
+  // Resizable Explorer state
+  const [sidebarWidth, setSidebarWidth] = useState(250);
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
   // Restore state from sessionStorage on mount
   useEffect(() => {
@@ -64,7 +69,27 @@ export default function IDEWorkspace({ onScanComplete }: IDEWorkspaceProps) {
     }
   };
 
-  const handleScan = async (target: string, isUrl: boolean, aiEnabled: boolean) => {
+  const handleMouseDownResize = (e: React.MouseEvent) => {
+    e.preventDefault();
+    const startX = e.clientX;
+    const startWidth = sidebarWidth;
+
+    const handleMouseMove = (moveEvent: MouseEvent) => {
+      const delta = moveEvent.clientX - startX;
+      const newWidth = Math.max(140, Math.min(500, startWidth + delta));
+      setSidebarWidth(newWidth);
+    };
+
+    const handleMouseUp = () => {
+      window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("mouseup", handleMouseUp);
+    };
+
+    window.addEventListener("mousemove", handleMouseMove);
+    window.addEventListener("mouseup", handleMouseUp);
+  };
+
+  const handleScan = async (targetOrOptions: string | ScanOptions, isUrl?: boolean, aiEnabledParam?: boolean) => {
     setIsScanning(true);
     setScanId(null);
     setFileTree(null);
@@ -73,34 +98,65 @@ export default function IDEWorkspace({ onScanComplete }: IDEWorkspaceProps) {
     setScanFindingsMap({});
 
     try {
-      const payload: any = {
-        scan_mode: "precision",
-        enable_ai: aiEnabled,
-      };
-      
-      if (isUrl) {
-        payload.repo_url = target;
-      } else {
-        payload.target_path = target;
-      }
+      let res: Response;
 
-      const res = await fetch(`${API_BASE}/api/v1/scans`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
+      if (typeof targetOrOptions === "object") {
+        const { sourceType, target, zipFile, aiEnabled } = targetOrOptions;
+        if (sourceType === "zip" && zipFile) {
+          const formData = new FormData();
+          formData.append("file", zipFile);
+          formData.append("scan_mode", "precision");
+          formData.append("enable_ai", String(aiEnabled));
+
+          res = await fetch(`${API_BASE}/api/v1/scans/upload`, {
+            method: "POST",
+            body: formData,
+          });
+        } else {
+          const payload: any = {
+            source_type: sourceType,
+            scan_mode: "precision",
+            enable_ai: aiEnabled,
+          };
+          if (sourceType === "github") {
+            payload.repo_url = target;
+          } else {
+            payload.target_path = target;
+          }
+
+          res = await fetch(`${API_BASE}/api/v1/scans`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+          });
+        }
+      } else {
+        const payload: any = {
+          source_type: isUrl ? "github" : "local",
+          scan_mode: "precision",
+          enable_ai: !!aiEnabledParam,
+        };
+        if (isUrl) {
+          payload.repo_url = targetOrOptions;
+        } else {
+          payload.target_path = targetOrOptions;
+        }
+
+        res = await fetch(`${API_BASE}/api/v1/scans`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+      }
 
       if (!res.ok) {
         let errMsg = "Scan failed";
         try {
           const errData = await res.json();
-          console.error("Scan failed - Server Error Detail:", errData);
           if (errData.detail) {
             errMsg = typeof errData.detail === "string" ? errData.detail : JSON.stringify(errData.detail);
           }
-        } catch (e) {
-          console.error("Could not parse scan error response JSON:", e);
-        }
+        } catch (e) {}
         throw new Error(errMsg);
       }
 
@@ -166,6 +222,56 @@ export default function IDEWorkspace({ onScanComplete }: IDEWorkspaceProps) {
     }
   };
 
+  const handleCodeChange = (newContent: string) => {
+    setFileContent(newContent);
+    if (!selectedFilePath) return;
+
+    const currentFileFindings = scanFindingsMap[selectedFilePath] || [];
+    if (currentFileFindings.length === 0) return;
+
+    const remainingFileFindings = currentFileFindings.filter((f) => {
+      const snippet = (f.snippet || "").trim();
+      const lineNum = f.line_number || f.line;
+
+      if (snippet && snippet.length > 5) {
+        if (!newContent.includes(snippet)) {
+          return false;
+        }
+      }
+
+      const cat = (f.category || f.title || "").toLowerCase();
+      const lines = newContent.split("\n");
+      if (lineNum && lineNum <= lines.length) {
+        const editedLine = lines[lineNum - 1];
+        if (cat.includes("sql") && editedLine.includes("%s") && !editedLine.includes("+")) {
+          return false;
+        }
+        if ((cat.includes("crypto") || cat.includes("md5")) && editedLine.includes("sha256")) {
+          return false;
+        }
+      }
+
+      return true;
+    });
+
+    if (remainingFileFindings.length !== currentFileFindings.length) {
+      setFindings(remainingFileFindings);
+      const updatedMap = { ...scanFindingsMap, [selectedFilePath]: remainingFileFindings };
+      setScanFindingsMap(updatedMap);
+      if (scanId) {
+        saveStateToStorage(scanId, fileTree, updatedMap, selectedFilePath, newContent, remainingFileFindings);
+      }
+      const allRemaining = Object.values(updatedMap).flat();
+      if (onUpdateFindings) {
+        onUpdateFindings(allRemaining);
+      }
+    } else {
+      if (scanId) {
+        saveStateToStorage(scanId, fileTree, scanFindingsMap, selectedFilePath, newContent, currentFileFindings);
+      }
+    }
+  };
+
   const handleApplyFix = async (finding: any) => {
     const lines = fileContent.split('\n');
     const lineNum = finding.line_number || finding.line || 1;
@@ -178,7 +284,6 @@ export default function IDEWorkspace({ onScanComplete }: IDEWorkspaceProps) {
 
     let replacement = originalLine;
 
-    // Call backend AutoFix service
     try {
       const res = await fetch(`${API_BASE}/api/v1/findings/autofix`, {
         method: "POST",
@@ -203,34 +308,16 @@ export default function IDEWorkspace({ onScanComplete }: IDEWorkspaceProps) {
       console.warn("Backend autofix call failed, using client-side rule transformer:", e);
     }
 
-    // Client-side fallback transformer if backend didn't transform or errored
     if (replacement === originalLine) {
       const cat = (finding.category || finding.title || "").toLowerCase();
       const cwe = (finding.cwe || finding.cwe_id || "").toUpperCase();
 
       if (cat.includes("sql") || cwe === "CWE-89") {
-        if (trimmed.includes("+")) {
-          replacement = `${indent}cursor.execute("SELECT * FROM users WHERE id = %s", (user_input,))`;
-        } else {
-          replacement = originalLine.replace(/execute\((.*?)\)/, 'execute("SELECT * FROM users WHERE id = %s", (user_input,))');
-        }
-      } else if (cat.includes("crypto") || cat.includes("md5") || cat.includes("sha1") || cwe === "CWE-327") {
-        let fixed = trimmed.replace("hashlib.md5", "hashlib.sha256").replace("hashlib.sha1", "hashlib.sha256").replace("MD5", "SHA-256");
+        replacement = `${indent}cursor.execute("SELECT * FROM users WHERE id = %s", (user_input,))`;
+      } else if (cat.includes("crypto") || cat.includes("md5") || cwe === "CWE-327") {
+        let fixed = trimmed.replace("hashlib.md5", "hashlib.sha256").replace("MD5", "SHA-256");
         replacement = `${indent}${fixed}`;
-      } else if (cat.includes("tls") || cat.includes("ssl") || cat.includes("verify") || cwe === "CWE-295") {
-        let fixed = trimmed.replace(/verify\s*=\s*False/i, "verify=True").replace(/_create_unverified_context/i, "create_default_context");
-        replacement = `${indent}${fixed}`;
-      } else if (cat.includes("secret") || cat.includes("password") || cwe === "CWE-798") {
-        const varMatch = trimmed.match(/^([a-zA-Z0-9_]+)\s*=\s*["'].*?["']/);
-        if (varMatch) {
-          replacement = `${indent}${varMatch[1]} = os.getenv("${varMatch[1].toUpperCase()}", "")`;
-        } else {
-          replacement = `${indent}SECRET_KEY = os.getenv("SECRET_KEY", "")`;
-        }
-      } else if (finding.remediation_patch) {
-        replacement = `${indent}${finding.remediation_patch.trim()}`;
       } else {
-        // Never replace line with just a comment! Preserve code and add inline remediation tag
         replacement = `${indent}${trimmed}  # remediated: ${finding.category || "security-fix"}`;
       }
     }
@@ -239,9 +326,32 @@ export default function IDEWorkspace({ onScanComplete }: IDEWorkspaceProps) {
     const updatedContent = lines.join('\n');
     setFileContent(updatedContent);
 
-    // Save updated content state to storage
-    if (scanId && selectedFilePath) {
-      saveStateToStorage(scanId, fileTree, scanFindingsMap, selectedFilePath, updatedContent, findings);
+    // Remove the remediated finding from active file findings
+    const targetId = finding.finding_id || finding.id;
+    const targetCategory = finding.category || finding.title;
+    const targetLine = finding.line_number || finding.line || lineNum;
+
+    const updatedFileFindings = findings.filter((f) => {
+      const fId = f.finding_id || f.id;
+      if (targetId && fId) return fId !== targetId;
+      const fCat = f.category || f.title;
+      const fLine = f.line_number || f.line;
+      return !(fCat === targetCategory && fLine === targetLine);
+    });
+
+    setFindings(updatedFileFindings);
+
+    if (selectedFilePath) {
+      const updatedMap = { ...scanFindingsMap, [selectedFilePath]: updatedFileFindings };
+      setScanFindingsMap(updatedMap);
+      if (scanId) {
+        saveStateToStorage(scanId, fileTree, updatedMap, selectedFilePath, updatedContent, updatedFileFindings);
+      }
+      // Dynamically notify parent page.tsx to reduce total metrics & risk scores
+      const allRemaining = Object.values(updatedMap).flat();
+      if (onUpdateFindings) {
+        onUpdateFindings(allRemaining);
+      }
     }
   };
 
@@ -263,57 +373,156 @@ export default function IDEWorkspace({ onScanComplete }: IDEWorkspaceProps) {
     }
   };
 
-  return (
-    <div className="flex flex-col h-[calc(100vh-160px)] gap-4">
-      <div className="shrink-0">
-        <RepoInput onScan={handleScan} isScanning={isScanning} />
+  const handleResetScan = () => {
+    setScanId(null);
+    setFileTree(null);
+    setSelectedFilePath(null);
+    setFileContent("// Select a file from the explorer to view its content.");
+    setFindings([]);
+    setScanFindingsMap({});
+    try {
+      sessionStorage.removeItem("guardian_scan_id");
+      sessionStorage.removeItem("guardian_file_tree");
+      sessionStorage.removeItem("guardian_findings_map");
+      sessionStorage.removeItem("guardian_selected_path");
+      sessionStorage.removeItem("guardian_file_content");
+      sessionStorage.removeItem("guardian_file_findings");
+      sessionStorage.removeItem("guardian_report");
+    } catch (e) {}
+    if (onUpdateFindings) {
+      onUpdateFindings([]);
+    }
+  };
+
+  const hasScanResult = Boolean(fileTree || scanId);
+
+  // Initial State (Before Scan) — Show ONLY the RepoInput selection form
+  if (!hasScanResult && !isScanning) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[calc(100vh-170px)] px-4 py-8">
+        <div className="w-full max-w-3xl space-y-6">
+          <div className="text-center space-y-2">
+            <h1 className="text-xl font-mono font-bold tracking-wider text-[#f4f4f8] uppercase">
+              SELECT REPOSITORY TO SCAN
+            </h1>
+            <p className="text-xs font-mono text-[#8e8e9a]">
+              Select a local directory, upload a ZIP archive, or enter a GitHub repository URL to initiate security analysis.
+            </p>
+          </div>
+          <RepoInput onScan={handleScan} isScanning={isScanning} />
+        </div>
       </div>
+    );
+  }
+
+  return (
+    <div className="flex flex-col h-[calc(100vh-115px)] gap-3.5">
+      {/* Compact Scan Status Banner (Replaces full RepoInput after scan starts/completes) */}
+      <div className="shrink-0 px-4 py-2 bg-[#12131a] border border-white/8 rounded-xl flex items-center justify-between">
+        <div className="flex items-center gap-2.5">
+          {isScanning ? (
+            <>
+              <Loader2 className="w-4 h-4 text-[#ff5400] animate-spin" />
+              <span className="text-xs font-mono font-semibold text-[#8e8e9a]">SCANNING REPOSITORY IN PROGRESS...</span>
+            </>
+          ) : (
+            <>
+              <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+              <span className="text-xs font-mono font-semibold text-[#f4f4f8]">
+                ACTIVE SCAN SESSION: <span className="text-[#ff5400]">{scanId || "COMPLETED"}</span>
+              </span>
+            </>
+          )}
+        </div>
+
+        {!isScanning && (
+          <button
+            type="button"
+            onClick={handleResetScan}
+            className="flex items-center gap-1.5 px-3 py-1 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-[11px] font-mono text-[#8e8e9a] hover:text-white transition-all"
+            title="Clear scan and select another repository"
+          >
+            <RotateCcw className="w-3 h-3 text-[#ff5400]" />
+            NEW SCAN / CHANGE REPO
+          </button>
+        )}
+      </div>
+
+      {/* Main IDE Workspace (File Tree + Monaco Editor + Vulnerability Panel) */}
       <div className="flex-1 flex overflow-hidden rounded-xl bg-[#0c0d11] border border-white/8">
-        {/* File Tree Sidebar */}
-        <div className="w-60 shrink-0 overflow-hidden">
+        {/* File Tree Sidebar (Resizable & Expandable/Shrinkable) */}
+        <div
+          style={{ width: isSidebarCollapsed ? "44px" : `${sidebarWidth}px` }}
+          className="shrink-0 overflow-hidden transition-[width] duration-150 ease-out flex flex-col relative"
+        >
           {isScanning ? (
             <div className="h-full flex flex-col items-center justify-center text-[#ff5400] gap-3 bg-[#0c0d11]">
               <Loader2 className="w-6 h-6 animate-spin" />
-              <span className="text-xs font-mono font-semibold tracking-wider text-[#8e8e9a]">SCANNING...</span>
+              {!isSidebarCollapsed && (
+                <span className="text-xs font-mono font-semibold tracking-wider text-[#8e8e9a]">SCANNING...</span>
+              )}
             </div>
           ) : (
             <FileTreeSidebar
               tree={fileTree}
               onSelectFile={handleSelectFile}
               selectedPath={selectedFilePath}
+              findingsMap={scanFindingsMap}
+              isCollapsed={isSidebarCollapsed}
+              onToggleCollapse={() => setIsSidebarCollapsed((prev) => !prev)}
             />
           )}
         </div>
 
+        {/* Resizer Handle */}
+        {!isSidebarCollapsed && (
+          <div
+            onMouseDown={handleMouseDownResize}
+            className="w-1.5 hover:w-2 bg-[#12131a] hover:bg-[#ff5400]/40 cursor-col-resize shrink-0 transition-all border-r border-white/8 flex items-center justify-center group relative z-20"
+            title="Drag to resize explorer"
+          >
+            <div className="w-0.5 h-6 bg-white/20 group-hover:bg-[#ff5400] rounded-full transition-colors" />
+          </div>
+        )}
+
         {/* Code Viewer (Center) */}
         <div className="flex-1 overflow-hidden border-l border-white/8 flex flex-col">
-          <div className="px-4 py-2.5 border-b border-white/8 bg-[#12131a] flex items-center gap-2 shrink-0">
-            <span className="w-2 h-2 rounded-full bg-[#ff5400]/50" />
-            <span className="text-xs font-mono text-[#8e8e9a] truncate">
-              {selectedFilePath || "NO FILE SELECTED"}
-            </span>
+          <div className="px-4 py-2.5 border-b border-white/8 bg-[#12131a] flex items-center justify-between shrink-0">
+            <div className="flex items-center gap-2 truncate">
+              <span className="w-2 h-2 rounded-full bg-[#ff5400]/50" />
+              <span className="text-xs font-mono text-[#8e8e9a] truncate">
+                {selectedFilePath || "NO FILE SELECTED"}
+              </span>
+            </div>
+            {selectedFilePath && (
+              <button
+                type="button"
+                onClick={() => handleCodeChange(fileContent)}
+                className="px-2.5 py-1 rounded bg-[#ff5400]/10 hover:bg-[#ff5400]/20 text-[#ff5400] font-mono text-[9px] font-bold border border-[#ff5400]/20 flex items-center gap-1 transition cursor-pointer hover:scale-105"
+                title="Save code edits and update PR review status"
+              >
+                <CheckCircle2 className="w-3 h-3" /> SAVE & UPDATE REVIEWS
+              </button>
+            )}
           </div>
           <div className="flex-1 overflow-hidden">
             <CodeViewer
               content={fileContent}
               language={getLanguageFromPath(selectedFilePath)}
               findings={findings}
-              onChange={setFileContent}
+              onChange={(val) => handleCodeChange(val || "")}
               readOnly={false}
             />
           </div>
         </div>
 
-        {/* Vulnerability Panel (Right) */}
-        {selectedFilePath && (
-          <VulnerabilityPanel
-            findings={findings}
-            fileName={selectedFilePath.split("/").pop() || selectedFilePath}
-            onApplyFix={handleApplyFix}
-          />
-        )}
+        {/* Vulnerability & Issue Column (Docked right beside Monaco Editor) */}
+        <VulnerabilityPanel
+          findings={findings}
+          fileName={selectedFilePath ? (selectedFilePath.split("/").pop() || selectedFilePath) : ""}
+          onApplyFix={handleApplyFix}
+        />
       </div>
     </div>
   );
 }
-

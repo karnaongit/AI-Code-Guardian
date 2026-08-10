@@ -8,7 +8,7 @@ requests>=2.31.0               # REST fallback transport
 # Vector RAG. Without them, reasoning falls back to the curated knowledge
 # pack in data/knowledge/, which covers the standards the prompts need.
 sentence-transformers>=2.7.0   # LOCAL embeddings (never sent to a remote API)
-faiss-cpu>=1.8.0               # vector index
+qdrant-client>=1.9.0           # Qdrant Vector Database Engine
 numpy>=1.24.0
 
 # Optional — CodeBERT semantic analysis for source-code chunks
