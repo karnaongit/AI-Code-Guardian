@@ -332,13 +332,13 @@ export default function CyberDashboard({ onNavigatePlatform }: CyberDashboardPro
                     CRITICAL
                   </span>
                   <div>
-                    <div className="text-white font-semibold">SQL Injection in payment_service.py</div>
-                    <div className="text-[10px] text-[#8e8e9a]">CWE-89 • Taint flow to cursor.execute()</div>
+                    <div className="text-white font-semibold">Taint-Flow SQL Execution Sinks</div>
+                    <div className="text-[10px] text-[#8e8e9a]">CWE-89 • Parameterized queries required</div>
                   </div>
                 </div>
                 <div className="text-right">
-                  <span className="text-[10px] text-[#ff5400] font-bold block">VULN-8902</span>
-                  <span className="text-[10px] text-emerald-400">AUTOFICED</span>
+                  <span className="text-[10px] text-[#ff5400] font-bold block">PRIORITY 1</span>
+                  <span className="text-[10px] text-emerald-400">AUTO-SCANNED</span>
                 </div>
               </div>
 
@@ -349,13 +349,13 @@ export default function CyberDashboard({ onNavigatePlatform }: CyberDashboardPro
                     HIGH
                   </span>
                   <div>
-                    <div className="text-white font-semibold">Deprecated MD5 Hashing in crypto.py</div>
-                    <div className="text-[10px] text-[#8e8e9a]">CWE-327 • Collision vulnerability</div>
+                    <div className="text-white font-semibold">Weak Cryptographic Hash Functions</div>
+                    <div className="text-[10px] text-[#8e8e9a]">CWE-327 • Upgrade to SHA-256 / Argon2</div>
                   </div>
                 </div>
                 <div className="text-right">
-                  <span className="text-[10px] text-orange-400 font-bold block">CRYPTO-327</span>
-                  <span className="text-[10px] text-emerald-400">UPGRADED SHA-256</span>
+                  <span className="text-[10px] text-orange-400 font-bold block">PRIORITY 2</span>
+                  <span className="text-[10px] text-emerald-400">PQC READY</span>
                 </div>
               </div>
 
@@ -367,12 +367,12 @@ export default function CyberDashboard({ onNavigatePlatform }: CyberDashboardPro
                   </span>
                   <div>
                     <div className="text-white font-semibold">Unverified SSL/TLS Certificate Context</div>
-                    <div className="text-[10px] text-[#8e8e9a]">CWE-295 • verify=False flag</div>
+                    <div className="text-[10px] text-[#8e8e9a]">CWE-295 • Enable strict CA validation</div>
                   </div>
                 </div>
                 <div className="text-right">
-                  <span className="text-[10px] text-yellow-400 font-bold block">TLS-295</span>
-                  <span className="text-[10px] text-emerald-400">VALIDATED</span>
+                  <span className="text-[10px] text-yellow-400 font-bold block">PRIORITY 3</span>
+                  <span className="text-[10px] text-emerald-400">VERIFIED</span>
                 </div>
               </div>
 

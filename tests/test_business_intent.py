@@ -333,3 +333,40 @@ class TestContextualPass:
         assert "EVIDENCE" in prompt
         assert "processRefund" in prompt
         assert len(prompt) < 12_500
+
+
+class TestDomainDefaultsAndDynamicProfiling:
+    def test_domain_default_policies_fallback(self, tmp_path):
+        from guardian.policies.domain_defaults import get_domain_default_policy_set
+        pset = get_domain_default_policy_set("Banking / FinTech")
+        assert len(pset.policies) >= 3
+        assert any(p.action == "refund" for p in pset.policies)
+
+    def test_rule_matcher_dynamic_profiling(self, tmp_path):
+        from guardian.intent.matcher.rule_matcher import RuleMatcher
+        from guardian.intent.parser.rule_parser import ParsedRule
+
+        matcher = RuleMatcher()
+        findings = [{
+            "function": "process_payout",
+            "file": "services/payout.py",
+            "line": 15,
+            "snippet": "def process_payout(amount): disburse_funds(amount)",
+            "reason": "Missing authorization check"
+        }]
+
+        profiles = matcher.build_dynamic_profiles(findings=findings)
+        assert any(p.function_name == "process_payout" for p in profiles)
+
+        rule = ParsedRule(
+            rule_id="RULE-1",
+            requirement_text="Payout requires authorization",
+            source_file="spec.md",
+            line_number=1,
+            action="payout",
+            condition="amount > 1000",
+            control="authorization",
+            rule_type="STRUCTURED"
+        )
+        res = matcher.evaluate_rule(rule, findings=findings)
+        assert res["status"] in ("VIOLATION", "PARTIAL", "COMPLIANT", "INSUFFICIENT_EVIDENCE")

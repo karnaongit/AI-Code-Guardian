@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Search, FolderGit2, Folder, FileArchive, Loader2, Play, Sparkles, Upload } from "lucide-react";
 
 export type SourceType = "local" | "zip" | "github";
@@ -22,6 +22,42 @@ export default function RepoInput({ onScan, isScanning }: RepoInputProps) {
   const [target, setTarget] = useState("");
   const [zipFile, setZipFile] = useState<File | null>(null);
   const [aiEnabled, setAiEnabled] = useState(false);
+
+  useEffect(() => {
+    try {
+      const savedSource = sessionStorage.getItem("guardian_source_type") as SourceType | null;
+      const savedTarget = sessionStorage.getItem("guardian_repo_target");
+      const savedAi = sessionStorage.getItem("guardian_ai_enabled");
+
+      if (savedSource) setSourceType(savedSource);
+      if (savedTarget) setTarget(savedTarget);
+      if (savedAi !== null) setAiEnabled(savedAi === "true");
+    } catch (e) {
+      console.warn("Failed to load RepoInput state from sessionStorage:", e);
+    }
+  }, []);
+
+  const handleSourceTypeChange = (type: SourceType) => {
+    setSourceType(type);
+    try {
+      sessionStorage.setItem("guardian_source_type", type);
+    } catch (e) {}
+  };
+
+  const handleTargetChange = (val: string) => {
+    setTarget(val);
+    try {
+      sessionStorage.setItem("guardian_repo_target", val);
+    } catch (e) {}
+  };
+
+  const handleAiToggle = () => {
+    const nextVal = !aiEnabled;
+    setAiEnabled(nextVal);
+    try {
+      sessionStorage.setItem("guardian_ai_enabled", String(nextVal));
+    } catch (e) {}
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -49,7 +85,7 @@ export default function RepoInput({ onScan, isScanning }: RepoInputProps) {
         <div className="flex items-center gap-1.5 bg-[#0c0d11] p-1 rounded-lg border border-white/8">
           <button
             type="button"
-            onClick={() => setSourceType("local")}
+            onClick={() => handleSourceTypeChange("local")}
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-mono font-medium transition-all ${
               sourceType === "local"
                 ? "bg-[#ff5400] text-white font-bold shadow"
@@ -62,7 +98,7 @@ export default function RepoInput({ onScan, isScanning }: RepoInputProps) {
 
           <button
             type="button"
-            onClick={() => setSourceType("zip")}
+            onClick={() => handleSourceTypeChange("zip")}
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-mono font-medium transition-all ${
               sourceType === "zip"
                 ? "bg-[#ff5400] text-white font-bold shadow"
@@ -75,7 +111,7 @@ export default function RepoInput({ onScan, isScanning }: RepoInputProps) {
 
           <button
             type="button"
-            onClick={() => setSourceType("github")}
+            onClick={() => handleSourceTypeChange("github")}
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-mono font-medium transition-all ${
               sourceType === "github"
                 ? "bg-[#ff5400] text-white font-bold shadow"
@@ -90,7 +126,7 @@ export default function RepoInput({ onScan, isScanning }: RepoInputProps) {
         {/* AI Toggle Button */}
         <button
           type="button"
-          onClick={() => setAiEnabled(!aiEnabled)}
+          onClick={handleAiToggle}
           className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-[11px] font-mono font-semibold transition-all select-none ${
             aiEnabled
               ? "bg-[#ff5400]/15 border-[#ff5400]/40 text-[#ff5400]"
@@ -119,7 +155,7 @@ export default function RepoInput({ onScan, isScanning }: RepoInputProps) {
                   placeholder="/Users/username/projects/my-app"
                   className="w-full h-10 pl-10 pr-3 rounded-lg glass-input text-sm font-mono placeholder:text-[#8e8e9a]/50 focus:outline-none disabled:opacity-50"
                   value={target}
-                  onChange={(e) => setTarget(e.target.value)}
+                  onChange={(e) => handleTargetChange(e.target.value)}
                   disabled={isScanning}
                 />
               </div>
@@ -159,7 +195,7 @@ export default function RepoInput({ onScan, isScanning }: RepoInputProps) {
                   placeholder="https://github.com/user/repository"
                   className="w-full h-10 pl-10 pr-3 rounded-lg glass-input text-sm font-mono placeholder:text-[#8e8e9a]/50 focus:outline-none disabled:opacity-50"
                   value={target}
-                  onChange={(e) => setTarget(e.target.value)}
+                  onChange={(e) => handleTargetChange(e.target.value)}
                   disabled={isScanning}
                 />
               </div>

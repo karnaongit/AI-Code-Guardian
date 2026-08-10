@@ -105,7 +105,11 @@ class ScanPipeline:
             truncated=discovered.truncated,
         )
         context = AnalysisContext(repository=repository, config=cfg)
-        context.business_requirements = [Path(p) for p in (business_requirements or [])]
+        context.business_requirements = self._resolve_business_requirements(
+            repo_root=repo_root,
+            requirements=business_requirements,
+            discovered=discovered,
+        )
 
         # 3. UST construction ---------------------------------------------
         try:
@@ -313,6 +317,45 @@ class ScanPipeline:
             log.info("fetching GitHub repository: %s", target)
             return GitHubService().fetch_repository(target)
         return Path(repo_root)
+
+    @staticmethod
+    def _resolve_business_requirements(
+        repo_root: Path,
+        requirements: Optional[list[str | Path]],
+        discovered: DiscoveredFiles,
+    ) -> list[Path]:
+        import re
+        if requirements:
+            return [Path(p) for p in requirements]
+
+        discovered_paths: list[Path] = []
+        doc_patterns = re.compile(r"(?i)(requirement|spec|business|policy|rule|brd|prd)")
+
+        for doc in discovered.docs:
+            if doc_patterns.search(doc.name) or doc_patterns.search(str(doc)):
+                if doc.suffix.lower() in (".md", ".txt", ".pdf", ".docx", ".json", ".yaml", ".yml", ".csv", ".xlsx"):
+                    discovered_paths.append(doc)
+
+        for item in (repo_root, repo_root / "docs"):
+            if item.exists():
+                for fn in ("requirements.md", "requirements.txt", "REQUIREMENTS.md",
+                           "business_requirements.md", "spec.md", "SPEC.md"):
+                    p = item / fn
+                    if p.exists() and p not in discovered_paths:
+                        discovered_paths.append(p)
+
+        try:
+            from guardian.intent.ingestion.document_loader import get_business_docs_dir
+            bdocs = get_business_docs_dir()
+            if bdocs.exists():
+                for f in bdocs.glob("*"):
+                    if f.is_file() and f.suffix.lower() in (".md", ".txt", ".pdf", ".docx", ".json", ".yaml", ".yml", ".csv", ".xlsx"):
+                        if f not in discovered_paths:
+                            discovered_paths.append(f)
+        except Exception:
+            pass
+
+        return discovered_paths
 
     def _engines(self) -> list:
         """Build the engine list for this scan, honouring config toggles."""

@@ -182,31 +182,80 @@ async def chat_completion(request: ChatCompletionRequest):
     )
 
 
+
 @router.post("/stream")
 async def chat_stream(request: ChatStreamRequest):
-    """Streams RAG Agent response using LangGraph Server-Sent Events."""
-    from guardian.orchestrator.workflow import OrchestratorWorkflow
-    
-    workflow = OrchestratorWorkflow()
-    
+    """Streams a Nemotron AI response via Server-Sent Events, grounded in active scan evidence."""
+    system_prompt = get_persona_prompt("Developer")
+    user_query = request.message.strip()
+
+    tool_insights: list[str] = []
+
+    knowledge_entries = query_security_knowledge(user_query)
+    if knowledge_entries:
+        snippets = [f"### [{k.get('standard','OWASP')}] {k.get('title','')}\n{k.get('content','')}" for k in knowledge_entries[:2]]
+        tool_insights.append("### Trusted Security Guidance:\n" + "\n\n".join(snippets))
+
+    findings_context = get_active_findings_context(limit=6)
+    if findings_context and "No active" not in findings_context:
+        tool_insights.append(f"### Active Scan Evidence:\n{findings_context}")
+
+    context_msg = (
+        "--- GROUNDED EVIDENCE CONTEXT ---\n"
+        + ("\n\n".join(tool_insights) if tool_insights else "No specific scan evidence attached.")
+        + "\n---------------------------------\n\n"
+        f"USER QUERY:\n{user_query}"
+    )
+
+    llm_messages = [
+        {"role": "system", "content": system_prompt},
+        {"role": "user", "content": context_msg},
+    ]
+
     async def event_generator():
-        from langchain_core.messages import HumanMessage
-        config = {"configurable": {"thread_id": request.thread_id}}
-        inputs = {"scan_mode": "chat", "messages": [HumanMessage(content=request.message)]}
-        
-        try:
-            # astream_events yields events dynamically
-            async for event in workflow.compiled_graph.astream_events(inputs, config=config, version="v1"):
-                kind = event["event"]
-                if kind == "on_chat_model_stream":
-                    chunk = event["data"]["chunk"]
-                    if chunk.content:
-                        yield f"data: {json.dumps({'content': chunk.content})}\n\n"
-                        
+        if not settings.NVIDIA_API_KEY:
+            deterministic_reply, _ = synthesize_security_answer(
+                user_query, list(_ACTIVE_FINDINGS.values()), persona="Developer",
+                conversation=[], knowledge=knowledge_entries,
+            )
+            yield f"data: {json.dumps({'content': deterministic_reply})}\n\n"
             yield "data: [DONE]\n\n"
+            return
+
+        try:
+            async with httpx.AsyncClient(timeout=60.0) as client:
+                async with client.stream(
+                    "POST",
+                    f"{settings.NVIDIA_BASE_URL.rstrip('/')}/chat/completions",
+                    headers={
+                        "Authorization": f"Bearer {settings.NVIDIA_API_KEY}",
+                        "Content-Type": "application/json",
+                    },
+                    json={
+                        "model": settings.NVIDIA_MODEL,
+                        "messages": llm_messages,
+                        "temperature": settings.LLM_TEMPERATURE,
+                        "max_tokens": settings.LLM_MAX_TOKENS,
+                        "stream": True,
+                    },
+                ) as response:
+                    async for line in response.aiter_lines():
+                        if line.startswith("data: "):
+                            raw = line[6:].strip()
+                            if raw == "[DONE]":
+                                yield "data: [DONE]\n\n"
+                                break
+                            try:
+                                chunk = json.loads(raw)
+                                content = chunk["choices"][0].get("delta", {}).get("content", "")
+                                if content:
+                                    yield f"data: {json.dumps({'content': content})}\n\n"
+                            except Exception:
+                                pass
         except Exception as e:
             yield f"data: {json.dumps({'error': str(e)})}\n\n"
             yield "data: [DONE]\n\n"
-        
+
     return StreamingResponse(event_generator(), media_type="text/event-stream")
+
 

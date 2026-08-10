@@ -6,7 +6,9 @@ Provides thread-safe session state accessors for active workspace, scans, chat h
 from __future__ import annotations
 
 from typing import Any, Dict, List, Optional
-from guardian.orchestrator.state import AgentWorkflowState
+
+# AgentWorkflowState is just a plain dict at runtime; no import needed.
+ScanState = Dict[str, Any]
 
 
 class DashboardSessionManager:
@@ -35,11 +37,11 @@ class DashboardSessionManager:
         return st.session_state.get("active_repo_info")
 
     @staticmethod
-    def set_current_state(st: Any, state: AgentWorkflowState) -> None:
+    def set_current_state(st: Any, state: ScanState) -> None:
         st.session_state["current_state"] = state
 
     @staticmethod
-    def get_current_state(st: Any) -> Optional[AgentWorkflowState]:
+    def get_current_state(st: Any) -> Optional[ScanState]:
         return st.session_state.get("current_state")
 
     @staticmethod

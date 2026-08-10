@@ -67,12 +67,16 @@ async def global_exception_handler(request: Request, exc: Exception):
         content={"detail": f"Internal Server Error: {str(exc)}"},
     )
 
+from backend.app.api.v1.business_intent import router as business_intent_router
+
 # Include v1 Routers
 app.include_router(scans_router, prefix=settings.API_V1_STR)
 app.include_router(files_router, prefix=settings.API_V1_STR)
 app.include_router(findings_router, prefix=settings.API_V1_STR)
 app.include_router(chat_router, prefix=settings.API_V1_STR)
 app.include_router(reports_router, prefix=settings.API_V1_STR)
+app.include_router(business_intent_router, prefix=settings.API_V1_STR)
+app.include_router(business_intent_router)
 
 
 @app.get("/", tags=["health"])

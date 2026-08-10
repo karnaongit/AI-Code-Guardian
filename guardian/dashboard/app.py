@@ -34,10 +34,9 @@ from guardian.dashboard.views import (
     ValidationDashboardPage,
     WorkflowTimelinePage,
 )
-from guardian.knowledge.services.knowledge_service import KnowledgeService
-from guardian.orchestrator import OrchestratorWorkflow
-from guardian.orchestrator.state import AgentWorkflowState
+from guardian.core.pipeline import ScanPipeline
 from guardian.workspace.manager import RepositoryManager
+
 
 
 class GuardianDashboardApp:
@@ -50,8 +49,9 @@ class GuardianDashboardApp:
         repo_manager: Optional[RepositoryManager] = None
     ) -> None:
         self.config = config or DashboardConfig()
-        self.knowledge_service = knowledge_service or KnowledgeService()
+        self.knowledge_service = knowledge_service
         self.repo_manager = repo_manager or RepositoryManager()
+
 
         # Component & Page Initializers
         self.navbar = NavigationBarComponent()
@@ -76,7 +76,7 @@ class GuardianDashboardApp:
             "Interactive Assistant": InteractiveAssistantPage(),
         }
 
-    def render_page(self, state: AgentWorkflowState, page_name: str = "Overview", **kwargs: Any) -> Dict[str, Any]:
+    def render_page(self, state: Dict[str, Any], page_name: str = "Overview", **kwargs: Any) -> Dict[str, Any]:
         """Renders target dashboard page using a read-only state view."""
         state_view = DashboardStateView(state)
         handler = self.pages.get(page_name, self.pages["Overview"])
@@ -172,26 +172,131 @@ def main():
     criticality = st.sidebar.selectbox("Business Criticality", ["CRITICAL", "HIGH", "MEDIUM", "LOW"])
 
     def run_scan(repo_path: str):
-        workflow = OrchestratorWorkflow()
-        return workflow.execute(
-            scan_id=f"scan-{os.urandom(4).hex()}",
-            repository_profile={
-                "repo_path": repo_path,
-                "primary_language": "Python",
-                "frameworks": ["FastAPI"],
-                "entry_points": ["backend/app/main.py"],
-                "manifest_files": ["requirements.txt"],
-            },
-            business_context={"domain": domain, "criticality": criticality},
-            policy_context={"frameworks": ["OWASP_TOP_10", "NIST_800_53"]},
-        )
+        """Run the rule-based ScanPipeline and convert its report to a dashboard state dict."""
+        from guardian.config import GuardianConfig
+        import uuid
+        report = ScanPipeline(GuardianConfig()).scan(repo_path)
 
-    if st.sidebar.button("⚡ Run Multi-Agent Scan"):
-        with st.spinner(f"Executing Multi-Agent Analysis Pipeline on `{target_repo_path}`..."):
+        scan = report.get("scan", {})
+        unified = report.get("unified_risk") or report.get("risk") or {}
+        evidence_items = report.get("evidence_items", [])
+
+        # Convert ScanPipeline findings to the flat dict format dashboard views consume
+        findings = []
+        for f in scan.get("findings", []):
+            findings.append({
+                "finding_id": getattr(f, "id", str(uuid.uuid4())),
+                "rule_id": f.get("rule_id", ""),
+                "title": f.get("category", "Security Finding"),
+                "severity": f.get("severity", "MEDIUM"),
+                "category": f.get("category", "security"),
+                "file_path": f.get("file", ""),
+                "line_number": f.get("line", 0),
+                "snippet": f.get("snippet", ""),
+                "description": f.get("reason", ""),
+                "confidence": f.get("confidence", 0.9),
+                "evidence_id": f.get("evidence_ids", [None])[0],
+            } if isinstance(f, dict) else {
+                "finding_id": str(uuid.uuid4()),
+                "rule_id": getattr(f, "rule_id", ""),
+                "title": getattr(f, "category", "Security Finding"),
+                "severity": str(getattr(f, "severity", "MEDIUM")),
+                "category": getattr(f, "category", "security"),
+                "file_path": getattr(f, "file", ""),
+                "line_number": getattr(f, "line", 0),
+                "snippet": getattr(f, "snippet", ""),
+                "description": getattr(f, "reason", ""),
+                "confidence": getattr(f, "confidence", 0.9),
+                "evidence_id": None,
+            })
+
+        repo = report.get("repository", {})
+
+        # Build a flat state dict compatible with DashboardStateView.get() calls
+        state: Dict[str, Any] = {
+            "scan_id": f"scan-{uuid.uuid4().hex[:8]}",
+            "scan_mode": "full_scan",
+            "repository_profile": {
+                "repo_path": repo_path,
+                "primary_language": repo.get("primary_language", "Unknown"),
+                "frameworks": repo.get("frameworks", []),
+                "architecture": repo.get("architecture", []),
+            },
+            "repository_context": {
+                "source_files": report.get("discovery", {}).get("source_files", 0),
+                "manifest_files": report.get("discovery", {}).get("manifest_files", 0),
+            },
+            "business_context": {"domain": domain, "criticality": criticality},
+            "policy_context": {"frameworks": ["OWASP_TOP_10", "NIST_800_53"]},
+            "findings": findings,
+            "evidence": evidence_items,
+            "risk_scores": {
+                "security_score": unified.get("security_score", 0),
+                "alignment_score": unified.get("alignment_score", 0),
+                "quantum_readiness_score": unified.get("quantum_readiness_score", 0),
+                "composite_risk_score": unified.get("overall_risk_score", 0),
+                "merge_decision": unified.get("merge_decision", "REVIEW"),
+            },
+            "security_context": {
+                "total_findings": scan.get("total_findings", 0),
+                "severity_counts": scan.get("by_severity", {}),
+                "engine_counts": report.get("engines", {}),
+            },
+            "patches": [],
+            "validation_results": [],
+            "agent_trace": [],
+            "execution_metrics": {
+                "total_execution_time": report.get("duration_seconds", 0),
+                "agent_runtime": {},
+                "number_of_findings": scan.get("total_findings", 0),
+                "number_of_evidence_objects": report.get("evidence", {}).get("total", 0),
+            },
+            "messages": [],
+            "pending_agents": [],
+            "completed_agents": ["security", "quantum", "business_intent"],
+            "active_agent": "DONE",
+            "current_task": "Scan complete",
+            "execution_plan": {},
+            "repo_overview": {
+                "repo_name": repo.get("root", repo_path),
+                "primary_languages": [repo.get("primary_language", "Unknown")],
+                "frameworks_detected": repo.get("frameworks", []),
+                "total_files_scanned": scan.get("files_scanned", 0),
+                "summary": f"{scan.get('total_findings', 0)} findings across {scan.get('files_scanned', 0)} files.",
+            },
+            "active_evidence_ids": [e.get("id", "") for e in evidence_items if isinstance(e, dict)],
+            "attack_paths": [],
+            "exploitability": 0.0,
+            "git_diff": "",
+            "validation_report": {},
+            "grounding_report": {},
+            "remediation_summary": {},
+            "developer_explanation": "",
+            "validation_confidence": 0.0,
+            "retrieved_documents": [],
+            "knowledge_context": {},
+            "semantic_context": {},
+            "repository_graph": {},
+            "architecture_context": {},
+            "dependency_context": {
+                "findings_count": report.get("analyzers", {}).get("dependencies", 0),
+            },
+            "threat_context": {},
+            "policy_results": {
+                "business_intent": report.get("business_intent"),
+            },
+            "correlated_findings": {},
+            "reports": [],
+        }
+        return state
+
+    if st.sidebar.button("⚡ Run Security Scan"):
+        with st.spinner(f"Scanning `{target_repo_path}`..."):
             state_res = run_scan(target_repo_path)
             DashboardSessionManager.set_current_state(st, state_res)
-            st.sidebar.success("Multi-Agent Scan Complete!")
+            st.sidebar.success("Scan Complete!")
             st.rerun()
+
 
     state = DashboardSessionManager.get_current_state(st)
     

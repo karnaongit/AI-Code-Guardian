@@ -7,13 +7,15 @@ Never mutates backend workflow state or executes agents.
 from __future__ import annotations
 
 from typing import Any, Dict, List, Optional
-from guardian.orchestrator.state import AgentWorkflowState
+
+# ScanState is the plain dict produced by ScanPipeline.scan()
+ScanState = Dict[str, Any]
 
 
 class DashboardStateView:
     """Read-only view model consuming AgentWorkflowState for UI presentation."""
 
-    def __init__(self, state: AgentWorkflowState) -> None:
+    def __init__(self, state: ScanState) -> None:
         self._state = state
 
     @property

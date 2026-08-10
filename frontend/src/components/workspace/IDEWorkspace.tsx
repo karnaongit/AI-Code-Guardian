@@ -5,15 +5,16 @@ import RepoInput, { ScanOptions } from "./RepoInput";
 import FileTreeSidebar, { FileNode } from "./FileTreeSidebar";
 import CodeViewer from "./CodeViewer";
 import VulnerabilityPanel from "./VulnerabilityPanel";
-import { Loader2 } from "lucide-react";
+import { Loader2, RotateCcw, CheckCircle2 } from "lucide-react";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
 interface IDEWorkspaceProps {
   onScanComplete?: (scanResult: any) => void;
+  onUpdateFindings?: (updatedFindings: any[]) => void;
 }
 
-export default function IDEWorkspace({ onScanComplete }: IDEWorkspaceProps) {
+export default function IDEWorkspace({ onScanComplete, onUpdateFindings }: IDEWorkspaceProps) {
   const [isScanning, setIsScanning] = useState(false);
   const [scanId, setScanId] = useState<string | null>(null);
   const [fileTree, setFileTree] = useState<FileNode | null>(null);
@@ -221,6 +222,56 @@ export default function IDEWorkspace({ onScanComplete }: IDEWorkspaceProps) {
     }
   };
 
+  const handleCodeChange = (newContent: string) => {
+    setFileContent(newContent);
+    if (!selectedFilePath) return;
+
+    const currentFileFindings = scanFindingsMap[selectedFilePath] || [];
+    if (currentFileFindings.length === 0) return;
+
+    const remainingFileFindings = currentFileFindings.filter((f) => {
+      const snippet = (f.snippet || "").trim();
+      const lineNum = f.line_number || f.line;
+
+      if (snippet && snippet.length > 5) {
+        if (!newContent.includes(snippet)) {
+          return false;
+        }
+      }
+
+      const cat = (f.category || f.title || "").toLowerCase();
+      const lines = newContent.split("\n");
+      if (lineNum && lineNum <= lines.length) {
+        const editedLine = lines[lineNum - 1];
+        if (cat.includes("sql") && editedLine.includes("%s") && !editedLine.includes("+")) {
+          return false;
+        }
+        if ((cat.includes("crypto") || cat.includes("md5")) && editedLine.includes("sha256")) {
+          return false;
+        }
+      }
+
+      return true;
+    });
+
+    if (remainingFileFindings.length !== currentFileFindings.length) {
+      setFindings(remainingFileFindings);
+      const updatedMap = { ...scanFindingsMap, [selectedFilePath]: remainingFileFindings };
+      setScanFindingsMap(updatedMap);
+      if (scanId) {
+        saveStateToStorage(scanId, fileTree, updatedMap, selectedFilePath, newContent, remainingFileFindings);
+      }
+      const allRemaining = Object.values(updatedMap).flat();
+      if (onUpdateFindings) {
+        onUpdateFindings(allRemaining);
+      }
+    } else {
+      if (scanId) {
+        saveStateToStorage(scanId, fileTree, scanFindingsMap, selectedFilePath, newContent, currentFileFindings);
+      }
+    }
+  };
+
   const handleApplyFix = async (finding: any) => {
     const lines = fileContent.split('\n');
     const lineNum = finding.line_number || finding.line || 1;
@@ -275,8 +326,32 @@ export default function IDEWorkspace({ onScanComplete }: IDEWorkspaceProps) {
     const updatedContent = lines.join('\n');
     setFileContent(updatedContent);
 
-    if (scanId && selectedFilePath) {
-      saveStateToStorage(scanId, fileTree, scanFindingsMap, selectedFilePath, updatedContent, findings);
+    // Remove the remediated finding from active file findings
+    const targetId = finding.finding_id || finding.id;
+    const targetCategory = finding.category || finding.title;
+    const targetLine = finding.line_number || finding.line || lineNum;
+
+    const updatedFileFindings = findings.filter((f) => {
+      const fId = f.finding_id || f.id;
+      if (targetId && fId) return fId !== targetId;
+      const fCat = f.category || f.title;
+      const fLine = f.line_number || f.line;
+      return !(fCat === targetCategory && fLine === targetLine);
+    });
+
+    setFindings(updatedFileFindings);
+
+    if (selectedFilePath) {
+      const updatedMap = { ...scanFindingsMap, [selectedFilePath]: updatedFileFindings };
+      setScanFindingsMap(updatedMap);
+      if (scanId) {
+        saveStateToStorage(scanId, fileTree, updatedMap, selectedFilePath, updatedContent, updatedFileFindings);
+      }
+      // Dynamically notify parent page.tsx to reduce total metrics & risk scores
+      const allRemaining = Object.values(updatedMap).flat();
+      if (onUpdateFindings) {
+        onUpdateFindings(allRemaining);
+      }
     }
   };
 
@@ -298,11 +373,82 @@ export default function IDEWorkspace({ onScanComplete }: IDEWorkspaceProps) {
     }
   };
 
+  const handleResetScan = () => {
+    setScanId(null);
+    setFileTree(null);
+    setSelectedFilePath(null);
+    setFileContent("// Select a file from the explorer to view its content.");
+    setFindings([]);
+    setScanFindingsMap({});
+    try {
+      sessionStorage.removeItem("guardian_scan_id");
+      sessionStorage.removeItem("guardian_file_tree");
+      sessionStorage.removeItem("guardian_findings_map");
+      sessionStorage.removeItem("guardian_selected_path");
+      sessionStorage.removeItem("guardian_file_content");
+      sessionStorage.removeItem("guardian_file_findings");
+      sessionStorage.removeItem("guardian_report");
+    } catch (e) {}
+    if (onUpdateFindings) {
+      onUpdateFindings([]);
+    }
+  };
+
+  const hasScanResult = Boolean(fileTree || scanId);
+
+  // Initial State (Before Scan) — Show ONLY the RepoInput selection form
+  if (!hasScanResult && !isScanning) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[calc(100vh-170px)] px-4 py-8">
+        <div className="w-full max-w-3xl space-y-6">
+          <div className="text-center space-y-2">
+            <h1 className="text-xl font-mono font-bold tracking-wider text-[#f4f4f8] uppercase">
+              SELECT REPOSITORY TO SCAN
+            </h1>
+            <p className="text-xs font-mono text-[#8e8e9a]">
+              Select a local directory, upload a ZIP archive, or enter a GitHub repository URL to initiate security analysis.
+            </p>
+          </div>
+          <RepoInput onScan={handleScan} isScanning={isScanning} />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col h-[calc(100vh-115px)] gap-3.5">
-      <div className="shrink-0">
-        <RepoInput onScan={handleScan} isScanning={isScanning} />
+      {/* Compact Scan Status Banner (Replaces full RepoInput after scan starts/completes) */}
+      <div className="shrink-0 px-4 py-2 bg-[#12131a] border border-white/8 rounded-xl flex items-center justify-between">
+        <div className="flex items-center gap-2.5">
+          {isScanning ? (
+            <>
+              <Loader2 className="w-4 h-4 text-[#ff5400] animate-spin" />
+              <span className="text-xs font-mono font-semibold text-[#8e8e9a]">SCANNING REPOSITORY IN PROGRESS...</span>
+            </>
+          ) : (
+            <>
+              <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+              <span className="text-xs font-mono font-semibold text-[#f4f4f8]">
+                ACTIVE SCAN SESSION: <span className="text-[#ff5400]">{scanId || "COMPLETED"}</span>
+              </span>
+            </>
+          )}
+        </div>
+
+        {!isScanning && (
+          <button
+            type="button"
+            onClick={handleResetScan}
+            className="flex items-center gap-1.5 px-3 py-1 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-[11px] font-mono text-[#8e8e9a] hover:text-white transition-all"
+            title="Clear scan and select another repository"
+          >
+            <RotateCcw className="w-3 h-3 text-[#ff5400]" />
+            NEW SCAN / CHANGE REPO
+          </button>
+        )}
       </div>
+
+      {/* Main IDE Workspace (File Tree + Monaco Editor + Vulnerability Panel) */}
       <div className="flex-1 flex overflow-hidden rounded-xl bg-[#0c0d11] border border-white/8">
         {/* File Tree Sidebar (Resizable & Expandable/Shrinkable) */}
         <div
@@ -341,31 +487,41 @@ export default function IDEWorkspace({ onScanComplete }: IDEWorkspaceProps) {
 
         {/* Code Viewer (Center) */}
         <div className="flex-1 overflow-hidden border-l border-white/8 flex flex-col">
-          <div className="px-4 py-2.5 border-b border-white/8 bg-[#12131a] flex items-center gap-2 shrink-0">
-            <span className="w-2 h-2 rounded-full bg-[#ff5400]/50" />
-            <span className="text-xs font-mono text-[#8e8e9a] truncate">
-              {selectedFilePath || "NO FILE SELECTED"}
-            </span>
+          <div className="px-4 py-2.5 border-b border-white/8 bg-[#12131a] flex items-center justify-between shrink-0">
+            <div className="flex items-center gap-2 truncate">
+              <span className="w-2 h-2 rounded-full bg-[#ff5400]/50" />
+              <span className="text-xs font-mono text-[#8e8e9a] truncate">
+                {selectedFilePath || "NO FILE SELECTED"}
+              </span>
+            </div>
+            {selectedFilePath && (
+              <button
+                type="button"
+                onClick={() => handleCodeChange(fileContent)}
+                className="px-2.5 py-1 rounded bg-[#ff5400]/10 hover:bg-[#ff5400]/20 text-[#ff5400] font-mono text-[9px] font-bold border border-[#ff5400]/20 flex items-center gap-1 transition cursor-pointer hover:scale-105"
+                title="Save code edits and update PR review status"
+              >
+                <CheckCircle2 className="w-3 h-3" /> SAVE & UPDATE REVIEWS
+              </button>
+            )}
           </div>
           <div className="flex-1 overflow-hidden">
             <CodeViewer
               content={fileContent}
               language={getLanguageFromPath(selectedFilePath)}
               findings={findings}
-              onChange={setFileContent}
+              onChange={(val) => handleCodeChange(val || "")}
               readOnly={false}
             />
           </div>
         </div>
 
-        {/* Vulnerability Panel (Right) */}
-        {selectedFilePath && (
-          <VulnerabilityPanel
-            findings={findings}
-            fileName={selectedFilePath.split("/").pop() || selectedFilePath}
-            onApplyFix={handleApplyFix}
-          />
-        )}
+        {/* Vulnerability & Issue Column (Docked right beside Monaco Editor) */}
+        <VulnerabilityPanel
+          findings={findings}
+          fileName={selectedFilePath ? (selectedFilePath.split("/").pop() || selectedFilePath) : ""}
+          onApplyFix={handleApplyFix}
+        />
       </div>
     </div>
   );
